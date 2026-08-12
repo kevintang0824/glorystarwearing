@@ -1,0 +1,20 @@
+name: Import static site
+on: [push]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import website
+        run: |
+          curl -fL --retry 5 --retry-all-errors -o /tmp/site.tar.gz https://glorystarwearsite.vercel.app/codex-import-20260812/site.tar.gz
+          echo "46f8f93df86f752529fd09ae261dc4db615408742623ab239d0b713d68227dbb  /tmp/site.tar.gz" | sha256sum -c
+          tar -xzf /tmp/site.tar.gz
+          rm -rf codex-import-20260812 .github/workflows/import-site.yml
+          git config user.name Codex
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Publish Glory Star Wearing website"
+          git push
