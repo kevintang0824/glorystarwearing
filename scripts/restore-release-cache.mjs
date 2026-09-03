@@ -9,7 +9,12 @@ const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
 const stagingRoot = path.join(root, ".catalog-build", "release-cache");
 const manifestPath = path.join(root, "catalog-data", "release-cache-manifest.json");
-const localCacheRoot = process.env.RELEASE_CACHE_DIR ? path.resolve(process.env.RELEASE_CACHE_DIR) : "";
+const bundledCacheRoot = path.join(root, "release-cache-upload");
+const localCacheRoot = process.env.RELEASE_CACHE_DIR
+  ? path.resolve(process.env.RELEASE_CACHE_DIR)
+  : fs.existsSync(bundledCacheRoot)
+    ? bundledCacheRoot
+    : "";
 const artifactToken = process.env.VERCEL_ARTIFACTS_TOKEN || process.env.TURBO_TOKEN || "";
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 const expectedTasks = ["cache-core", ..."0123456789abcdef".split("").map((prefix) => `cache-media-${prefix}`)];
