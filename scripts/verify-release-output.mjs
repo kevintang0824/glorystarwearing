@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { canonicalPages } from "./prepare-multilingual.mjs";
+import { canonicalPages, releaseImageAssets } from "./prepare-multilingual.mjs";
 import { languages } from "./locales.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -117,6 +117,13 @@ for (const relative of ["assets/multilingual.js", "assets/multilingual.css", "as
   const output = path.join(publicRoot, relative);
   if (!fs.existsSync(output) || !fs.readFileSync(source).equals(fs.readFileSync(output))) {
     fail(`Multilingual asset is missing or stale: ${relative}`);
+  }
+}
+for (const relative of releaseImageAssets) {
+  const source = path.join(root, relative);
+  const output = path.join(publicRoot, relative);
+  if (!fs.existsSync(output) || !fs.readFileSync(source).equals(fs.readFileSync(output))) {
+    fail(`Release image is missing or stale: ${relative}`);
   }
 }
 for (const relative of canonicalPages(publicRoot)) {

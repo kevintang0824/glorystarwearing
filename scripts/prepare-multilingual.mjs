@@ -61,6 +61,18 @@ export function installMultilingual(root = sourceRoot) {
 }
 const titleFor = (t, key) => t.pages[key]?.split('|')[0];
 const navRoutes = ['/','/products/','/private-label-activewear/','/about-glory-star-wear/','/support/','/contact-us/','/request-a-quote/'];
+export const releaseImageAssets = [
+  'wp-content/uploads/2026/08/activewear-collection-480.avif',
+  'wp-content/uploads/2026/08/activewear-collection-820.avif',
+  'wp-content/uploads/2026/08/activewear-collection-1280.avif',
+  'wp-content/uploads/2026/08/activewear-collection-1640.avif',
+  'wp-content/uploads/2026/08/activewear-collection-480.jpg',
+  'wp-content/uploads/2026/08/activewear-collection-820.jpg',
+  'wp-content/uploads/2026/08/activewear-collection-1280.jpg',
+  'wp-content/uploads/2026/08/activewear-collection-1640.jpg',
+  'wp-content/uploads/2026/08/activewear-collection-clean.png',
+  'wp-content/uploads/2026/08/xiamen-guangxingheng-team.png',
+];
 const categoryName = (t,label) => t.categories[categoryKeys.indexOf(label)] || t.ui.product;
 const attributeRules = [/\bseamless\b/i,/\bhigh[ -]waist/i,/\bwith (?:side )?pockets?\b/i,/\bflare(?:d)?\b/i,/\bribbed\b/i,/\bbackless\b|\bopen[ -]back\b/i,/\bhalter\b/i,/\bone[ -]shoulder\b/i,/\blong[ -]sleeve\b/i,/\bmen(?:'s|s)?\b/i,/\bwomen(?:'s|s)?\b/i];
 export function productName(product,t) {
@@ -158,6 +170,10 @@ export function prepareMultilingualRelease() {
     if(!/^products\/(?:[a-z0-9-]+\/index\.html|index\.html|catalog-index\.json|catalog-manifest\.json)$/.test(relative)) throw new Error(`Invalid snapshot path: ${relative}`);
     fs.mkdirSync(path.dirname(path.join(outputRoot,relative)),{recursive:true});
     fs.writeFileSync(path.join(outputRoot,relative),html);
+  }
+  for(const relative of releaseImageAssets) {
+    fs.mkdirSync(path.dirname(path.join(outputRoot,relative)),{recursive:true});
+    fs.copyFileSync(path.join(sourceRoot,relative),path.join(outputRoot,relative));
   }
   fs.cpSync(path.join(sourceRoot,'assets'),path.join(outputRoot,'assets'),{recursive:true});
   // Source HTML already contains the same generated navigation and metadata.
