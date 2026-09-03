@@ -2,3 +2,9 @@
 ._*
 .vercel
 .env*
+.catalog-build
+public
+.turbo
+.wrangler
+/products/
+/wp-content/uploads/catalog/

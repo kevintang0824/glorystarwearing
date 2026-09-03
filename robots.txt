@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://glorystarwearing.com/sitemap.xml
+Sitemap: https://glorystarwearing.com/sitemap-multilingual.xml

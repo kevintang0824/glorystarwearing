@@ -1,0 +1,26 @@
+{
+  "name": "glorystarwear-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "scripts": {
+    "cache-core": "node scripts/cache-release-slice.mjs core",
+    "cache-media-0": "node scripts/cache-release-slice.mjs 0",
+    "cache-media-1": "node scripts/cache-release-slice.mjs 1",
+    "cache-media-2": "node scripts/cache-release-slice.mjs 2",
+    "cache-media-3": "node scripts/cache-release-slice.mjs 3",
+    "cache-media-4": "node scripts/cache-release-slice.mjs 4",
+    "cache-media-5": "node scripts/cache-release-slice.mjs 5",
+    "cache-media-6": "node scripts/cache-release-slice.mjs 6",
+    "cache-media-7": "node scripts/cache-release-slice.mjs 7",
+    "cache-media-8": "node scripts/cache-release-slice.mjs 8",
+    "cache-media-9": "node scripts/cache-release-slice.mjs 9",
+    "cache-media-a": "node scripts/cache-release-slice.mjs a",
+    "cache-media-b": "node scripts/cache-release-slice.mjs b",
+    "cache-media-c": "node scripts/cache-release-slice.mjs c",
+    "cache-media-d": "node scripts/cache-release-slice.mjs d",
+    "cache-media-e": "node scripts/cache-release-slice.mjs e",
+    "cache-media-f": "node scripts/cache-release-slice.mjs f",
+    "release": "node scripts/verify-release-output.mjs"
+  }
+}

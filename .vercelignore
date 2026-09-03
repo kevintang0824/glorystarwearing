@@ -1,0 +1,11 @@
+.git
+.vercel
+.env*
+_url_map.json
+SEO_*.md
+.catalog-build
+.turbo
+.wrangler
+products
+public
+wp-content/uploads/catalog

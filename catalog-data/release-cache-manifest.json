@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "teamId": "team_1lsLPmalu7YaM68wgv9n1LSg",
+  "artifacts": [
+    {
+      "task": "cache-core",
+      "hash": "a116ee51fe0138e9",
+      "bytes": 18543693,
+      "sha256": "e024a7d1b21feb21e0b5cd4dfd4f170e38270569bac23a1936afb3366e05f1e8",
+      "duration": 109
+    },
+    {
+      "task": "cache-media-0",
+      "hash": "8bc104c8a87716d7",
+      "bytes": 26534878,
+      "sha256": "f69c7c3608a91665edc5f5978fe7d53cb12bc273ea2b656f0f25d136a050abbc",
+      "duration": 2780
+    },
+    {
+      "task": "cache-media-1",
+      "hash": "a15437f1c39c3153",
+      "bytes": 24828445,
+      "sha256": "9eb213612b8ecedbc89e7ac9f5229cdc404774993ee87dcffd23ec05db60014e",
+      "duration": 2887
+    },
+    {
+      "task": "cache-media-2",
+      "hash": "7260a5c03e93e88a",
+      "bytes": 24226667,
+      "sha256": "5ea4dcfa8d2b63b91cb0d88d9c96463323731dd7b18fc478f71b4a4e7cfc6dc4",
+      "duration": 132
+    },
+    {
+      "task": "cache-media-3",
+      "hash": "92be95ee7876a9ac",
+      "bytes": 26232559,
+      "sha256": "86b8cad706c6cd4a96df01af667a6fee755f47714a113a3299d80ed691f5e30c",
+      "duration": 552
+    },
+    {
+      "task": "cache-media-4",
+      "hash": "2b6045c009784ac8",
+      "bytes": 26084064,
+      "sha256": "9effea38ea5f3ad4225e31d81fe0eab42dd24f36649e03fb209cf81de081a3ac",
+      "duration": 1432
+    },
+    {
+      "task": "cache-media-5",
+      "hash": "415b67e48dc173f8",
+      "bytes": 26130622,
+      "sha256": "34c88ccea97362aa6e20cc991dc0ea400f9f4624c8308741f9ac1924fb4578dd",
+      "duration": 2790
+    },
+    {
+      "task": "cache-media-6",
+      "hash": "3e07a8008224b82d",
+      "bytes": 29289544,
+      "sha256": "e51c89ce8ee06108710781de098d32c7f6d26868547890c58cce30b0dce82d1e",
+      "duration": 1432
+    },
+    {
+      "task": "cache-media-7",
+      "hash": "8b13449a700e5832",
+      "bytes": 26516010,
+      "sha256": "c942850d6ce2b8f7fee0dd3301fcde994e72282230740afdcd005e17975193f1",
+      "duration": 2884
+    },
+    {
+      "task": "cache-media-8",
+      "hash": "5fdc8b3821fb3066",
+      "bytes": 26091229,
+      "sha256": "8f76ddace0c985d4a716d12964b6ad9e85812f15e89dea16194832cffa9f8cb6",
+      "duration": 1758
+    },
+    {
+      "task": "cache-media-9",
+      "hash": "6c4fed277b5f077e",
+      "bytes": 25181326,
+      "sha256": "56648d789f9ebb311239a9fd9738972479283207196d311f67a396c539bacf0b",
+      "duration": 1432
+    },
+    {
+      "task": "cache-media-a",
+      "hash": "badafc52eb0ab762",
+      "bytes": 28090592,
+      "sha256": "a28ef3b1faf8c7930ceb8a3825c14e1ee8c99de43b3f5435d7d5703a29629aa5",
+      "duration": 1953
+    },
+    {
+      "task": "cache-media-b",
+      "hash": "f71fc9352b59efaf",
+      "bytes": 28643343,
+      "sha256": "26770d9ce135118860e47016bac80b1a69c89dcef80327d0164b505127233daa",
+      "duration": 1961
+    },
+    {
+      "task": "cache-media-c",
+      "hash": "0722fce0b5b7f066",
+      "bytes": 31000486,
+      "sha256": "f00d00f8b22fb72717be3c2bb5f927437e09dee2915d201b9a06e1f6dd2709ac",
+      "duration": 729
+    },
+    {
+      "task": "cache-media-d",
+      "hash": "36dadc18d3400226",
+      "bytes": 27556596,
+      "sha256": "8da1e70f8439583fe324d3302e3e93016e864921311fed451701d00491ee7ece",
+      "duration": 540
+    },
+    {
+      "task": "cache-media-e",
+      "hash": "c10db51374d3a0c5",
+      "bytes": 24286226,
+      "sha256": "b36f718ad69316754ff484e185fa9084b70e19896127eb0378fd2bc17e006b54",
+      "duration": 565
+    },
+    {
+      "task": "cache-media-f",
+      "hash": "7146bceb97a62af0",
+      "bytes": 25358705,
+      "sha256": "447d6e2f20a4bcc8e2d20164cd2f981960d1a23d52ba685a39c67019125e41e5",
+      "duration": 2015
+    }
+  ]
+}

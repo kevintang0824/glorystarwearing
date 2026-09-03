@@ -1,0 +1,368 @@
+:root {
+  --gs-ink: #17372e;
+  --gs-muted: #5f6d68;
+  --gs-paper: #f7f8f5;
+  --gs-white: #ffffff;
+  --gs-accent: #3f7d69;
+  --gs-accent-dark: #285a4b;
+  --gs-line: #dbe3df;
+  --gs-soft: #edf4f1;
+  --gs-max: 1280px;
+}
+
+html {
+  overflow-x: clip;
+}
+
+body.home {
+  overflow-x: clip;
+  background: var(--gs-paper);
+  color: var(--gs-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body.home #page,
+body.home .site-content,
+body.home .entry-content {
+  background: var(--gs-paper);
+}
+
+body.home .elementor-section.elementor-section-boxed > .elementor-container {
+  width: min(var(--gs-max), calc(100% - 40px));
+  max-width: var(--gs-max);
+}
+
+body.home .elementor-location-header {
+  display: none !important;
+}
+
+body.home .glorystar-official-logo {
+  display: none !important;
+}
+
+body.home .elementor-element-8b9c992 {
+  display: none !important;
+}
+
+.home-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(38, 82, 68, 0.12);
+  background: rgba(207, 229, 221, 0.96);
+  box-shadow: 0 2px 14px rgba(29, 65, 54, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.home-shell-header__inner {
+  display: flex;
+  width: min(var(--gs-max), calc(100% - 40px));
+  min-height: 62px;
+  margin: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 46px);
+}
+
+.home-shell-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  color: #20483c;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: 0.075em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-shell-brand img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.home-shell-nav {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(13px, 1.8vw, 25px);
+  color: #26483e;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.home-shell-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-shell-nav > a:not(.home-shell-quote) {
+  position: relative;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+}
+
+.home-shell-nav > a:not(.home-shell-quote)::after {
+  position: absolute;
+  right: 50%;
+  bottom: 3px;
+  left: 50%;
+  height: 1px;
+  background: #356b5a;
+  content: "";
+  transition: right 0.2s ease, left 0.2s ease;
+}
+
+.home-shell-nav > a:not(.home-shell-quote):hover::after,
+.home-shell-nav > a:not(.home-shell-quote):focus-visible::after,
+.home-shell-nav > a[aria-current="page"]::after {
+  right: 0;
+  left: 0;
+}
+
+.home-shell-quote {
+  display: inline-flex;
+  min-height: 42px;
+  padding: 9px 18px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gs-accent);
+  border-radius: 999px;
+  background: var(--gs-accent);
+  color: #fff !important;
+}
+
+.home-shell-quote:hover,
+.home-shell-quote:focus-visible {
+  border-color: var(--gs-accent-dark);
+  background: var(--gs-accent-dark);
+}
+
+body.home #content {
+  background: var(--gs-paper);
+}
+
+body.home .elementor-heading-title,
+body.home .uael-heading,
+body.home .qodef-e-title {
+  color: var(--gs-ink);
+}
+
+body.home .elementor-widget-heading h1.elementor-heading-title,
+body.home .elementor-widget-heading h2.elementor-heading-title,
+body.home .uael-heading-text,
+body.home .glory-process-proof h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+body.home .elementor-widget-text-editor,
+body.home .elementor-widget-text-editor p {
+  color: var(--gs-muted);
+}
+
+body.home .elementor-button,
+body.home button.elementor-button,
+body.home .qodef-qi-button {
+  border: 1px solid var(--gs-accent) !important;
+  border-radius: 999px !important;
+  background: var(--gs-accent) !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+
+body.home .elementor-button:hover,
+body.home .elementor-button:focus,
+body.home button.elementor-button:hover,
+body.home button.elementor-button:focus,
+body.home .qodef-qi-button:hover,
+body.home .qodef-qi-button:focus {
+  border-color: var(--gs-accent-dark) !important;
+  background: var(--gs-accent-dark) !important;
+}
+
+body.home #products,
+body.home #about,
+body.home #customize,
+body.home #new-arrivals {
+  border-top: 1px solid var(--gs-line);
+  scroll-margin-top: 78px;
+}
+
+body.home #products,
+body.home #about {
+  background: var(--gs-white);
+}
+
+body.home #customize,
+body.home #new-arrivals {
+  background: var(--gs-paper);
+}
+
+body.home .qodef-e-inner,
+body.home .qodef-e-inner-holder,
+body.home .elementor-widget-wrap,
+body.home .elementor-widget-container {
+  box-shadow: none;
+}
+
+body.home #products .qodef-e-inner,
+body.home #new-arrivals .qodef-e-inner {
+  border-color: var(--gs-line) !important;
+  background: var(--gs-white);
+}
+
+body.home #products .qodef-e-title,
+body.home #new-arrivals .qodef-e-title {
+  color: var(--gs-ink) !important;
+}
+
+body.home input.elementor-field,
+body.home select.elementor-field,
+body.home textarea.elementor-field {
+  border: 1px solid var(--gs-line) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+
+body.home .elementor-location-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  background: #102a23;
+}
+
+body.home .elementor-location-footer > section,
+body.home .elementor-location-footer .elementor-section {
+  background: #102a23 !important;
+}
+
+body.home .elementor-location-footer .elementor-heading-title,
+body.home .elementor-location-footer .elementor-field-label,
+body.home .elementor-location-footer .elementor-widget-text-editor,
+body.home .elementor-location-footer .elementor-widget-text-editor p,
+body.home .elementor-location-footer a {
+  color: #eef5f2 !important;
+}
+
+body.home .elementor-location-footer > section:last-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.home .elementor-location-footer a {
+  text-underline-offset: 3px;
+}
+
+/* Lighthouse accessibility fixes: distinguish inline links and enlarge touch targets. */
+body.home .entry-content .elementor-widget-text-editor p a {
+  color: #7a3e30 !important;
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+body.home .ha-dual-btn--left {
+  background-color: #4d731f !important;
+}
+
+body.home .ha-dual-btn--right {
+  background-color: #5b43ad !important;
+}
+
+body.home .elementor-swiper-button {
+  display: flex;
+  width: 44px !important;
+  min-width: 44px;
+  height: 44px !important;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+body.home .swiper-pagination-bullet[role="button"] {
+  width: 24px !important;
+  height: 24px !important;
+  margin: 0 2px !important;
+  padding: 8px;
+  background-clip: content-box !important;
+  box-sizing: border-box;
+}
+
+body.home .elementor-location-footer .elementor-icon-list-item > a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
+body.home .elementor-location-footer input.elementor-field,
+body.home .elementor-location-footer select.elementor-field,
+body.home .elementor-location-footer textarea.elementor-field {
+  color: var(--gs-ink) !important;
+}
+
+@media (max-width: 1120px) {
+  .home-shell-brand span {
+    display: none;
+  }
+
+  .home-shell-nav {
+    gap: 13px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 860px) {
+  body.home .elementor-section.elementor-section-boxed > .elementor-container {
+    width: min(var(--gs-max), calc(100% - 28px));
+  }
+
+  .home-shell-header__inner {
+    width: min(var(--gs-max), calc(100% - 28px));
+    min-height: 72px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-top: 7px;
+  }
+
+  .home-shell-brand {
+    align-self: flex-start;
+  }
+
+  .home-shell-brand span {
+    display: inline;
+  }
+
+  .home-shell-nav {
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 5px 0 9px;
+    scrollbar-width: thin;
+  }
+
+  .home-shell-nav > a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .home-shell-nav > a:not(.home-shell-quote) {
+    min-height: 40px;
+    padding: 8px 11px;
+    border: 1px solid rgba(50, 92, 79, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.34);
+  }
+
+  .home-shell-nav > a:not(.home-shell-quote)::after {
+    display: none;
+  }
+}
