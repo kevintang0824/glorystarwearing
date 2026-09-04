@@ -9,9 +9,7 @@ const require=createRequire(import.meta.url);
 const {JSDOM}=require(process.env.GSW_JSDOM_PATH || 'jsdom');
 const root=path.resolve(import.meta.dirname,'..');
 const menuScript=fs.readFileSync(path.join(root,'assets/multilingual.js'),'utf8');
-const localeScript=fs.readFileSync(path.join(root,'assets/localized-site.js'),'utf8');
 const read=file=>fs.readFileSync(path.join(root,'public',file),'utf8');
-const tick=()=>new Promise(resolve=>setTimeout(resolve,10));
 
 function domFor(file,url) {
   return new JSDOM(read(file),{url,runScripts:'outside-only'});
@@ -21,10 +19,13 @@ function runMenu(dom) {
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded',{bubbles:true}));
 }
 
-test('every language has independent authored pages and no runtime translation provider',()=>{
+const structure=(html)=>Object.fromEntries(['section','article','img','form','input','textarea','details','figure'].map(tag=>[tag,(html.match(new RegExp(`<${tag}\\b`,'gi'))||[]).length]));
+
+test('every language clones the complete English interface and uses no runtime translation provider',()=>{
   const manifest=JSON.parse(read('multilingual-manifest.json'));
   assert.equal(manifest.localizedPages,5130);
   assert.equal(manifest.translationService,false);
+  assert.equal(manifest.interfaceParity,'english-page-clone');
   const product=JSON.parse(read('products/catalog-index.json'))[0];
   for(const language of languages) {
     const prefix=language.prefix?`${language.prefix}/`:'';
@@ -34,13 +35,18 @@ test('every language has independent authored pages and no runtime translation p
       assert.match(html,new RegExp(`<html lang="${documentLanguage.replace('-','\\-')}"`));
       assert.doesNotMatch(html,/translate\.google|TranslateElement|gtranslate|googtrans/i);
       assert.equal((html.match(/data-language=/g)||[]).length,6);
+      if(language.prefix) {
+        const englishFile=file.slice(prefix.length);
+        assert.deepEqual(structure(html),structure(read(englishFile)));
+        assert.doesNotMatch(html,/class="localized-site"/);
+      }
     }
   }
-  assert.match(read('zh-cn/index.html'),/为您的品牌，打造运动服系列/);
-  assert.match(read('fr/index.html'),/Votre collection, votre identité/);
-  assert.match(read('es/index.html'),/Tu colección, tu identidad/);
-  assert.match(read('pt/index.html'),/A sua coleção, a sua identidade/);
-  assert.match(read('ru/index.html'),/Ваша коллекция. Ваш бренд/);
+  assert.match(read('zh-cn/index.html'),/为您的品牌打造运动服系列/);
+  assert.match(read('fr/index.html'),/Vêtements de sport pour votre marque/);
+  assert.match(read('es/index.html'),/Ropa deportiva para tu marca/);
+  assert.match(read('pt/index.html'),/Roupa desportiva para a sua marca/);
+  assert.match(read('ru/index.html'),/Спортивная одежда под вашим брендом/);
 });
 
 test('language selector keeps the current product, query and fragment',()=>{
@@ -75,29 +81,20 @@ test('selector supports arrow keys, End and Escape',()=>{
   dom.window.close();
 });
 
-test('localized catalogue filters its own saved-language records',async()=>{
-  const dom=domFor('zh-cn/products/index.html','https://glorystarwearing.com/zh-cn/products/?q=SP8793');
+test('localized catalogue keeps the English catalogue interface and points at localized records',()=>{
+  const html=read('zh-cn/products/index.html');
   const feed=JSON.parse(read('zh-cn/products/catalog-index.json'));
-  dom.window.fetch=async()=>({ok:true,json:async()=>feed});
-  dom.window.eval(localeScript);
-  await tick();
-  const cards=[...dom.window.document.querySelectorAll('[data-native-product]')];
-  assert.equal(cards.length,1);
-  assert.match(cards[0].textContent,/SP8793/);
-  assert.ok(cards[0].querySelector('a').pathname.startsWith('/zh-cn/products/'));
-  dom.window.close();
+  assert.match(html,/data-catalog-feed="\/zh-cn\/products\/catalog-index\.json"/);
+  assert.equal(feed.length,1002);
+  assert.ok(feed.every(product=>product.route.startsWith('/zh-cn/products/')));
+  assert.deepEqual(structure(html),structure(read('products/index.html')));
 });
 
-test('localized inquiry creates a native-language WhatsApp draft and retains product context',()=>{
-  const dom=domFor('fr/request-a-quote/index.html','https://glorystarwearing.com/fr/request-a-quote/?sku=GS123&product=Brassi%C3%A8re&source=%2Ffr%2Fproducts%2Fmodele-123%2F');
-  let openedUrl='';
-  dom.window.open=()=>({opener:null,location:{replace:url=>{openedUrl=url;}}});
-  dom.window.eval(localeScript);
-  const form=dom.window.document.querySelector('[data-native-inquiry]');
-  for(const field of form.querySelectorAll('[required]')) field.value=field.name==='email'?'buyer@example.com':'Test';
-  form.dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));
-  assert.match(decodeURIComponent(openedUrl),/Bonjour Glory Star Wear/);
-  assert.match(decodeURIComponent(openedUrl),/GS123/);
-  assert.match(decodeURIComponent(openedUrl),/\/fr\/products\/modele-123\//);
-  dom.window.close();
+test('localized inquiry retains every English form field and interaction script',()=>{
+  const english=read('request-a-quote/index.html');
+  const french=read('fr/request-a-quote/index.html');
+  assert.deepEqual(structure(french),structure(english));
+  assert.equal((french.match(/<(?:input|textarea|select)\b/gi)||[]).length,(english.match(/<(?:input|textarea|select)\b/gi)||[]).length);
+  assert.match(french,/\/assets\//);
+  assert.match(french,/\/fr\/privacy-policy\//);
 });

@@ -108,6 +108,88 @@ function documentHtml(language,route,title,description,body,{product,robots='ind
   const pageData={code:language.code,base,ui:u,privacy:t.privacyBanner};
   return `<!doctype html>\n<html lang="${language.code}" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)} | Glory Star Wear</title><meta name="description" content="${escape(description)}"><meta name="robots" content="${robots}"><link rel="canonical" href="${url}">${robots.startsWith('noindex')?'':alternates(route)}<meta property="og:locale" content="${language.code.replace('-','_')}"><meta property="og:type" content="${product?'product':'website'}"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${url}">${product?`<meta property="og:image" content="${origin}${product.image.path}">`:''}<link rel="icon" href="/assets/brand/glorystarwear-favicon-32.png"><link rel="stylesheet" href="/assets/seo-pages.css?v=20260828-3"><link rel="stylesheet" href="/assets/catalog.css?v=20260828-10"><link rel="stylesheet" href="/assets/multilingual.css?v=${version}"><link rel="stylesheet" href="/assets/localized-site.css?v=${version}"><script type="application/ld+json">${json(schema)}</script><script type="application/json" id="gsw-locale-data">${json(pageData)}</script><script defer src="/assets/multilingual.js?v=${version}"></script><script defer src="/assets/localized-site.js?v=${version}"></script><script defer src="/assets/privacy-controls.js" data-measurement-id="GT-W6K5676W"></script></head><body class="localized-site"><a class="skip" href="#main">${u.skip}</a><header class="site-header"><div class="wrap nav gsw-language-layout"><a class="brand" href="${base}/" aria-label="Glory Star Wear · ${t.nav[0]}"><img src="/assets/brand/glorystarwear-mark-360.png" width="40" height="40" alt=""><span>GLORY STAR WEAR</span></a><nav class="nav-links" aria-label="${u.primary}">${navRoutes.map((r,i)=>`<a href="${base}${r}"${i===6?' class="button"':''}${r===route?' aria-current="page"':''}>${t.nav[i]}</a>`).join('')}</nav>${switcher(language,robots.startsWith('noindex')?'/':route)}</div></header><main id="main">${body}</main><footer class="site-footer"><div class="wrap footer-grid"><div class="footer-brand"><a href="${base}/"><img src="/assets/brand/glorystarwear-mark-360.png" width="44" height="44" alt=""><strong>GLORY STAR WEAR</strong></a><p>${u.brandNote}</p></div><nav class="footer-links" aria-label="${u.footer}"><div><strong>${u.explore}</strong>${[1,2,3].map(i=>`<a href="${base}${navRoutes[i]}">${t.nav[i]}</a>`).join('')}</div><div><strong>${t.nav[4]}</strong><a href="${base}/activewear-manufacturing-guides/">${u.guides}</a><a href="${base}/faq/">${u.faq}</a><a href="${base}/contact-us/">${t.nav[5]}</a></div></nav></div><div class="footer-legal"><div class="wrap"><span>© 2026 Glory Star Wear. ${u.rights}</span><span><a href="${base}/privacy-policy/">${u.privacy}</a> · <a href="${base}/terms-of-use/">${u.terms}</a> · <a href="${base}/cookie-policy/">${u.cookies}</a> · <a href="${base}/cookie-policy/" data-cookie-settings>${u.cookieSettings}</a></span></div></div></footer></body></html>`;
 }
+const sharedText = (t) => new Map([
+  ['Skip to content',t.ui.skip],['Primary navigation',t.ui.primary],['Footer navigation',t.ui.footer],
+  ['Home',t.nav[0]],['Products',t.nav[1]],['Customize Service',t.nav[2]],['About Us',t.nav[3]],
+  ['Support',t.nav[4]],['Contact Us',t.nav[5]],['Request a quote',t.nav[6]],['Request A Quote',t.nav[6]],
+  ['Explore',t.ui.explore],['Support hub',t.nav[4]],['FAQ',t.ui.faq],['Privacy',t.ui.privacy],
+  ['Terms',t.ui.terms],['Cookies',t.ui.cookies],['Cookie settings',t.ui.cookieSettings],
+  ['All rights reserved.',t.ui.rights],['View style',t.ui.view],['Product information',t.ui.specs],
+  ['Material',t.ui.material],['Size range',t.ui.sizes],['Color options',t.ui.colors],
+  ['Style code',t.ui.reference],['Product type',t.ui.product],['Additional product views',t.ui.gallery],
+  ['Primary product image',t.ui.product],['Ask about this SKU',t.nav[6]],['Start on WhatsApp',t.ui.submit],
+  ['Related product styles',t.ui.related],['Style brief',t.ui.details],['At a glance',t.ui.details],
+  ['Material direction',t.ui.material],['Customization',t.nav[2]],['MOQ & sampling',t.ui.sample],
+  ['Project process',t.ui.workflow],['Custom & private-label activewear',t.nav[2]],
+  ['Select',t.ui.steps[0]],['Customize',t.ui.steps[1]],['Sample',t.ui.steps[2]],['Produce',t.ui.steps[3]],
+  ['Select language',languages.find(x=>x.code===t.code)?.heading || 'Select language'],
+]);
+
+const routePrefix = (language, value) => {
+  if (!value || !value.startsWith('/') || value.startsWith('//')) return value;
+  if (/^\/(?:assets|wp-content|wp-includes|_vercel)(?:\/|$)/.test(value)) return value;
+  if (languages.slice(1).some(({prefix}) => value === `/${prefix}` || value.startsWith(`/${prefix}/`))) return value;
+  return `/${language.prefix}${value}`;
+};
+
+function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null}={}) {
+  const t=copy[language.code], page=t.pages[pageKey]?.split('|') || [];
+  let html=sourceHtml
+    .replace(/<html\s+lang="[^"]+"/,`<html lang="${language.code}"`)
+    .replace(/"inLanguage":"en-US"/g,`"inLanguage":"${language.code}"`)
+    .replace(/(<meta\s+property="og:locale"\s+content=")[^"]*(")/i,`$1${language.code.replace('-','_')}$2`)
+    .replace(/\s*<!-- gsw-language-start -->[\s\S]*?<!-- gsw-language-end -->/g,'')
+    .replace(/\s*<!-- gsw-alternates-start -->[\s\S]*?<!-- gsw-alternates-end -->/g,'');
+
+  html=html.replace(/\b(href|action|data-catalog-feed|data-feed)="(\/[^"#]*)"/g,(match,attr,value)=>`${attr}="${routePrefix(language,value)}"`);
+  // WordPress exported the homepage with root-relative-looking asset paths that
+  // omit the leading slash. They must remain shared assets inside locale folders.
+  html=html.replace(/(["'])((?:wp-content|wp-includes)\/)/g,'$1/$2');
+  html=html.replace(/https:\/\/glorystarwearing\.com(\/(?!assets\/|wp-content\/|wp-includes\/|_vercel\/)[^"'<\s]*)/g,(_,value)=>`${origin}${routePrefix(language,value)}`);
+  html=html.replace(/<link\s+rel="canonical"\s+href="([^"]+)"\s*\/?>/i,'<link rel="canonical" href="$1">');
+
+  const localizedTitle=product ? productName(product,t) : page[0];
+  const localizedLead=product ? t.ui.productIntro : page[1];
+  if(localizedTitle) {
+    html=html.replace(/<title>[\s\S]*?<\/title>/,`<title>${escape(localizedTitle)} | Glory Star Wear</title>`)
+      .replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i,`$1${escape(localizedTitle)}$2`)
+      .replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i,`$1${escape(localizedTitle)}$2`);
+  }
+  if(localizedLead) {
+    html=html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i,`$1${escape(localizedLead)}$2`)
+      .replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i,`$1${escape(localizedLead)}$2`)
+      .replace(/(<p\b[^>]*class="[^"]*(?:lead|intro)[^"]*"[^>]*>)[\s\S]*?(<\/p>)/i,`$1${escape(localizedLead)}$2`);
+  }
+  if(!product && page.length>2) {
+    let point=0;
+    html=html.replace(/(<main\b[\s\S]*?<\/main>)/i,(main)=>main.replace(/(<p\b(?![^>]*class="[^"]*(?:kicker|eyebrow))[^>]*>)([^<]{45,})(<\/p>)/g,(full,start,text,end)=>{
+      if(point>=page.length-2) return full;
+      return `${start}${escape(page[point+++2])}${end}`;
+    }));
+  }
+  if(product) {
+    const localizedName=productName(product,t);
+    html=html.split(escape(product.title)).join(escape(localizedName)).split(product.title).join(localizedName);
+    html=html.replace(/Use these details to shortlist the style,[^<]+/g,escape(t.ui.productIntro))
+      .replace(/Fabric, measurements, colors and performance claims are reconfirmed on the approved sample\.[^<]*/g,escape(t.ui.confirm))
+      .replace(/Quote this style for your collection\./g,escape(t.ui.cta))
+      .replace(/Send SKU ([^<]+) with colors, sizes, logo placement and estimated quantities\./g,(_,sku)=>escape(`${t.ui.reference} ${sku}: ${t.ui.ctaText}`));
+  }
+  for(const [english,localized] of sharedText({...t,code:language.code})) {
+    html=html.split(`>${english}<`).join(`>${localized}<`)
+      .split(`aria-label="${english}"`).join(`aria-label="${escape(localized)}"`);
+  }
+
+  html=html.replace(/class="home-shell-header__inner(?: gsw-language-layout)?"/,'class="home-shell-header__inner gsw-language-layout"')
+    .replace(/class="wrap nav(?: gsw-language-layout)?"/,'class="wrap nav gsw-language-layout"');
+  let inserted=false;
+  html=html.replace(/<\/nav>(\s*<\/div>\s*<\/header>)/,(_,ending)=>{inserted=true;return `</nav>${switcher(language,route)}${ending}`;});
+  if(!inserted) throw new Error(`Could not place localized language selector: ${language.prefix}${route}`);
+  const meta=route==='/' && /<meta name="robots" content="noindex/.test(html) ? '' : `\n<!-- gsw-alternates-start -->\n${alternates(route)}\n<!-- gsw-alternates-end -->`;
+  html=html.replace('</head>',`${meta}\n</head>`);
+  return html;
+}
+
 function buildLocalized(outputRoot,snapshot) {
   const urls=[];
   const write=(file,html)=>{const dest=path.join(outputRoot,file);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,html)};
@@ -115,44 +197,21 @@ function buildLocalized(outputRoot,snapshot) {
     const t=copy[language.code],u=t.ui,base=`/${language.prefix}`;
     const products=snapshot.products.map((p)=>({...p,title:productName(p,t),route:`${base}${p.route}`,primaryLabel:categoryName(t,p.primaryLabel),pills:p.pills.map(label=>label==='Seamless'?t.attrs[0]:categoryName(t,label)),image:{...p.image,alt:productName(p,t)}}));
     write(`${language.prefix}/products/catalog-index.json`,JSON.stringify(products));
-    const cta=()=>`<section class="cta"><div class="wrap cta-grid"><div><h2>${u.cta}</h2><p>${u.ctaText}</p></div><a class="button" href="${base}/request-a-quote/">${t.nav[6]}</a></div></section>`;
-    const related=()=>`<section class="section"><div class="wrap"><h2>${u.related}</h2><div class="native-guide-grid">${guideRoutes.map(key=>`<a class="native-guide" href="${base}/${key}/"><h3>${titleFor(t,key)}</h3><p>${t.pages[key].split('|')[1]}</p><span aria-hidden="true">→</span></a>`).join('')}</div></div></section>`;
-    const faq=()=>`<div class="faq">${t.faq.map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
-    for(const [key,content] of Object.entries(t.pages)) {
-      const [title,lead,...points]=content.split('|');
+    for(const [key] of Object.entries(t.pages)) {
       const route=key?`/${key}/`:'/';
-      let body=`<div class="wrap breadcrumbs"><a href="${base}/">${t.nav[0]}</a> / ${title}</div><section class="hero"><div class="wrap"><p class="eyebrow">GLORY STAR WEAR</p><h1>${title}</h1><p class="lead">${lead}</p></div></section>`;
-      if(key==='') {
-        body=`<section class="native-home-hero"><div class="wrap hero-grid"><div><p class="eyebrow">GLORY STAR WEAR · OEM / ODM</p><h1>${u.collection}</h1><p class="lead">${u.homeLead}</p><div class="hero-actions"><a class="button" href="${base}/products/">${t.nav[1]}</a><a class="button secondary" href="${base}/request-a-quote/">${t.nav[6]}</a></div></div><img src="/wp-content/uploads/2026/08/activewear-collection-1280.jpg" width="1280" height="960" alt="${t.pages['products'].split('|')[0]}" fetchpriority="high"></div></section><section class="section alt"><div class="wrap"><h2>${u.selection}</h2><div class="catalog-grid native-featured">${[0,100,230,390,650,900].map(i=>card(products[i],t)).join('')}</div><p><a class="button secondary" href="${base}/products/">${t.nav[1]} →</a></p></div></section><section class="section"><div class="wrap"><h2>${u.workflow}</h2><div class="native-steps">${u.steps.map((step,i)=>`<article><span>0${i+1}</span><h3>${step}</h3></article>`).join('')}</div></div></section>${cta()}`;
-      } else if(key==='products') {
-        const categories=[...new Set(products.map(p=>p.primaryLabel))];
-        body+=`<section class="section native-catalog" data-native-catalog data-feed="${base}/products/catalog-index.json"><div class="wrap"><div class="native-filters"><label>${u.search}<input type="search" data-native-search placeholder="${u.search}" autocomplete="off"></label><label>${u.all}<select data-native-category><option value="">${u.all}</option>${categories.map(c=>`<option value="${escape(c)}">${escape(c)}</option>`).join('')}</select></label></div><p data-native-count role="status">${u.count.replace('{shown}',24).replace('{total}',products.length)}</p><div class="catalog-grid" data-native-grid>${products.slice(0,24).map(p=>card(p,t)).join('')}</div><p data-native-empty hidden>${u.empty}</p><button type="button" class="button" data-native-more>${u.more}</button><details class="native-crawl"><summary>${t.nav[1]} · ${products.length}</summary><ul>${products.map(p=>`<li><a href="${p.route}">${escape(p.title)} · ${escape(p.sku)}</a></li>`).join('')}</ul></details></div></section>`;
-      } else if(key==='request-a-quote') {
-        const fields=[['name','text','name'],['email','email','email'],['whatsapp','tel','tel'],['country','text','country-name'],['company','text','organization'],['product','text','off'],['quantity','text','off'],['timing','text','off'],['message','textarea','off']];
-        body+=`<section class="section alt"><div class="wrap native-form-wrap"><p class="lead">${u.quoteIntro}</p><p data-native-product-context hidden></p><form data-native-inquiry hidden><p>${u.required} *</p><div class="native-form-grid">${fields.map(([id,type,autocomplete],i)=>`<label${type==='textarea'?' class="native-form-wide"':''} for="${id}">${u.formLabels[i]}${i===7?'':' *'}${type==='textarea'?`<textarea id="${id}" name="${id}" data-label="${u.formLabels[i]}" maxlength="1500" required></textarea>`:`<input id="${id}" name="${id}" type="${type}" data-label="${u.formLabels[i]}" autocomplete="${autocomplete}" maxlength="${type==='email'?254:200}"${i===7?'':' required'}>`}</label>`).join('')}</div><button class="button" type="submit">${u.submit}</button><p class="native-form-note">${u.formNote} <a href="${base}/privacy-policy/">${u.privacy}</a> · <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">WhatsApp · ${u.privacy}</a></p></form><noscript><p><a href="https://wa.me/8618020755949">WhatsApp: +86 180 2075 5949</a></p></noscript><p><a href="mailto:kevin@glorystarwears.com">kevin@glorystarwears.com</a></p></div></section>`;
-      } else if(key==='faq') {
-        body+=`<section class="section alt"><div class="wrap">${faq()}</div></section>${cta()}`;
-      } else {
-        if(key==='contact-us') body+=`<section class="section alt"><div class="wrap native-contact"><article><h2>${u.email}</h2><a href="mailto:kevin@glorystarwears.com">kevin@glorystarwears.com</a></article><article><h2>WhatsApp</h2><a href="https://wa.me/8618020755949">+86 180 2075 5949</a></article><article><h2>${u.office}</h2><p>${u.location}</p></article></div></section>`;
-        if(key==='about-glory-star-wear') body+=`<div class="wrap native-team"><img loading="lazy" src="/wp-content/uploads/2026/08/xiamen-guangxingheng-team.png" width="1200" height="800" alt="Glory Star Wear · ${u.office}"></div>`;
-        body+=`<section class="section alt"><div class="wrap native-article"><h2>${u.details}</h2>${points.map((p,i)=>`<section><span class="eyebrow">${String(i+1).padStart(2,'0')}</span><p>${p}</p></section>`).join('')}${key==='cookie-policy'?`<p><a href="${base}/cookie-policy/" data-cookie-settings>${u.cookieSettings}</a></p>`:''}</div></section>`;
-        if(!['privacy-policy','terms-of-use','cookie-policy'].includes(key)) body+=related()+cta();
-      }
-      write(`${language.prefix}/${key?`${key}/`:''}index.html`,documentHtml(language,route,title,lead,body));
+      const relative=key?`${key}/index.html`:'index.html';
+      const source=key==='products' ? snapshot.files['products/index.html'] : fs.readFileSync(path.join(outputRoot,relative),'utf8');
+      write(`${language.prefix}/${relative}`,cloneEnglishPage(language,route,source,{pageKey:key}));
       urls.push(`${origin}${base}${route}`);
     }
-    products.forEach((product,i)=>{
-      const original=snapshot.products[i],route=original.route;
-      const {facts,images}=productFacts(original,snapshot,t);
-      const inquiry=new URLSearchParams({sku:original.sku,product:product.title,source:product.route});
-      const body=`<div class="wrap breadcrumbs"><a href="${base}/">${t.nav[0]}</a> / <a href="${base}/products/">${t.nav[1]}</a> / ${escape(product.title)}</div><section class="native-product"><div class="wrap hero-grid"><div><img class="native-product-main" fetchpriority="high" src="${images[0].path}" width="${images[0].width}" height="${images[0].height}" alt="${escape(product.title)}"></div><article><p class="eyebrow">${escape(product.primaryLabel)}</p><h1>${escape(product.title)}</h1><p class="native-sku">${u.reference}: <b>${escape(product.sku)}</b></p><p class="lead">${u.productIntro}</p><h2>${u.specs}</h2><dl class="native-specs">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${escape(v)}</dd></div>`).join('')}</dl><p>${u.confirm}</p><div class="hero-actions"><a class="button" href="${base}/request-a-quote/?${escape(inquiry.toString())}">${t.nav[6]}</a><a class="button secondary" href="${base}/activewear-moq-sampling/">${u.sample}</a></div></article></div></section><section class="section alt"><div class="wrap"><h2>${u.gallery}</h2><div class="native-gallery">${images.slice(1).map((image,j)=>`<a href="${image.path}" target="_blank" rel="noopener noreferrer"><img loading="lazy" decoding="async" src="${image.path}" width="${image.width}" height="${image.height}" alt="${escape(product.title)} · ${j+2}"></a>`).join('')}</div></div></section>${cta()}`;
-      write(`${language.prefix}${route}index.html`,documentHtml(language,route,product.title,`${product.title}. ${u.productIntro}`,body,{product}));
-      urls.push(`${origin}${product.route}`);
+    snapshot.products.forEach((product)=>{
+      write(`${language.prefix}${product.route}index.html`,cloneEnglishPage(language,product.route,snapshot.files[`${product.route.slice(1)}index.html`],{product}));
+      urls.push(`${origin}${base}${product.route}`);
     });
-    write(`${language.prefix}/404.html`,documentHtml(language,'/',u.notFound,u.notFound,`<section class="hero"><div class="wrap"><p class="eyebrow">404</p><h1>${u.notFound}</h1><a class="button" href="${base}/">${u.back}</a></div></section>`,{robots:'noindex,follow'}));
+    write(`${language.prefix}/404.html`,cloneEnglishPage(language,'/',fs.readFileSync(path.join(outputRoot,'404.html'),'utf8'),{pageKey:''}));
   }
   write('sitemap-multilingual.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url=>`<url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`);
-  write('multilingual-manifest.json',JSON.stringify({version:2,languages:languages.map(({code,prefix})=>({code,prefix})),sourcePages:1026,localizedPages:urls.length,productsPerLanguage:snapshot.products.length,translationService:false},null,2));
+  write('multilingual-manifest.json',JSON.stringify({version:3,languages:languages.map(({code,prefix})=>({code,prefix})),sourcePages:1026,localizedPages:urls.length,productsPerLanguage:snapshot.products.length,translationService:false,interfaceParity:'english-page-clone'},null,2));
   let robots=fs.readFileSync(path.join(outputRoot,'robots.txt'),'utf8');
   if(!robots.includes('/sitemap-multilingual.xml')) robots+=`\nSitemap: ${origin}/sitemap-multilingual.xml\n`;
   write('robots.txt',robots);

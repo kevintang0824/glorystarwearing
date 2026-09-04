@@ -137,6 +137,11 @@ for (const relative of canonicalPages(publicRoot)) {
     const translatedPath = path.join(publicRoot, language.prefix, relative);
     if (!fs.existsSync(translatedPath)) { fail(`Missing language page ${language.prefix}/${relative}`); continue; }
     const localized = fs.readFileSync(translatedPath, "utf8");
+    for (const tag of ["section", "article", "img", "form", "input", "textarea", "details", "figure"]) {
+      const sourceCount = (page.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
+      const localizedCount = (localized.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
+      if (localizedCount !== sourceCount) fail(`Interface parity failed for ${language.prefix}/${relative}: ${tag} ${localizedCount}/${sourceCount}`);
+    }
     const route = relative === "index.html" ? "/" : `/${relative.replace(/index\.html$/, "")}`;
     const canonical = `https://glorystarwearing.com/${language.prefix}${route}`;
     if (!localized.includes(`<html lang="${language.code}"`) || !localized.includes(`<link rel="canonical" href="${canonical}">`)) {
@@ -144,6 +149,9 @@ for (const relative of canonicalPages(publicRoot)) {
     }
     if (localized.split('hreflang="x-default"').length !== 2) fail(`Missing alternate languages in ${language.prefix}/${relative}`);
     if (/translate\.google|gtranslate|googtrans|TranslateElement/.test(localized)) fail(`Unexpected translation service in ${language.prefix}/${relative}`);
+    if (/\b(?:src|href|data-[\w-]+)="(?:wp-content|wp-includes)\//.test(localized)) {
+      fail(`Locale-relative shared asset URL in ${language.prefix}/${relative}`);
+    }
   }
 }
 
