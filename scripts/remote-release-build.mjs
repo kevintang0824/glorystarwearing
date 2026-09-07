@@ -8,7 +8,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
 const buildMirror = path.join(root, ".catalog-build", "mirror");
 const localMirror = process.env.CATALOG_SOURCE_ROOT || "/Users/kevintang/Documents/HERMES/sparkgymwear";
-const priorAssetBase = (process.env.CATALOG_ASSET_BASE || "https://glorystarwearing-1uzcrhz17-glorystarpack-s-projects.vercel.app").replace(/\/$/, "");
+const priorAssetBase = (process.env.CATALOG_ASSET_BASE || "https://glorystarwearing.com").replace(/\/$/, "");
 const allowedImageExtension = /\.(?:jpe?g|png|webp)$/i;
 const maximumImageBytes = 15 * 1024 * 1024;
 
