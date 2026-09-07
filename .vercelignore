@@ -6,6 +6,7 @@ SEO_*.md
 .catalog-build
 .turbo
 .wrangler
+release-cache-upload
 products
 public
 wp-content/uploads/catalog
