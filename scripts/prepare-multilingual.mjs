@@ -390,6 +390,12 @@ for (const [code, labels] of Object.entries(legacyPhraseExtra)) Object.assign(le
 
 const localizePagePhrases = (html, language) => {
   html = html.replace(/&#8217;|&#x2019;/gi, '’');
+  const protectedBlocks = [];
+  html = html.replace(/<(script|style|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, (block) => {
+    const marker = `__GSW_BLOCK_${protectedBlocks.length}__`;
+    protectedBlocks.push(block);
+    return marker;
+  });
   const t = copy[language.code];
   const categoryPhrases = Object.fromEntries(categoryKeys.map((key, index) => [key, t.categories[index] || key]));
   Object.assign(categoryPhrases, {
@@ -488,7 +494,7 @@ const localizePagePhrases = (html, language) => {
     const boundaryPattern = new RegExp(`(?<![A-Za-z])${escaped}(?![A-Za-z])`, 'gi');
     html = html.replace(/>([^<>]*)</g, (full, text) => `>${text.replace(boundaryPattern, escape(localized))}<`);
   }
-  return html;
+  return html.replace(/__GSW_BLOCK_(\d+)__/g, (_, index) => protectedBlocks[Number(index)] || '');
 };
 
 const localizeJsonLd = (html, language, t, {title='', lead='', product=null} = {}) => {
@@ -515,8 +521,15 @@ const localizeJsonLd = (html, language, t, {title='', lead='', product=null} = {
       protectedBrands.push(brand);
       return marker;
     });
-    for (const [from, to] of jsonPhrases) localizedValue = localizedValue.split(from).join(to);
+    const phraseMarkers = [];
+    for (const [from, to] of jsonPhrases) {
+      if (!localizedValue.includes(from)) continue;
+      const marker = `__GSW_JT_${phraseMarkers.length}__`;
+      phraseMarkers.push(to);
+      localizedValue = localizedValue.split(from).join(marker);
+    }
     for (const [pattern, to] of jsonWordPhrases) localizedValue = localizedValue.replace(pattern, to);
+    localizedValue = localizedValue.replace(/__GSW_JT_(\d+)__/g, (_, index) => phraseMarkers[Number(index)] || '');
     localizedValue = localizedValue.replace(/__GSW_JB_(\d+)__/g, (_, index) => protectedBrands[Number(index)] || '');
     return localizedValue;
   };
@@ -537,6 +550,7 @@ const localizeJsonLd = (html, language, t, {title='', lead='', product=null} = {
       result.description = t.ui.productIntro;
     } else if ((type.includes('Page') || type.includes('Article')) && !type.includes('WebSite') && title) {
       result.name = title;
+      if (type.includes('Article')) result.headline = title;
       if (lead) result.description = lead;
     } else if (type.includes('BreadcrumbList') && Array.isArray(result.itemListElement)) {
       result.itemListElement = result.itemListElement.map((item) => {
@@ -729,6 +743,59 @@ const localizedFaqJson = {
   'zh-CN':[['What logo file should I send for private-label activewear?','自有品牌运动服应该发送什么格式的标志文件？'],['What should a logo placement specification include?','标志位置规格应包含哪些内容？'],['What label information should an activewear brand prepare?','运动服品牌需要准备哪些标签信息？'],['How should branding be approved before bulk production?','大货生产前应如何确认品牌定制？'],['Custom Activewear Logo, Labels & Packaging Guide','运动服标志、标签与包装定制指南']]
 };
 for (const [code, pairs] of Object.entries(localizedFaqJson)) residualFragmentCopy[code].push(...pairs);
+const localizedQualityFaqJson = {
+  fr:[
+    ['What should an activewear quality control plan include?','Que doit inclure un plan de contrôle qualité des vêtements de sport ?'],
+    ['It should identify the approved specification and sample, inspection stages, measurement method and tolerances, material and workmanship criteria, branding and packaging checks, sampling method, defect classification, evidence required and release authority.','Il doit identifier la spécification et l’échantillon approuvés, les étapes d’inspection, la méthode de mesure et les tolérances, les critères de matière et de confection, les contrôles du marquage et de l’emballage, la méthode d’échantillonnage, la classification des défauts, les preuves requises et l’autorité de validation.'],
+    ['What is a golden sample in activewear manufacturing?','Qu’est-ce qu’un échantillon de référence dans la fabrication de vêtements de sport ?'],
+    ['A golden sample is the approved physical reference used with the written specification. The project should record which sample version is approved and how later changes are controlled.','L’échantillon de référence est la pièce physique approuvée utilisée avec la spécification écrite. Le projet doit indiquer la version approuvée et la manière de contrôler les modifications ultérieures.'],
+    ['How should garment measurements be inspected?','Comment inspecter les mesures d’un vêtement ?'],
+    ['Use named points of measurement, a defined garment condition and agreed tolerances. Record actual results by size and compare them with the latest approved measurement chart.','Utilisez des points de mesure nommés, un état défini du vêtement et des tolérances convenues. Notez les résultats réels par taille et comparez-les au dernier tableau de mesures approuvé.'],
+    ['Does a final inspection replace earlier quality checks?','Une inspection finale remplace-t-elle les contrôles qualité précédents ?'],
+    ['No. A final inspection can identify shipment-level issues but cannot efficiently correct every material, construction or specification problem introduced earlier. Agree checkpoints before production begins.','Non. Une inspection finale peut repérer des problèmes au niveau de l’expédition, mais elle ne peut pas corriger efficacement tous les problèmes de matière, de confection ou de spécification introduits plus tôt. Convenez des points de contrôle avant le début de la production.'],
+  ],
+  es:[
+    ['What should an activewear quality control plan include?','¿Qué debe incluir un plan de control de calidad de ropa deportiva?'],
+    ['It should identify the approved specification and sample, inspection stages, measurement method and tolerances, material and workmanship criteria, branding and packaging checks, sampling method, defect classification, evidence required and release authority.','Debe identificar la especificación y la muestra aprobadas, las etapas de inspección, el método de medición y las tolerancias, los criterios de tejido y confección, las comprobaciones de marca y embalaje, el método de muestreo, la clasificación de defectos, las pruebas necesarias y la autoridad de liberación.'],
+    ['What is a golden sample in activewear manufacturing?','¿Qué es una muestra de referencia en la fabricación de ropa deportiva?'],
+    ['A golden sample is the approved physical reference used with the written specification. The project should record which sample version is approved and how later changes are controlled.','La muestra de referencia es la pieza física aprobada que se usa con la especificación escrita. El proyecto debe registrar qué versión está aprobada y cómo se controlan los cambios posteriores.'],
+    ['How should garment measurements be inspected?','¿Cómo deben inspeccionarse las medidas de una prenda?'],
+    ['Use named points of measurement, a defined garment condition and agreed tolerances. Record actual results by size and compare them with the latest approved measurement chart.','Use puntos de medición definidos, una condición de prenda establecida y tolerancias acordadas. Registre los resultados reales por talla y compárelos con la tabla de medidas aprobada más reciente.'],
+    ['Does a final inspection replace earlier quality checks?','¿Una inspección final sustituye los controles de calidad anteriores?'],
+    ['No. A final inspection can identify shipment-level issues but cannot efficiently correct every material, construction or specification problem introduced earlier. Agree checkpoints before production begins.','No. Una inspección final puede detectar problemas del envío, pero no puede corregir eficazmente todos los problemas de tejido, confección o especificación introducidos antes. Acuerde los puntos de control antes de iniciar la producción.'],
+  ],
+  pt:[
+    ['What should an activewear quality control plan include?','O que deve incluir um plano de controlo de qualidade de roupa desportiva?'],
+    ['It should identify the approved specification and sample, inspection stages, measurement method and tolerances, material and workmanship criteria, branding and packaging checks, sampling method, defect classification, evidence required and release authority.','Deve identificar a especificação e a amostra aprovadas, as fases de inspeção, o método de medição e as tolerâncias, os critérios de material e confeção, as verificações de marca e embalagem, o método de amostragem, a classificação de defeitos, as provas necessárias e a autoridade de aprovação.'],
+    ['What is a golden sample in activewear manufacturing?','O que é uma amostra de referência na produção de roupa desportiva?'],
+    ['A golden sample is the approved physical reference used with the written specification. The project should record which sample version is approved and how later changes are controlled.','A amostra de referência é a peça física aprovada usada com a especificação escrita. O projeto deve registar qual versão está aprovada e como são controladas as alterações posteriores.'],
+    ['How should garment measurements be inspected?','Como devem ser inspecionadas as medidas de uma peça?'],
+    ['Use named points of measurement, a defined garment condition and agreed tolerances. Record actual results by size and compare them with the latest approved measurement chart.','Utilize pontos de medição definidos, uma condição de peça estabelecida e tolerâncias acordadas. Registe os resultados reais por tamanho e compare-os com a tabela de medidas aprovada mais recente.'],
+    ['Does a final inspection replace earlier quality checks?','Uma inspeção final substitui os controlos de qualidade anteriores?'],
+    ['No. A final inspection can identify shipment-level issues but cannot efficiently correct every material, construction or specification problem introduced earlier. Agree checkpoints before production begins.','Não. Uma inspeção final pode identificar problemas ao nível do envio, mas não corrige eficazmente todos os problemas de material, confeção ou especificação introduzidos anteriormente. Defina pontos de controlo antes do início da produção.'],
+  ],
+  ru:[
+    ['What should an activewear quality control plan include?','Что должен включать план контроля качества спортивной одежды?'],
+    ['It should identify the approved specification and sample, inspection stages, measurement method and tolerances, material and workmanship criteria, branding and packaging checks, sampling method, defect classification, evidence required and release authority.','Он должен определять утверждённые спецификацию и образец, этапы проверки, метод измерений и допуски, критерии материала и исполнения, проверки брендирования и упаковки, метод выборки, классификацию дефектов, необходимые подтверждения и ответственного за выпуск.'],
+    ['What is a golden sample in activewear manufacturing?','Что такое эталонный образец в производстве спортивной одежды?'],
+    ['A golden sample is the approved physical reference used with the written specification. The project should record which sample version is approved and how later changes are controlled.','Эталонный образец — утверждённое физическое изделие, используемое вместе с письменной спецификацией. В проекте нужно указать утверждённую версию и порядок контроля последующих изменений.'],
+    ['How should garment measurements be inspected?','Как проверять размеры изделия?'],
+    ['Use named points of measurement, a defined garment condition and agreed tolerances. Record actual results by size and compare them with the latest approved measurement chart.','Используйте обозначенные точки измерения, определённое состояние изделия и согласованные допуски. Записывайте фактические результаты по размерам и сравнивайте их с последней утверждённой таблицей мерок.'],
+    ['Does a final inspection replace earlier quality checks?','Заменяет ли финальная проверка предыдущие проверки качества?'],
+    ['No. A final inspection can identify shipment-level issues but cannot efficiently correct every material, construction or specification problem introduced earlier. Agree checkpoints before production begins.','Нет. Финальная проверка может выявить проблемы на уровне отгрузки, но не может эффективно исправить все проблемы материала, конструкции или спецификации, возникшие ранее. Согласуйте контрольные точки до начала производства.'],
+  ],
+  'zh-CN':[
+    ['What should an activewear quality control plan include?','运动服质量控制计划应包含哪些内容？'],
+    ['It should identify the approved specification and sample, inspection stages, measurement method and tolerances, material and workmanship criteria, branding and packaging checks, sampling method, defect classification, evidence required and release authority.','计划应明确已批准的规格与样品、检查阶段、测量方法和公差、面料与做工标准、品牌定制与包装检查、抽样方法、缺陷分类、所需证据和放行负责人。'],
+    ['What is a golden sample in activewear manufacturing?','运动服生产中的标准样是什么？'],
+    ['A golden sample is the approved physical reference used with the written specification. The project should record which sample version is approved and how later changes are controlled.','标准样是与书面规格一起使用的已批准实物参考。项目应记录批准的样品版本，以及后续变更的控制方式。'],
+    ['How should garment measurements be inspected?','应如何检查服装尺寸？'],
+    ['Use named points of measurement, a defined garment condition and agreed tolerances. Record actual results by size and compare them with the latest approved measurement chart.','请使用明确的测量点、规定的服装状态和双方同意的公差，按尺码记录实际结果，并与最新批准的尺寸表比较。'],
+    ['Does a final inspection replace earlier quality checks?','最终检查可以代替前期质量检查吗？'],
+    ['No. A final inspection can identify shipment-level issues but cannot efficiently correct every material, construction or specification problem introduced earlier. Agree checkpoints before production begins.','不能。最终检查可以发现发货层面的问题，但无法高效纠正前期产生的所有面料、结构或规格问题。应在生产开始前确定检查节点。'],
+  ],
+};
+for (const [code, pairs] of Object.entries(localizedQualityFaqJson)) residualFragmentCopy[code].push(...pairs);
 residualFragmentCopy.fr.push(['Que label information doit a brand prepare?','Quelles informations d’étiquette une marque doit-elle préparer ?'],['Que information doit a fabric brief include?','Quelles informations un brief matière doit-il contenir ?']);
 residualFragmentCopy.es.push(['Qué label information debe a brand prepare?','¿Qué información de etiquetas debe preparar una marca?'],['Qué information debe a fabric brief include?','¿Qué información debe incluir un brief de tejido?'],['Qué debe I Envía before requesting a quote?','¿Qué debo enviar antes de solicitar un presupuesto?']);
 residualFragmentCopy.ru.push(['Что label information нужно a brand prepare?','Какие данные на этикетке должен подготовить бренд?']);
