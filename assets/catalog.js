@@ -2,6 +2,18 @@
   "use strict";
 
   const PAGE_SIZE = 24;
+  const localeData = (() => {
+    try { return JSON.parse(document.getElementById("gsw-locale-data")?.textContent || "{}"); }
+    catch { return {}; }
+  })();
+  const catalogCopy = localeData.interface?.catalog || {};
+  const routePrefix = (() => {
+    const feed = document.querySelector("[data-catalog]")?.dataset.catalogFeed || "";
+    const match = feed.match(/^\/(fr|es|pt|ru|zh-cn)\/products\//i);
+    return match ? `/${match[1]}` : "";
+  })();
+  const validProductRoute = (route) => new RegExp(`^${routePrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/products/[a-z0-9-]+/$`, "i").test(route || "");
+  const formatStatus = (template, values) => String(template || "").replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "");
 
   const normalize = (value) =>
     String(value || "")
@@ -77,7 +89,7 @@
     prepareItems();
 
     const createCatalogItem = (product) => {
-      if (!product || !/^\/products\/[a-z0-9-]+\/$/.test(product.route || "") ||
+      if (!product || !validProductRoute(product.route) ||
           !/^\/(?:wp-content\/uploads\/catalog|assets)\//.test(product.image?.path || "")) return null;
       const item = document.createElement("article");
       item.className = "catalog-card";
@@ -99,7 +111,7 @@
       image.alt = product.image.alt || `${product.title} – product view`;
       const badge = document.createElement("span");
       badge.className = "catalog-card__badge";
-      badge.textContent = product.mediaReview ? "Image review" : product.primaryLabel;
+      badge.textContent = product.mediaReview ? (catalogCopy.imageReview || "Image review") : product.primaryLabel;
       media.append(image, badge);
 
       const body = document.createElement("div");
@@ -116,7 +128,7 @@
       title.textContent = product.title || "Activewear style";
       const arrow = document.createElement("span");
       arrow.className = "catalog-card__arrow";
-      arrow.textContent = "View style";
+      arrow.textContent = catalogCopy.view || "View style";
       body.append(meta, title, arrow);
       link.append(media, body);
       item.append(link);
@@ -138,7 +150,7 @@
             __catalogSearchText: normalize([product.title, product.sku, ...(product.pills || [])].join(" ")),
             __catalogCategories: Array.isArray(product.groups) ? product.groups.map(normalizeCategory) : [],
           }));
-          if (products.some((product) => !/^\/products\/[a-z0-9-]+\/$/.test(product.route || "") ||
+          if (products.some((product) => !validProductRoute(product.route) ||
               !/^\/(?:wp-content\/uploads\/catalog|assets)\//.test(product.image?.path || ""))) {
             throw new Error("Catalog feed contains an invalid product record");
           }
@@ -146,7 +158,7 @@
         })
         .catch((error) => {
           loadPromise = undefined;
-          if (status) status.textContent = "The full catalog could not be loaded. Use the complete catalog index below.";
+          if (status) status.textContent = catalogCopy.fullCatalogError || "The full catalog could not be loaded. Use the complete catalog index below.";
           throw error;
         });
       return loadPromise;
@@ -249,11 +261,14 @@
 
       if (status) {
         if (!reportedMatches) {
-          status.textContent = "No products found. Try a different search or category.";
+          status.textContent = catalogCopy.noProducts || "No products found. Try a different search or category.";
         } else if (visibleCount < reportedMatches) {
-          status.textContent = `${reportedMatches} products found. Showing ${visibleCount}.`;
+          status.textContent = formatStatus(catalogCopy.found || "{total} products found. Showing {visible}.", {total: reportedMatches, visible: visibleCount});
         } else {
-          status.textContent = `${reportedMatches} ${reportedMatches === 1 ? "product" : "products"} found. Showing all.`;
+          status.textContent = formatStatus(catalogCopy.all || "{total} products found. Showing all.", {
+            total: reportedMatches,
+            word: reportedMatches === 1 ? (catalogCopy.wordProduct || "product") : (catalogCopy.wordProducts || "products"),
+          });
         }
 
         if (!announce) status.removeAttribute("aria-live");

@@ -129,7 +129,7 @@ for (const relative of releaseImageAssets) {
 for (const relative of canonicalPages(publicRoot)) {
   const page = fs.readFileSync(path.join(publicRoot, relative), "utf8");
   for (const asset of ["multilingual.js", "multilingual.css"]) {
-    if (page.split(`/assets/${asset}?v=20260903-2`).length !== 2) fail(`Expected one ${asset} reference in ${relative}.`);
+    if (page.split(`/assets/${asset}?v=20260906-1`).length !== 2) fail(`Expected one ${asset} reference in ${relative}.`);
   }
   if (!page.includes('data-language="fr"')) fail(`Missing native language links in ${relative}.`);
   if (relative === "404.html") continue;
