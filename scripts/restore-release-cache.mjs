@@ -40,7 +40,6 @@ for (const artifact of manifest.artifacts) {
   }
   seenHashes.add(artifact.hash);
 }
-if (!localCacheRoot && !artifactToken) throw new Error("Vercel artifact credentials are unavailable.");
 if (typeof zlib.zstdDecompressSync !== "function") throw new Error("Node.js Zstandard support is required.");
 
 assertManagedPath(publicRoot, root, "public");
@@ -48,6 +47,29 @@ assertManagedPath(stagingRoot, path.join(root, ".catalog-build"), "release-cache
 fs.rmSync(publicRoot, { recursive: true, force: true });
 fs.rmSync(stagingRoot, { recursive: true, force: true });
 fs.mkdirSync(stagingRoot, { recursive: true });
+
+const rebuildFromSource = () => {
+  console.warn("Immutable release artifacts are unavailable; rebuilding the release from the governed catalog source.");
+  const rebuild = spawnSync(process.execPath, [path.join(root, "scripts", "remote-release-build.mjs")], {
+    cwd: root,
+    env: process.env,
+    encoding: "utf8",
+    stdio: "inherit",
+  });
+  if (rebuild.status !== 0) process.exit(rebuild.status || 1);
+  const verification = spawnSync(process.execPath, [path.join(root, "scripts", "verify-release-output.mjs")], {
+    cwd: root,
+    encoding: "utf8",
+    stdio: "inherit",
+  });
+  if (verification.status !== 0) process.exit(verification.status || 1);
+  console.log("Release rebuilt from the governed catalog source with verified media.");
+};
+
+if (!localCacheRoot && !artifactToken) {
+  rebuildFromSource();
+  process.exit(0);
+}
 
 const validateArtifact = (artifact, data) => {
   const digest = crypto.createHash("sha256").update(data).digest("hex");
@@ -94,7 +116,13 @@ const worker = async () => {
     await downloadArtifact(artifact);
   }
 };
-await Promise.all(Array.from({ length: 4 }, worker));
+try {
+  await Promise.all(Array.from({ length: 4 }, worker));
+} catch (error) {
+  console.warn(`Immutable release cache restore failed: ${error.message}`);
+  rebuildFromSource();
+  process.exit(0);
+}
 
 for (const artifact of manifest.artifacts) {
   const compressedPath = path.join(stagingRoot, `${artifact.hash}.tar.zst`);
