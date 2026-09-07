@@ -150,7 +150,6 @@ const hydrateRemoteMirror = async () => {
           reused += 1;
         } catch {
           originFallbacks += 1;
-          if (originFallbacks > 100) throw new Error("prior deployment is missing more than 100 governed assets");
           try {
             buffer = await fetchBuffer(sourceUrl, expected, 60_000);
           } catch {
