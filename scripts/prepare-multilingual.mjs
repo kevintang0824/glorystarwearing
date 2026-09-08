@@ -495,19 +495,10 @@ const localizePagePhrases = (html, language) => {
   // Restore authored translations only after the residual word pass. Markers
   // contain no dictionary words, so they cannot be rewritten accidentally.
   html = html.replace(/__GSW_TRANSLATED_(\d+)__/g, (_, index) => translationMarkers[Number(index)] || '');
-  // Apply exact fixes after marker restoration, because a phrase such as
-  // “Logo artwork” may have been protected as a marker before its surrounding
-  // legacy sentence is visible again. Matching the whole node prevents any
-  // changes inside scripts, JSON-LD and URLs.
-  for (const [from, localized] of finalVisibleCopy[language.code] || []) {
-    if (!from || localized == null || from === localized) continue;
-    html = html.replace(/>([^<>]*)</g, (full, text) => {
-      const leading = text.match(/^\s*/)?.[0] || '';
-      const trailing = text.match(/\s*$/)?.[0] || '';
-      if (text.trim() !== from) return full;
-      return `>${leading}${escape(localized)}${trailing}<`;
-    });
-  }
+  // Apply exact and pattern-based fixes after marker restoration, because a
+  // phrase such as “Logo artwork” may have been protected before its
+  // surrounding legacy sentence is visible again.
+  html = applyFinalVisibleCopy(html, language);
   return html.replace(/__GSW_BLOCK_(\d+)__/g, (_, index) => protectedBlocks[Number(index)] || '');
 };
 
@@ -887,6 +878,61 @@ const finalVisibleCopy = {
     ['Placement', '位置'],
   ],
 };
+const finalVisiblePatternCopy = {
+  fr: [
+    [/^Check couverture, then inspect coutures, bords, poches et fermetures\.?$/i, 'Vérifiez la couverture, puis inspectez les coutures, bords, poches et fermetures.'],
+    [/^Définir seamless ou cut-et-sew orientation, coutures, gusset et poche needs\.?$/i, 'Définissez une construction sans coutures ou coupée-cousue, l’orientation, les coutures, le gousset et les besoins des poches.'],
+    [/^Une final approval$/i, 'Une validation finale'],
+    [/^Variations$/i, 'Variantes'],
+    [/^Provide\b[^<]*(?:expectations|placement)[^<]*$/i, 'Fournissez la maquette du logo, son emplacement et les attentes liées aux étiquettes.'],
+  ],
+  es: [
+    [/^Provide\b[^<]*(?:expectations|placement)[^<]*$/i, 'Proporciona el diseño del logotipo, la ubicación y las expectativas sobre las etiquetas.'],
+    [/^Check\b[^<]*(?:orientación|orientation)[^<]*$/i, 'Comprueba la escala del logotipo, su ubicación, la etiqueta y la orientación del embalaje.'],
+    [/^Definir shared colors, contrast Detalles, logotipo scale y placement\.?$/i, 'Define los colores compartidos, los detalles de contraste, la escala del logotipo y su ubicación.'],
+    [/^Diseño, placement, etiquetas, Embalaje, SKU identification y approval responsibility\.?$/i, 'Diseño, ubicación, etiquetas, embalaje, identificación del SKU y responsabilidad de aprobación.'],
+    [/^el shared marco stays coherentes, while each Producto adds different ajuste, construcción y performance risks\.?$/i, 'El marco compartido se mantiene coherente, mientras cada producto añade riesgos distintos de ajuste, construcción y rendimiento.'],
+    [/^Una final approval$/i, 'Una aprobación final'],
+    [/^Approval muestra$/i, 'Muestra aprobada'],
+    [/^Variations$/i, 'Variantes'],
+    [/^The high-performance fabric wicks away moisture,?[^<]*$/i, 'El tejido de alto rendimiento evacua la humedad para mantenerte seco y fresco durante tu rutina de ejercicio. El ajuste compresivo proporciona una excelente sujeción, favorece la recuperación muscular y reduce la fatiga durante sesiones prolongadas.'],
+    [/^(?=.*(?:evacua|away|provides|enhancing|reducing|fatigue|prolonged|sessions))[^<]+$/i, 'El tejido de alto rendimiento evacua la humedad para mantenerte seco y fresco durante tu rutina de ejercicio. El ajuste compresivo proporciona una excelente sujeción, favorece la recuperación muscular y reduce la fatiga durante sesiones prolongadas.'],
+  ],
+  pt: [
+    [/^Provide\b[^<]*(?:expectations|placement)[^<]*$/i, 'Forneça a arte do logótipo, o posicionamento e as expectativas das etiquetas.'],
+    [/^Check\b[^<]*(?:orientação|orientation)[^<]*$/i, 'Verifique a escala do logótipo, o posicionamento, a etiqueta e a orientação da embalagem.'],
+    [/^Definir shared colors, contrast Detalhes, logótipo scale e placement\.?$/i, 'Defina as cores partilhadas, os detalhes de contraste, a escala do logótipo e o posicionamento.'],
+    [/^Arte final, placement, etiquetas, Embalagem, SKU identification e approval responsibility\.?$/i, 'Arte final, posicionamento, etiquetas, embalagem, identificação do SKU e responsabilidade pela aprovação.'],
+    [/^o shared estrutura stays coerentes, while each Produto adds different ajuste, construção e performance risks\.?$/i, 'A estrutura partilhada mantém-se coerente, enquanto cada produto acrescenta riscos diferentes de ajuste, construção e desempenho.'],
+    [/^Uma final approval$/i, 'Uma aprovação final'],
+    [/^Approval amostra$/i, 'Amostra aprovada'],
+    [/^Variations$/i, 'Variantes'],
+    [/^(?=.*(?:alto desempenho|evacua|away|provides|enhancing|reducing|fatigue|prolonged|sessions))[^<]+$/i, 'O tecido de alto desempenho afasta a humidade para o manter seco e fresco durante a sua rotina de exercício. O corte de compressão proporciona excelente suporte, favorece a recuperação muscular e reduz a fadiga em sessões prolongadas.'],
+  ],
+  ru: [
+    [/^Browse\b[^<]*(?:каталог|catalog)[^<]*$/i, 'Открыть каталог товаров'],
+    [/^Упаковка, identification и artwork версия$/i, 'Упаковка, идентификация и версия макета'],
+    [/^Approval образец$/i, 'Утверждённый образец'],
+    [/^Variations$/i, 'Варианты'],
+    [/^Placement$/i, 'Размещение'],
+  ],
+  'zh-CN': [
+    [/^一份\s*最终 approval$/i, '一份最终确认'],
+    [/^Approval 样品$/i, '已确认样品'],
+    [/^Variations$/i, '变体'],
+    [/^Placement$/i, '位置'],
+  ],
+};
+const applyFinalVisibleCopy = (html, language) => html.replace(/>([^<>]*)</g, (full, text) => {
+  const leading = text.match(/^\s*/)?.[0] || '';
+  const trailing = text.match(/\s*$/)?.[0] || '';
+  const trimmed = text.trim();
+  if (!trimmed) return full;
+  const exact = (finalVisibleCopy[language.code] || []).find(([from]) => from === trimmed);
+  if (exact) return `>${leading}${escape(exact[1])}${trailing}<`;
+  const pattern = (finalVisiblePatternCopy[language.code] || []).find(([from]) => from.test(trimmed));
+  return pattern ? `>${leading}${escape(pattern[1])}${trailing}<` : full;
+});
 const localizedFaqJson = {
   fr:[['What logo file should I send for private-label activewear?','Quel fichier logo dois-je envoyer pour des vêtements de sport sous marque privée ?'],['What should a logo placement specification include?','Que doit contenir une spécification de placement du logo ?'],['What label information should an activewear brand prepare?','Quelles informations d’étiquette une marque de vêtements de sport doit-elle préparer ?'],['How should branding be approved before bulk production?','Comment valider le marquage avant la production en volume ?'],['Custom Activewear Logo, Labels & Packaging Guide','Guide du logo, des étiquettes et de l’emballage des vêtements de sport personnalisés']],
   es:[['What logo file should I send for private-label activewear?','¿Qué archivo de logotipo debo enviar para ropa deportiva de marca privada?'],['What should a logo placement specification include?','¿Qué debe incluir una especificación de colocación del logotipo?'],['What label information should an activewear brand prepare?','¿Qué información de etiquetas debe preparar una marca deportiva?'],['How should branding be approved before bulk production?','¿Cómo aprobar la marca antes de producir en volumen?'],['Custom Activewear Logo, Labels & Packaging Guide','Guía de logotipo, etiquetas y embalaje de ropa deportiva personalizada']],
@@ -1722,6 +1768,10 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
   }
 
   html = localizePagePhrases(html, language);
+  // Run the final legacy-node cleanup before the generic residual fallback so
+  // mixed labels become authored copy instead of being replaced by a repeated
+  // route summary.
+  html = applyFinalVisibleCopy(html, language);
   // Run the authored residual pass after the phrase dictionaries so complete
   // page copy wins; its English vocabulary also detects mixed legacy lines.
   html = localizeRemainingPageText(html, language, pageKey, product);
