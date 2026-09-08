@@ -522,6 +522,16 @@ const localizeJsonLd = (html, language, t, {title='', lead='', product=null} = {
   const translateJsonString = (value, key='') => {
     if (preserveJsonKeys.has(key) || /^https?:\/\//i.test(value) || /@/.test(value) || isStandaloneBrandText(value)) return value;
     let localizedValue = value;
+    // Translate the logo caption before protecting the registered brand name;
+    // otherwise the brand marker prevents the full caption phrase matching.
+    const logoCaption = {
+      fr: 'Logo officiel Glory Star Wear',
+      es: 'Logotipo oficial de Glory Star Wear',
+      pt: 'Logótipo oficial da Glory Star Wear',
+      ru: 'Официальный логотип Glory Star Wear',
+      'zh-CN': 'Glory Star Wear 官方标志',
+    }[language.code];
+    if (logoCaption) localizedValue = localizedValue.split('Glory Star Wear official logo').join(logoCaption);
     // Keep the registered brand wording intact even when it appears inside a
     // longer JSON-LD headline or description. Word-level residual rules may
     // translate “Wear” as a common noun, which would corrupt the brand name.
@@ -705,6 +715,11 @@ const hardResidualEnglish = /\b(?:have|ample|capacity|deep|generous|making|easy|
 // result remains grammatical instead of exposing mixed-language labels.
 const residualFragmentCopy = {
   fr: [
+    ['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricant de vêtements de sport et de vêtements activewear pour projets OEM et ODM sous marque privée.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for global brands.', 'Fabricant chinois de vêtements de sport proposant des services OEM/ODM, des vêtements de yoga et de salle, des brassières et une production sous marque privée pour les marques internationales.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for US and EU brands.', 'Fabricant chinois de vêtements de sport proposant des services OEM/ODM et une production sous marque privée pour les marques américaines et européennes.'],
+    ['Company identity, location, product scope, project approach and official channels for Glory Star Wear.', 'Identité de l’entreprise, localisation, offre produit, approche projet et canaux officiels de Glory Star Wear.'],
+    ['Glory Star Wear official logo', 'Logo officiel Glory Star Wear'],
     ['Discuss your branding brief','Parlez de votre brief de marque'], ['Discuss your yoga line','Parlez de votre ligne yoga'], ['Discuss your workout set','Parlez de votre ensemble d’entraînement'], ['Discuss your shipment','Parlez de votre expédition'], ['Discuss your ','Parlez de votre '],
     ['Private-label service','Service de marque privée'], ['Build a yoga collection, not isolated pieces','Construisez une collection yoga cohérente, pas des pièces isolées'], ['Procurement questions','Questions d’approvisionnement'], ['Request comparable proof','Demandez des preuves comparables'], ['Dated quotation tied to the same brief','Devis daté lié au même brief'], ['Unqualified delivery or customs guarantees','Garanties de livraison ou de douane non vérifiées'], ['Give every supplier identical scope','Donnez à chaque fournisseur le même périmètre'], ['Evaluate against one specification','Évaluez selon une même spécification'], ['Same commercial basis','Même base commerciale'], ['Same evidence','Mêmes éléments de preuve'], ['Normalize assumptions and exclusions','Harmonisez hypothèses et exclusions'], ['Evidence to record','Preuves à consigner'], ['Red flag to clarify','Point d’alerte à clarifier'], ['Evaluation area','Domaine d’évaluation'], ['Product fit','Adéquation du produit'], ['Identity and contact','Identité et contact'], ['Shipping and handoff','Expédition et transmission'], ['Sampling','Échantillonnage'],
     ['From logo file to approved ','Du fichier logo au conditionnement approuvé '], ['Artwork','Visuel'], ['High-resolution PNG or AI file','Fichier PNG haute résolution ou fichier AI'], ['Measured position, scale and orientation','Position, échelle et orientation mesurées'], ['Content, dimensions, location and language','Contenu, dimensions, emplacement et langue'], ['Pack-out, identification and artwork version','Conditionnement, identification et version du visuel'], ['What logo file should I send?','Quel fichier logo dois-je envoyer ?'], ['Information we receive','Informations reçues'], ['Communications:','Communications :'], ['Language preference','Préférence de langue'], ['6. More information','6. Informations complémentaires'], ['or use','ou utilisez'], ['to change the preference.','pour modifier votre choix.'], ['Can I add a private label and logo?','Puis-je ajouter une marque privée et un logo ?'], ['Can gym clothing carry a private label?','Les vêtements de salle peuvent-ils porter une marque privée ?'],
@@ -712,6 +727,11 @@ const residualFragmentCopy = {
     [' and ',' et '], [' &amp; ',' et '], [' or ',' ou '], [' with ',' avec '], [' from ',' de '], [' your ',' votre '], [' you ',' vous '], [' should ',' doit '], ['What ','Que '], ['How ','Comment '], ['Why ','Pourquoi '], ['Which ','Quel '], ['When ','Quand '], ['Where ','Où '], ['View ','Voir '], ['Send ','Envoyer '], ['Review ','Vérifier '], ['Choose ','Choisir '], ['Build ','Construire '], ['Prepare ','Préparer '], ['Confirm ','Confirmer '], ['Product route','Parcours produit'], ['Material route','Parcours matière'], ['Variation count','Nombre de variantes'], ['Brand scope','Périmètre de marque']
   ],
   es: [
+    ['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricante de ropa deportiva y activewear para proyectos OEM y ODM de marca privada.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for global brands.', 'Fabricante chino de ropa deportiva que ofrece OEM/ODM, ropa de yoga y gimnasio, sujetadores deportivos y producción de marca privada para marcas globales.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for US and EU brands.', 'Fabricante chino de ropa deportiva que ofrece OEM/ODM y producción de marca privada para marcas de Estados Unidos y Europa.'],
+    ['Company identity, location, product scope, project approach and official channels for Glory Star Wear.', 'Identidad de la empresa, ubicación, oferta de productos, enfoque del proyecto y canales oficiales de Glory Star Wear.'],
+    ['Glory Star Wear official logo', 'Logotipo oficial de Glory Star Wear'],
     ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Define las referencias aprobadas, las etapas de inspección, los registros de medidas, las evidencias y la autoridad de liberación del envío.'],
     ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Referencias aprobadas, controles, alcance de inspección, evidencias, gestión de desviaciones y autoridad de envío.'],
     ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'mensajes, archivos e información de seguimiento intercambiados directamente por correo electrónico, WhatsApp u otro canal acordado.'],
@@ -730,6 +750,11 @@ const residualFragmentCopy = {
     [' and ',' y '], [' &amp; ',' y '], [' or ',' o '], [' with ',' con '], [' from ',' de '], [' your ',' tu '], [' you ',' tú '], [' should ',' debe '], ['What ','Qué '], ['How ','Cómo '], ['Why ','Por qué '], ['Which ','Qué '], ['When ','Cuándo '], ['Where ','Dónde '], ['View ','Ver '], ['Send ','Envía '], ['Review ','Revisa '], ['Choose ','Elige '], ['Build ','Crea '], ['Prepare ','Prepara '], ['Confirm ','Confirma '], ['Product route','Ruta del producto'], ['Material route','Ruta del tejido'], ['Variation count','Número de variantes'], ['Brand scope','Alcance de marca']
   ],
   pt: [
+    ['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricante de roupa desportiva e activewear para projetos OEM e ODM de marca própria.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for global brands.', 'Fabricante chinês de roupa desportiva que oferece OEM/ODM, roupa de yoga e ginásio, soutiens desportivos e produção de marca própria para marcas globais.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for US and EU brands.', 'Fabricante chinês de roupa desportiva que oferece OEM/ODM e produção de marca própria para marcas dos Estados Unidos e da Europa.'],
+    ['Company identity, location, product scope, project approach and official channels for Glory Star Wear.', 'Identidade da empresa, localização, oferta de produtos, abordagem do projeto e canais oficiais da Glory Star Wear.'],
+    ['Glory Star Wear official logo', 'Logótipo oficial da Glory Star Wear'],
     ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Defina as referências aprovadas, as fases de inspeção, os registos de medidas, as provas e a autoridade de libertação do envio.'],
     ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Referências aprovadas, pontos de controlo, âmbito da inspeção, provas, gestão de desvios e autoridade de expedição.'],
     ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'mensagens, ficheiros e informações de seguimento trocados diretamente por e-mail, WhatsApp ou outro canal acordado.'],
@@ -748,6 +773,11 @@ const residualFragmentCopy = {
     [' and ',' e '], [' &amp; ',' e '], [' or ',' ou '], [' with ',' com '], [' from ',' de '], [' your ',' o seu '], [' you ',' você '], [' should ',' deve '], ['What ','O que '], ['How ','Como '], ['Why ','Porquê '], ['Which ','Que '], ['When ','Quando '], ['Where ','Onde '], ['View ','Ver '], ['Send ','Envie '], ['Review ','Reveja '], ['Choose ','Escolha '], ['Build ','Crie '], ['Prepare ','Prepare '], ['Confirm ','Confirme '], ['Product route','Percurso do produto'], ['Material route','Percurso do tecido'], ['Variation count','Número de variações'], ['Brand scope','Âmbito da marca']
   ],
   ru: [
+    ['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Производитель спортивной одежды для проектов OEM и ODM под собственной маркой.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for global brands.', 'Китайский производитель спортивной одежды: OEM/ODM, одежда для йоги и тренировок, спортивные бюстгальтеры и производство под собственной маркой для международных брендов.'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for US and EU brands.', 'Китайский производитель спортивной одежды, предлагающий OEM/ODM и производство под собственной маркой для брендов США и Европы.'],
+    ['Company identity, location, product scope, project approach and official channels for Glory Star Wear.', 'Данные компании, местоположение, ассортимент, подход к проектам и официальные каналы Glory Star Wear.'],
+    ['Glory Star Wear official logo', 'Официальный логотип Glory Star Wear'],
     ['Discuss your branding brief','Обсудите бриф по брендированию'], ['Discuss your yoga line','Обсудите линейку для йоги'], ['Discuss your workout set','Обсудите комплект для тренировок'], ['Discuss your shipment','Обсудите доставку'], ['Discuss your ','Обсудите '],
     ['Private-label service','Услуга собственной марки'], ['Build a yoga collection, not isolated pieces','Создайте коллекцию для йоги, а не отдельные вещи'], ['Procurement questions','Вопросы по закупке'], ['Request comparable proof','Запросите сопоставимые подтверждения'], ['Dated quotation tied to the same brief','Датированное предложение по тому же брифу'], ['Unqualified delivery or customs guarantees','Неподтверждённые гарантии доставки или таможни'], ['Give every supplier identical scope','Дайте каждому поставщику одинаковый объём'], ['Evaluate against one specification','Оценивайте по одной спецификации'], ['Same commercial basis','Одинаковая коммерческая база'], ['Same evidence','Одинаковые подтверждения'], ['Normalize assumptions and exclusions','Унифицируйте допущения и исключения'], ['Evidence to record','Что зафиксировать'], ['Red flag to clarify','Риск, требующий уточнения'], ['Evaluation area','Область оценки'], ['Product fit','Соответствие товара'], ['Identity and contact','Данные и контакты'], ['Shipping and handoff','Доставка и передача'], ['Sampling','Образцы'],
     ['From logo file to approved ','От файла логотипа до утверждённой упаковки '], ['Artwork','Макет'], ['High-resolution PNG or AI file','PNG высокого разрешения или файл AI'], ['Measured position, scale and orientation','Измеренные позиция, масштаб и ориентация'], ['Content, dimensions, location and language','Содержание, размеры, расположение и язык'], ['Pack-out, identification and artwork version','Упаковка, идентификация и версия макета'], ['What logo file should I send?','Какой файл логотипа отправить?'], ['Information we receive','Получаемая информация'], ['Communications:','Связь:'], ['Language preference','Языковые настройки'], ['6. More information','6. Дополнительная информация'], ['or use','или используйте'], ['to change the preference.','чтобы изменить выбор.'], ['Can I add a private label and logo?','Можно ли добавить собственную марку и логотип?'], ['Can gym clothing carry a private label?','Может ли одежда для тренировок иметь собственную марку?'],
@@ -767,6 +797,11 @@ const residualFragmentCopy = {
     ['What logo files and branding details should I provide?', 'Какие файлы логотипа и данные по брендированию нужно предоставить?'],
   ],
   'zh-CN': [
+    ['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', '为自有品牌 OEM 和 ODM 项目提供定制运动服生产。'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for global brands.', '中国运动服制造商，为全球品牌提供 OEM/ODM 瑜伽服、健身服、运动内衣及自有品牌生产。'],
+    ['Custom activewear and sportswear manufacturer in China offering OEM/ODM yoga wear, gym clothing, sports bras and private-label production for US and EU brands.', '中国运动服制造商，为美国和欧洲品牌提供 OEM/ODM 及自有品牌生产。'],
+    ['Company identity, location, product scope, project approach and official channels for Glory Star Wear.', 'Glory Star Wear 的公司信息、所在地、产品范围、项目方式和官方联系渠道。'],
+    ['Glory Star Wear official logo', 'Glory Star Wear 官方标志'],
     ['Discuss your branding brief','讨论您的品牌定制需求'], ['Discuss your yoga line','讨论您的瑜伽系列'], ['Discuss your workout set','讨论您的训练套装'], ['Discuss your shipment','讨论您的运输安排'], ['Discuss your ','讨论您的'],
     ['Private-label service','自有品牌服务'], ['Build a yoga collection, not isolated pieces','打造完整的瑜伽系列，而不是零散单品'], ['Procurement questions','采购问题'], ['Request comparable proof','要求提供可比的证明'], ['Dated quotation tied to the same brief','与同一需求对应的带日期报价'], ['Unqualified delivery or customs guarantees','未经确认的交付或清关保证'], ['Give every supplier identical scope','向每家供应商提供相同范围'], ['Evaluate against one specification','按同一份规格评估'], ['Same commercial basis','相同的商务基础'], ['Same evidence','相同的证明材料'], ['Normalize assumptions and exclusions','统一假设和排除项'], ['Evidence to record','需要记录的证据'], ['Red flag to clarify','需要澄清的风险'], ['Evaluation area','评估项目'], ['Product fit','产品匹配度'], ['Identity and contact','身份与联系信息'], ['Shipping and handoff','运输与交接'], ['Sampling','打样'],
     ['From logo file to approved ','从标志文件到确认的包装 '], ['Artwork','图稿'], ['High-resolution PNG or AI file','高清 PNG 或 AI 文件'], ['Measured position, scale and orientation','已测量的位置、比例和方向'], ['Content, dimensions, location and language','内容、尺寸、位置和语言'], ['Pack-out, identification and artwork version','成品包装、识别信息和图稿版本'], ['What logo file should I send?','应该发送什么格式的标志文件？'], ['Information we receive','我们接收的信息'], ['Communications:','沟通：'], ['Language preference','语言偏好'], ['6. More information','6. 更多信息'], ['or use','或使用'], ['to change the preference.','来修改选择。'], ['Can I add a private label and logo?','可以添加自有品牌和标志吗？'], ['Can gym clothing carry a private label?','健身服可以使用自有品牌吗？'],
@@ -794,6 +829,73 @@ residualFragmentCopy.ru.push(
 residualFragmentCopy['zh-CN'].push(
   ['Logo, label and packaging requirements','标志、标签与包装要求'], ['Thin-strap studio style','细肩带工作室款'], ['Minimal adjustable-strap style','简约可调节肩带款'], ['Neckline, side and back direction','领口、侧面与后背结构'], ['Manufacturer selection','生产商选择'], ['Visit buyer support','查看买家支持'], ['Site and catalog terms','网站与目录条款'], ['Starting a project','开始项目'], ['Brief, route, MOQ and samples','需求、路径、MOQ 与样品'], ['What information should I send with my first inquiry?','首次询价需要发送哪些信息？'], ['Complete workout set','完整训练套装'], ['size pairing','尺码搭配'], ['Activewear set manufacturing FAQ','运动套装生产常见问题'], ['How should sizes be planned for workout sets?','运动套装应如何规划尺码？'], ['Training tops','训练上衣'], ['Workout shorts','训练短裤'], ['Coordinated gym sets','协调的健身套装'], ['One sample record','一份样品记录'], ['Brand and delivery','品牌与交付'], ['Material and construction','面料与结构'], ['to prepare a comparable route brief.','以准备可比的项目路径需求。'], ['Destination and timing','目的地与时间'], ['JavaScript is required to prepare the structured message.','准备结构化消息需要启用 JavaScript。'], ['directly on','直接通过'], ['do not enter private information into the page URL.','请勿在页面 URL 中填写私人信息。'], ['Review shipment release','检查发货放行'], ['service and shipment details','服务与运输细节'], ['route availability by destination','按目的地确认运输路径'], ['Plan around shipment and booking details','围绕运输与订舱细节安排'], ['Selected style or custom development','已选款式或定制开发'], ['Colors, sizes and quantity split','颜色、尺码与数量分配'], ['Build a fabric brief','建立面料需求'], ['Coverage and color','覆盖度与颜色']
 );
+// Keep repeated guide workflows semantically aligned with the English source.
+// Complete entries run before the residual fallback so every locale retains
+// the same wearer, product, fit, branding and timing inputs.
+const guideStepCopy = {
+  fr: [
+    ['Wearer and market', 'Utilisateur et marché'],
+    ['Describe the customer, sales region and intended price position.', 'Décrivez le client, la région de vente et le positionnement prix visé.'],
+    ['Product roles', 'Rôles du produit'],
+    ['List the leggings, bras, tops, shorts or sets required.', 'Listez les leggings, brassières, hauts, shorts ou ensembles nécessaires.'],
+    ['Fit direction', 'Orientation de la coupe'],
+    ['Brand details', 'Détails de la marque'],
+    ['Provide logo artwork, placement and label expectations.', 'Fournissez la maquette du logo, son emplacement et les attentes liées aux étiquettes.'],
+    ['Project scope', 'Périmètre du projet'],
+    ['State colors, sizes, quantities and target timing.', 'Indiquez les coloris, les tailles, les quantités et le calendrier visé.'],
+    ['These decisions affect how a yoga product looks, feels and functions. They should be written into the brief rather than left to assumptions.', 'Ces décisions influencent l’apparence, le toucher et la fonction d’un produit de yoga. Elles doivent figurer dans le brief plutôt que reposer sur des suppositions.'],
+  ],
+  es: [
+    ['Wearer and market', 'Usuario y mercado'],
+    ['Describe the customer, sales region and intended price position.', 'Describe el cliente, la región de venta y el posicionamiento de precio previsto.'],
+    ['Product roles', 'Funciones del producto'],
+    ['List the leggings, bras, tops, shorts or sets required.', 'Enumera los leggings, sujetadores, tops, shorts o conjuntos necesarios.'],
+    ['Fit direction', 'Orientación del ajuste'],
+    ['Brand details', 'Detalles de marca'],
+    ['Provide logo artwork, placement and label expectations.', 'Proporciona el diseño del logotipo, la ubicación y las expectativas sobre las etiquetas.'],
+    ['Project scope', 'Alcance del proyecto'],
+    ['State colors, sizes, quantities and target timing.', 'Indica colores, tallas, cantidades y plazos objetivo.'],
+    ['These decisions affect how a yoga product looks, feels and functions. They should be written into the brief rather than left to assumptions.', 'Estas decisiones afectan al aspecto, el tacto y el funcionamiento de un producto de yoga. Deben quedar por escrito en el brief, sin dejarse a suposiciones.'],
+  ],
+  pt: [
+    ['Wearer and market', 'Utilizador e mercado'],
+    ['Describe the customer, sales region and intended price position.', 'Descreva o cliente, a região de venda e o posicionamento de preço pretendido.'],
+    ['Product roles', 'Funções do produto'],
+    ['List the leggings, bras, tops, shorts or sets required.', 'Liste as leggings, os soutiens, os tops, os calções ou os conjuntos necessários.'],
+    ['Fit direction', 'Orientação do ajuste'],
+    ['Brand details', 'Detalhes da marca'],
+    ['Provide logo artwork, placement and label expectations.', 'Forneça a arte do logótipo, o posicionamento e as expectativas das etiquetas.'],
+    ['Project scope', 'Âmbito do projeto'],
+    ['State colors, sizes, quantities and target timing.', 'Indique as cores, os tamanhos, as quantidades e o prazo pretendido.'],
+    ['These decisions affect how a yoga product looks, feels and functions. They should be written into the brief rather than left to assumptions.', 'Estas decisões afetam o aspeto, o toque e a funcionalidade de uma peça de yoga. Devem ficar registadas no briefing, em vez de dependerem de suposições.'],
+  ],
+  ru: [
+    ['Wearer and market', 'Пользователь и рынок'],
+    ['Describe the customer, sales region and intended price position.', 'Опишите покупателя, регион продаж и целевой ценовой сегмент.'],
+    ['Product roles', 'Роли товара'],
+    ['List the leggings, bras, tops, shorts or sets required.', 'Перечислите необходимые легинсы, бюстгальтеры, топы, шорты или комплекты.'],
+    ['Fit direction', 'Направление посадки'],
+    ['Brand details', 'Детали бренда'],
+    ['Provide logo artwork, placement and label expectations.', 'Предоставьте макет логотипа, его размещение и требования к этикеткам.'],
+    ['Project scope', 'Объём проекта'],
+    ['State colors, sizes, quantities and target timing.', 'Укажите цвета, размеры, количество и целевые сроки.'],
+    ['These decisions affect how a yoga product looks, feels and functions. They should be written into the brief rather than left to assumptions.', 'Эти решения определяют внешний вид, ощущения и функциональность изделия для йоги. Их нужно зафиксировать в брифе, а не оставлять на усмотрение.'],
+  ],
+  'zh-CN': [
+    ['Wearer and market', '穿着人群与市场'],
+    ['Describe the customer, sales region and intended price position.', '说明目标客户、销售地区和预期价格定位。'],
+    ['Product roles', '产品角色'],
+    ['List the leggings, bras, tops, shorts or sets required.', '列出所需的紧身裤、运动内衣、上衣、短裤或套装。'],
+    ['Fit direction', '版型方向'],
+    ['Brand details', '品牌细节'],
+    ['Provide logo artwork, placement and label expectations.', '提供标志图稿、位置和标签要求。'],
+    ['Project scope', '项目范围'],
+    ['State colors, sizes, quantities and target timing.', '说明颜色、尺码、数量和目标时间。'],
+    ['These decisions affect how a yoga product looks, feels and functions. They should be written into the brief rather than left to assumptions.', '这些决定会影响瑜伽产品的外观、触感和功能，应写入项目需求，不能依赖假设。'],
+  ],
+};
+for (const [code, pairs] of Object.entries(guideStepCopy)) residualFragmentCopy[code].push(...pairs);
+
 // Final authored fixes for short legacy labels and one long product paragraph
 // that otherwise survive the fragment pass as mixed-language text.
 const finalResidualCopy = {
@@ -1434,6 +1536,78 @@ const semanticCompletionCopy = {
   ],
 };
 for (const [code, pairs] of Object.entries(semanticCompletionCopy)) residualFragmentCopy[code].push(...pairs);
+
+// Complete the recurring guide and legal sentences that older WordPress
+// exports left partly translated. Keeping these as whole authored nodes avoids
+// grammatical fragments created by the residual word pass.
+const additionalSemanticCopy = {
+  fr: [
+    ['What information is needed to quote a custom sports bra?', 'Quelles informations faut-il pour chiffrer une brassière de sport personnalisée ?'],
+    ['What information is needed to quote custom leggings?', 'Quelles informations faut-il pour chiffrer des leggings personnalisés ?'],
+    ['A set can pair leggings or shorts with a sports bra, tank, short-sleeve top or longline top. Define which pieces are sold together and which can also be purchased separately.', 'Un ensemble peut associer leggings ou shorts, brassière, débardeur, haut à manches courtes ou haut long. Définissez les pièces vendues ensemble et celles qui peuvent aussi être achetées séparément.'],
+    ['The goal is not a larger folder of random photos. Evidence should connect a specific result to a specific requirement and product identity.', 'L’objectif n’est pas d’accumuler des photos au hasard. Chaque preuve doit relier un résultat précis à une exigence et à l’identité du produit.'],
+    ['Early planning often uses estimates. Keep them labeled so buyers and suppliers know which details must be replaced before a final route or dispatch decision.', 'La planification initiale repose souvent sur des estimations. Étiquetez-les clairement afin que les acheteurs et fournisseurs sachent quelles données remplacer avant la décision finale d’itinéraire ou d’expédition.'],
+    ['This is a due-diligence checklist, not a claim that every item is automatically included by Glory Star Wear or another supplier.', 'Cette checklist sert à la vérification préalable ; elle ne signifie pas que chaque point est automatiquement inclus par Glory Star Wear ou un autre fournisseur.'],
+    ['Is the company identity consistent across quotation, invoice and official contact channels?', 'L’identité de l’entreprise est-elle cohérente sur le devis, la facture et les canaux de contact officiels ?'],
+    ['Glory Star Wear is the customer-facing name used by Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), based in Xiamen, Fujian Province, China. Privacy questions may be sent to ', 'Glory Star Wear est le nom utilisé auprès des clients par Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), établie à Xiamen, dans le Fujian, en Chine. Pour toute question sur la confidentialité, écrivez à '],
+    ['Depending on the circumstances, processing may be based on your request for pre-contractual steps, consent, legitimate business interests or legal obligations.', 'Selon les circonstances, le traitement peut reposer sur votre demande de mesures précontractuelles, votre consentement, nos intérêts commerciaux légitimes ou des obligations légales.'],
+  ],
+  es: [
+    ['What information is needed to quote a custom sports bra?', '¿Qué información se necesita para presupuestar un sujetador deportivo personalizado?'],
+    ['What information is needed to quote custom leggings?', '¿Qué información se necesita para presupuestar leggings personalizados?'],
+    ['A set can pair leggings or shorts with a sports bra, tank, short-sleeve top or longline top. Define which pieces are sold together and which can also be purchased separately.', 'Un conjunto puede combinar leggings o shorts con un sujetador deportivo, top de tirantes, top de manga corta o top largo. Define qué prendas se venden juntas y cuáles también pueden comprarse por separado.'],
+    ['The goal is not a larger folder of random photos. Evidence should connect a specific result to a specific requirement and product identity.', 'El objetivo no es acumular una carpeta de fotos al azar. Cada evidencia debe vincular un resultado concreto con un requisito concreto y la identidad del producto.'],
+    ['Early planning often uses estimates. Keep them labeled so buyers and suppliers know which details must be replaced before a final route or dispatch decision.', 'La planificación inicial suele usar estimaciones. Etiquétalas para que compradores y proveedores sepan qué datos deben sustituirse antes de decidir la ruta o el envío final.'],
+    ['This is a due-diligence checklist, not a claim that every item is automatically included by Glory Star Wear or another supplier.', 'Esta lista sirve para la diligencia debida y no afirma que Glory Star Wear u otro proveedor incluya automáticamente cada punto.'],
+    ['Is the company identity consistent across quotation, invoice and official contact channels?', '¿Es coherente la identidad de la empresa en el presupuesto, la factura y los canales oficiales de contacto?'],
+    ['Glory Star Wear is the customer-facing name used by Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), based in Xiamen, Fujian Province, China. Privacy questions may be sent to ', 'Glory Star Wear es el nombre de atención al cliente utilizado por Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), con sede en Xiamen, Fujian, China. Las preguntas sobre privacidad pueden enviarse a '],
+    ['Depending on the circumstances, processing may be based on your request for pre-contractual steps, consent, legitimate business interests or legal obligations.', 'Según las circunstancias, el tratamiento puede basarse en tu solicitud de medidas precontractuales, tu consentimiento, intereses comerciales legítimos u obligaciones legales.'],
+  ],
+  pt: [
+    ['What information is needed to quote a custom sports bra?', 'Que informação é necessária para orçamentar um soutien desportivo personalizado?'],
+    ['What information is needed to quote custom leggings?', 'Que informação é necessária para orçamentar leggings personalizados?'],
+    ['A set can pair leggings or shorts with a sports bra, tank, short-sleeve top or longline top. Define which pieces are sold together and which can also be purchased separately.', 'Um conjunto pode combinar leggings ou calções com um soutien desportivo, top de alças, top de manga curta ou top comprido. Defina quais as peças vendidas em conjunto e quais podem também ser compradas separadamente.'],
+    ['The goal is not a larger folder of random photos. Evidence should connect a specific result to a specific requirement and product identity.', 'O objetivo não é acumular uma pasta de fotografias aleatórias. Cada prova deve ligar um resultado específico a um requisito específico e à identidade do produto.'],
+    ['Early planning often uses estimates. Keep them labeled so buyers and suppliers know which details must be replaced before a final route or dispatch decision.', 'O planeamento inicial usa frequentemente estimativas. Identifique-as para que compradores e fornecedores saibam quais os dados a substituir antes da decisão final sobre o percurso ou a expedição.'],
+    ['This is a due-diligence checklist, not a claim that every item is automatically included by Glory Star Wear or another supplier.', 'Esta lista apoia a verificação prévia e não afirma que cada ponto seja automaticamente incluído pela Glory Star Wear ou por outro fornecedor.'],
+    ['Is the company identity consistent across quotation, invoice and official contact channels?', 'A identidade da empresa é coerente no orçamento, na fatura e nos canais oficiais de contacto?'],
+    ['Glory Star Wear is the customer-facing name used by Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), based in Xiamen, Fujian Province, China. Privacy questions may be sent to ', 'Glory Star Wear é o nome utilizado perante os clientes pela Xiamen Guangxingheng Import & Export Co., Ltd. (厦门广兴恒进出口有限公司), sediada em Xiamen, Fujian, China. As questões de privacidade podem ser enviadas para '],
+    ['Depending on the circumstances, processing may be based on your request for pre-contractual steps, consent, legitimate business interests or legal obligations.', 'Consoante as circunstâncias, o tratamento pode basear-se no seu pedido de medidas pré-contratuais, no seu consentimento, em interesses comerciais legítimos ou em obrigações legais.'],
+    ['Use, when available, the confirmed quantities, assortment, carton count, dimensions and weight. Clearly mark estimates.', 'Quando disponíveis, utilize as quantidades confirmadas, o sortido, o número de caixas, as dimensões e o peso. Assinale claramente as estimativas.'],
+  ],
+  ru: [
+    ['What information is needed to quote a custom sports bra?', 'Какие данные нужны для расчёта стоимости спортивного бюстгальтера под заказ?'],
+    ['What information is needed to quote custom leggings?', 'Какие данные нужны для расчёта стоимости легинсов под заказ?'],
+    ['A set can pair leggings or shorts with a sports bra, tank, short-sleeve top or longline top. Define which pieces are sold together and which can also be purchased separately.', 'Комплект может включать легинсы или шорты, спортивный бюстгальтер, майку, топ с коротким рукавом или удлинённый топ. Определите, какие изделия продаются вместе, а какие можно приобрести отдельно.'],
+    ['The goal is not a larger folder of random photos. Evidence should connect a specific result to a specific requirement and product identity.', 'Цель не в том, чтобы собирать папку случайных фотографий. Каждое подтверждение должно связывать конкретный результат с требованием и идентичностью товара.'],
+    ['Early planning often uses estimates. Keep them labeled so buyers and suppliers know which details must be replaced before a final route or dispatch decision.', 'На начальном этапе часто используют оценки. Помечайте их, чтобы покупатель и поставщик знали, какие данные заменить до окончательного решения по маршруту или отправке.'],
+    ['This is a due-diligence checklist, not a claim that every item is automatically included by Glory Star Wear or another supplier.', 'Это чеклист предварительной проверки, а не утверждение, что Glory Star Wear или другой поставщик автоматически включает каждый пункт.'],
+    ['Is the company identity consistent across quotation, invoice and official contact channels?', 'Совпадают ли данные компании в предложении, счёте и официальных каналах связи?'],
+    ['Depending on the circumstances, processing may be based on your request for pre-contractual steps, consent, legitimate business interests or legal obligations.', 'В зависимости от обстоятельств обработка может основываться на запросе преддоговорных действий, согласии, законных коммерческих интересах или юридических обязанностях.'],
+  ],
+  'zh-CN': [
+    ['What information is needed to quote a custom sports bra?', '定制运动内衣报价需要哪些信息？'],
+    ['What information is needed to quote custom leggings?', '定制紧身裤报价需要哪些信息？'],
+    ['A set can pair leggings or shorts with a sports bra, tank, short-sleeve top or longline top. Define which pieces are sold together and which can also be purchased separately.', '一套产品可以将紧身裤或短裤与运动内衣、背心、短袖上衣或长款上衣搭配。请明确哪些单品成套销售，哪些也可以单独购买。'],
+    ['The goal is not a larger folder of random photos. Evidence should connect a specific result to a specific requirement and product identity.', '目标不是积累一大批零散照片。每份凭证都应将具体结果与具体要求及产品身份对应起来。'],
+    ['Early planning often uses estimates. Keep them labeled so buyers and suppliers know which details must be replaced before a final route or dispatch decision.', '前期计划经常使用估算值。请标明哪些是估算，让买家和供应商知道在最终确定运输路径或发货前需要替换哪些数据。'],
+    ['This is a due-diligence checklist, not a claim that every item is automatically included by Glory Star Wear or another supplier.', '这是一份尽职核查清单，不代表 Glory Star Wear 或其他供应商会自动包含每一项内容。'],
+    ['Is the company identity consistent across quotation, invoice and official contact channels?', '报价单、发票和官方联系方式中的公司信息是否一致？'],
+    ['Depending on the circumstances, processing may be based on your request for pre-contractual steps, consent, legitimate business interests or legal obligations.', '根据具体情况，信息处理可能基于您提出的合同前措施请求、您的同意、合法商业利益或法律义务。'],
+  ],
+};
+for (const [code, pairs] of Object.entries(additionalSemanticCopy)) residualFragmentCopy[code].push(...pairs);
+// The legacy fragment object contains two Russian branches; append these
+// JSON-LD phrases after object creation so the final branch cannot shadow the
+// authored organization description and logo caption.
+const jsonSpecificCopy = {
+  fr: [['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricant de vêtements de sport et de vêtements activewear pour projets OEM et ODM sous marque privée.'], ['Glory Star Wear official logo', 'Logo officiel Glory Star Wear']],
+  es: [['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricante de ropa deportiva y activewear para proyectos OEM y ODM de marca privada.'], ['Glory Star Wear official logo', 'Logotipo oficial de Glory Star Wear']],
+  pt: [['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Fabricante de roupa desportiva e activewear para projetos OEM e ODM de marca própria.'], ['Glory Star Wear official logo', 'Logótipo oficial da Glory Star Wear']],
+  ru: [['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', 'Производитель спортивной одежды для проектов OEM и ODM под собственной маркой.'], ['Glory Star Wear official logo', 'Официальный логотип Glory Star Wear']],
+  'zh-CN': [['Custom activewear and sportswear manufacturer supporting private-label OEM and ODM projects.', '为自有品牌 OEM 和 ODM 项目提供定制运动服生产。'], ['Glory Star Wear official logo', 'Glory Star Wear 官方标志']],
+};
+for (const [code, pairs] of Object.entries(jsonSpecificCopy)) residualFragmentCopy[code].push(...pairs);
 const residualWordCopy = {
   fr:{'Published':'Publié','Updated':'Mis à jour','by':'par','the':'le','our':'notre','your':'votre','with':'avec','from':'de','for':'pour','and':'et','or':'ou','what':'que','how':'comment','why':'pourquoi','which':'quel','when':'quand','where':'où','control':'contrôle','plan':'plan','authority':'autorité','accepts':'accepte','rejects':'rejette','gate':'étape','Measurements':'Mesures','Workmanship':'Confection','coverage':'couverture','straps':'bretelles','band':'bande','cups':'coques','waist':'taille','length':'longueur','seams':'coutures','Material':'Matière','Current':'Actuel','Publication':'Validation','Details':'Détails','details':'détails','who':'qui','pieces':'pièces','labeled':'étiquetées','packed':'emballées','shipping':'expédition','shipment':'expédition','booking':'réservation','service':'service','specific':'précis','Specification':'Spécification','Product':'Produit','Route':'Parcours','Read':'Lire','Delivery':'Livraison','Evaluate':'Évaluer','Plan':'Planifier','Share':'Partager','Explain':'Expliquer','Keep':'Conserver','One':'Une','Brand':'Marque','support':'assistance','catalog':'catalogue','guides':'guides','questions':'questions'},
   es:{'Published':'Publicado','Updated':'Actualizado','by':'por','the':'el','our':'nuestro','your':'tu','with':'con','from':'de','for':'para','and':'y','or':'o','what':'qué','how':'cómo','why':'por qué','which':'qué','when':'cuándo','where':'dónde','control':'control','plan':'plan','authority':'autoridad','accepts':'acepta','rejects':'rechaza','gate':'control','Measurements':'Medidas','Workmanship':'Confección','coverage':'cobertura','straps':'tirantes','band':'banda','cups':'copas','waist':'cintura','length':'largo','seams':'costuras','Material':'Material','Current':'Actual','Publication':'Liberación','Details':'Detalles','details':'detalles','who':'quién','pieces':'piezas','labeled':'etiquetadas','packed':'embaladas','shipping':'envío','shipment':'envío','booking':'reserva','service':'servicio','specific':'concreto','Specification':'Especificación','Product':'Producto','Route':'Ruta','Read':'Leer','Delivery':'Entrega','Evaluate':'Evalúa','Plan':'Planifica','Share':'Comparte','Explain':'Explica','Keep':'Conserva','One':'Una','Brand':'Marca','support':'ayuda','catalog':'catálogo','guides':'guías','questions':'preguntas'},
@@ -1522,6 +1696,7 @@ const localizeRemainingPageText = (html, language, pageKey, product = null) => {
     if (/^\d/.test(text) && text.length < 90) return full;
     const words = text.match(/[A-Za-z]{2,}/g) || [];
     const englishScore = (text.match(residualEnglishWords) || []).length;
+    const hardCount = (text.match(hardResidualEnglish) || []).length;
     const asciiRatio = (text.match(/[A-Za-z]/g) || []).length / Math.max(1, (text.match(/[A-Za-zÀ-ÿА-Яа-я\u4e00-\u9fff]/g) || []).length);
     const localHints = language.code === 'fr'
       ? /\b(?:a|à|au|aux|avec|ce|cette|dans|de|des|du|en|et|la|le|les|notre|nos|pour|sur|une|un|votre|vos|vous|qui|que|est)\b/i
@@ -1533,7 +1708,16 @@ const localizeRemainingPageText = (html, language, pageKey, product = null) => {
     // Russian and Chinese pages should not expose any multi-word ASCII copy;
     // for Latin-script locales, use the broader ASCII check only when a line
     // has no obvious local-language characters.
-    const likelyEnglish = words.length >= 2 && (englishScore >= 2 || (asciiRatio > 0.92 && !(localHints && localHints.test(text))));
+    // Common Portuguese/Spanish/French articles such as “a”, “de”, “do” and
+    // “et” also appear in the broad English vocabulary above. Preserve a
+    // locally grammatical sentence when it has no unmistakable hard English
+    // term; mixed lines containing “placement”, “provide”, “intended”, etc.
+    // still fall through to the authored residual copy.
+    const localGrammar = localHints && localHints.test(text);
+    const likelyEnglish = words.length >= 2 && (
+      (englishScore >= 2 && !(localGrammar && hardCount < 1)) ||
+      (asciiRatio > 0.92 && !localGrammar)
+    );
     if (!likelyEnglish) return full;
     let localized;
     if (text.endsWith('?')) localized = fallback.question;
