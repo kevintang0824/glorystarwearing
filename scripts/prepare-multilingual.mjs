@@ -342,11 +342,11 @@ const productResidualSentenceCopy = {
   ru:'Быстросохнущий материал быстро отводит влагу и пот, сохраняя сухость и комфорт даже во время интенсивных тренировок.',
   'zh-CN':'速干面料快速吸收汗水和湿气，即使在高强度训练中也能保持干爽舒适。'
 };
-Object.assign(productResidualTermCopy.fr, {'with ':'avec ',' and ':' et ',' or ':' ou ','with hood':'avec capuche','zipper':'fermeture éclair','Thumb Hole':'passage de pouce','scrunch short':'short scrunch','Moderate Support':'maintien modéré'});
-Object.assign(productResidualTermCopy.es, {'with ':'con ',' and ':' y ',' or ':' o ','with hood':'con capucha','zipper':'cremallera','Thumb Hole':'paso para el pulgar','scrunch short':'short scrunch','Moderate Support':'sujeción moderada'});
-Object.assign(productResidualTermCopy.pt, {'with ':'com ',' and ':' e ',' or ':' ou ','with hood':'com capuz','zipper':'fecho','Thumb Hole':'abertura para o polegar','scrunch short':'calções scrunch','Moderate Support':'suporte moderado'});
-Object.assign(productResidualTermCopy.ru, {'with ':'с ',' and ':' и ',' or ':' или ','with hood':'с капюшоном','zipper':'молния','Thumb Hole':'отверстие для большого пальца','scrunch short':'шорты scrunch','Moderate Support':'средняя поддержка'});
-Object.assign(productResidualTermCopy['zh-CN'], {'with ':'配有 ',' and ':' 和 ',' or ':' 或 ','with hood':'配有帽子','zipper':'拉链','Thumb Hole':'拇指孔','scrunch short':'提臀短裤','Moderate Support':'中等支撑'});
+Object.assign(productResidualTermCopy.fr, {'with ':'avec ',' and ':' et ',' or ':' ou ','with hood':'avec capuche','full zipper':'fermeture intégrale','full zip':'fermeture intégrale','zipper':'fermeture éclair','Thumb Hole':'passage de pouce','scrunch short':'short scrunch','built in shorts':'short intégré','build in shorts':'short intégré','Moderate Support':'maintien modéré'});
+Object.assign(productResidualTermCopy.es, {'with ':'con ',' and ':' y ',' or ':' o ','with hood':'con capucha','full zipper':'cremallera completa','full zip':'cremallera completa','zipper':'cremallera','Thumb Hole':'paso para el pulgar','scrunch short':'short scrunch','built in shorts':'short integrado','build in shorts':'short integrado','Moderate Support':'sujeción moderada'});
+Object.assign(productResidualTermCopy.pt, {'with ':'com ',' and ':' e ',' or ':' ou ','with hood':'com capuz','full zipper':'fecho completo','full zip':'fecho completo','zipper':'fecho','Thumb Hole':'abertura para o polegar','scrunch short':'calções scrunch','built in shorts':'calções integrados','build in shorts':'calções integrados','Moderate Support':'suporte moderado'});
+Object.assign(productResidualTermCopy.ru, {'with ':'с ',' and ':' и ',' or ':' или ','with hood':'с капюшоном','full zipper':'полная молния','full zip':'полная молния','zipper':'молния','Thumb Hole':'отверстие для большого пальца','scrunch short':'шорты scrunch','built in shorts':'встроенные шорты','build in shorts':'встроенные шорты','Moderate Support':'средняя поддержка'});
+Object.assign(productResidualTermCopy['zh-CN'], {'with ':'配有 ',' and ':' 和 ',' or ':' 或 ','with hood':'配有帽子','full zipper':'全开拉链','full zip':'全开拉链','zipper':'拉链','Thumb Hole':'拇指孔','scrunch short':'提臀短裤','built in shorts':'内置短裤','build in shorts':'内置短裤','Moderate Support':'中等支撑'});
 
 // Product feature headings are authored in the source catalog and are often
 // short phrases, so the long paragraph fallback intentionally does not touch
@@ -495,6 +495,19 @@ const localizePagePhrases = (html, language) => {
   // Restore authored translations only after the residual word pass. Markers
   // contain no dictionary words, so they cannot be rewritten accidentally.
   html = html.replace(/__GSW_TRANSLATED_(\d+)__/g, (_, index) => translationMarkers[Number(index)] || '');
+  // Apply exact fixes after marker restoration, because a phrase such as
+  // “Logo artwork” may have been protected as a marker before its surrounding
+  // legacy sentence is visible again. Matching the whole node prevents any
+  // changes inside scripts, JSON-LD and URLs.
+  for (const [from, localized] of finalVisibleCopy[language.code] || []) {
+    if (!from || localized == null || from === localized) continue;
+    html = html.replace(/>([^<>]*)</g, (full, text) => {
+      const leading = text.match(/^\s*/)?.[0] || '';
+      const trailing = text.match(/\s*$/)?.[0] || '';
+      if (text.trim() !== from) return full;
+      return `>${leading}${escape(localized)}${trailing}<`;
+    });
+  }
   return html.replace(/__GSW_BLOCK_(\d+)__/g, (_, index) => protectedBlocks[Number(index)] || '');
 };
 
@@ -708,6 +721,17 @@ const residualFragmentCopy = {
     [' and ',' et '], [' &amp; ',' et '], [' or ',' ou '], [' with ',' avec '], [' from ',' de '], [' your ',' votre '], [' you ',' vous '], [' should ',' doit '], ['What ','Que '], ['How ','Comment '], ['Why ','Pourquoi '], ['Which ','Quel '], ['When ','Quand '], ['Where ','Où '], ['View ','Voir '], ['Send ','Envoyer '], ['Review ','Vérifier '], ['Choose ','Choisir '], ['Build ','Construire '], ['Prepare ','Préparer '], ['Confirm ','Confirmer '], ['Product route','Parcours produit'], ['Material route','Parcours matière'], ['Variation count','Nombre de variantes'], ['Brand scope','Périmètre de marque']
   ],
   es: [
+    ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Define las referencias aprobadas, las etapas de inspección, los registros de medidas, las evidencias y la autoridad de liberación del envío.'],
+    ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Referencias aprobadas, controles, alcance de inspección, evidencias, gestión de desviaciones y autoridad de envío.'],
+    ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'mensajes, archivos e información de seguimiento intercambiados directamente por correo electrónico, WhatsApp u otro canal acordado.'],
+    ['Align logos, labels and packaging', 'Alinea logotipos, etiquetas y embalaje'],
+    ['Fit and movement', 'Ajuste y movimiento'],
+    ['Meet Glory Star Wear', 'Conoce Glory Star Wear'],
+    ['Explain the timing', 'Explica los plazos'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Explora las categorías de ropa deportiva y guarda las páginas de producto que encajen con tu dirección.'],
+    ['Confirm the style, measurements, fabric direction, construction details, color references, logo artwork and placement, labels and packaging expectations before the sample route begins.', 'Confirma el modelo, las medidas, la orientación del tejido, los detalles de confección, las referencias de color, el diseño y la posición del logotipo, las etiquetas y las expectativas de embalaje antes de iniciar las muestras.'],
+    ['Confirm inspection evidence, destination, timing and shipping responsibilities.', 'Confirma las evidencias de inspección, el destino, los plazos y las responsabilidades de envío.'],
+    ['What logo files and branding details should I provide?', '¿Qué archivos de logotipo y detalles de marca debo proporcionar?'],
     ['Discuss your branding brief','Habla sobre tu brief de marca'], ['Discuss your yoga line','Habla sobre tu línea de yoga'], ['Discuss your workout set','Habla sobre tu conjunto de entrenamiento'], ['Discuss your shipment','Habla sobre tu envío'], ['Discuss your ','Habla sobre tu '],
     ['Private-label service','Servicio de marca privada'], ['Build a yoga collection, not isolated pieces','Crea una colección de yoga, no piezas aisladas'], ['Procurement questions','Preguntas de compras'], ['Request comparable proof','Solicita pruebas comparables'], ['Dated quotation tied to the same brief','Cotización fechada vinculada al mismo brief'], ['Unqualified delivery or customs guarantees','Garantías de entrega o aduanas sin verificar'], ['Give every supplier identical scope','Da a cada proveedor el mismo alcance'], ['Evaluate against one specification','Evalúa con una sola especificación'], ['Same commercial basis','Misma base comercial'], ['Same evidence','Mismas pruebas'], ['Normalize assumptions and exclusions','Normaliza supuestos y exclusiones'], ['Evidence to record','Evidencias que registrar'], ['Red flag to clarify','Alerta que aclarar'], ['Evaluation area','Área de evaluación'], ['Product fit','Adecuación del producto'], ['Identity and contact','Identidad y contacto'], ['Shipping and handoff','Envío y entrega'], ['Sampling','Muestras'],
     ['From logo file to approved ','Del archivo del logotipo al embalaje aprobado '], ['Artwork','Diseño'], ['High-resolution PNG or AI file','Archivo PNG de alta resolución o AI'], ['Measured position, scale and orientation','Posición, escala y orientación medidas'], ['Content, dimensions, location and language','Contenido, dimensiones, ubicación e idioma'], ['Pack-out, identification and artwork version','Embalaje, identificación y versión del diseño'], ['What logo file should I send?','¿Qué archivo de logotipo debo enviar?'], ['Information we receive','Información que recibimos'], ['Communications:','Comunicaciones:'], ['Language preference','Preferencia de idioma'], ['6. More information','6. Más información'], ['or use','o usa'], ['to change the preference.','para cambiar la preferencia.'], ['Can I add a private label and logo?','¿Puedo añadir una marca privada y un logotipo?'], ['Can gym clothing carry a private label?','¿Puede la ropa de gimnasio llevar una marca privada?'],
@@ -715,6 +739,17 @@ const residualFragmentCopy = {
     [' and ',' y '], [' &amp; ',' y '], [' or ',' o '], [' with ',' con '], [' from ',' de '], [' your ',' tu '], [' you ',' tú '], [' should ',' debe '], ['What ','Qué '], ['How ','Cómo '], ['Why ','Por qué '], ['Which ','Qué '], ['When ','Cuándo '], ['Where ','Dónde '], ['View ','Ver '], ['Send ','Envía '], ['Review ','Revisa '], ['Choose ','Elige '], ['Build ','Crea '], ['Prepare ','Prepara '], ['Confirm ','Confirma '], ['Product route','Ruta del producto'], ['Material route','Ruta del tejido'], ['Variation count','Número de variantes'], ['Brand scope','Alcance de marca']
   ],
   pt: [
+    ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Defina as referências aprovadas, as fases de inspeção, os registos de medidas, as provas e a autoridade de libertação do envio.'],
+    ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Referências aprovadas, pontos de controlo, âmbito da inspeção, provas, gestão de desvios e autoridade de expedição.'],
+    ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'mensagens, ficheiros e informações de seguimento trocados diretamente por e-mail, WhatsApp ou outro canal acordado.'],
+    ['Align logos, labels and packaging', 'Alinhe logótipos, etiquetas e embalagem'],
+    ['Fit and movement', 'Ajuste e movimento'],
+    ['Meet Glory Star Wear', 'Conheça a Glory Star Wear'],
+    ['Explain the timing', 'Explique o prazo'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Consulte as categorias de roupa desportiva e guarde as páginas de produto adequadas à sua orientação.'],
+    ['Confirm the style, measurements, fabric direction, construction details, color references, logo artwork and placement, labels and packaging expectations before the sample route begins.', 'Confirme o modelo, as medidas, a orientação do tecido, os detalhes de construção, as referências de cor, a arte e o posicionamento do logótipo, as etiquetas e as expectativas de embalagem antes de iniciar as amostras.'],
+    ['Confirm inspection evidence, destination, timing and shipping responsibilities.', 'Confirme as provas de inspeção, o destino, o prazo e as responsabilidades de expedição.'],
+    ['What logo files and branding details should I provide?', 'Que ficheiros de logótipo e detalhes de marca devo fornecer?'],
     ['Discuss your branding brief','Fale sobre o seu briefing de marca'], ['Discuss your yoga line','Fale sobre a sua linha de yoga'], ['Discuss your workout set','Fale sobre o seu conjunto de treino'], ['Discuss your shipment','Fale sobre a sua expedição'], ['Discuss your ','Fale sobre o seu '],
     ['Private-label service','Serviço de marca própria'], ['Build a yoga collection, not isolated pieces','Crie uma coleção de yoga, não peças isoladas'], ['Procurement questions','Questões de aprovisionamento'], ['Request comparable proof','Peça provas comparáveis'], ['Dated quotation tied to the same brief','Orçamento datado ligado ao mesmo briefing'], ['Unqualified delivery or customs guarantees','Garantias de entrega ou alfândega sem validação'], ['Give every supplier identical scope','Dê o mesmo âmbito a todos os fornecedores'], ['Evaluate against one specification','Avalie com base numa só especificação'], ['Same commercial basis','Mesma base comercial'], ['Same evidence','As mesmas provas'], ['Normalize assumptions and exclusions','Normalize pressupostos e exclusões'], ['Evidence to record','Evidência a registar'], ['Red flag to clarify','Sinal de alerta a esclarecer'], ['Evaluation area','Área de avaliação'], ['Product fit','Adequação do produto'], ['Identity and contact','Identidade e contacto'], ['Shipping and handoff','Expedição e passagem'], ['Sampling','Amostragem'],
     ['From logo file to approved ','Do ficheiro do logótipo à embalagem final aprovada '], ['Artwork','Arte final'], ['High-resolution PNG or AI file','Ficheiro PNG de alta resolução ou AI'], ['Measured position, scale and orientation','Posição, escala e orientação medidas'], ['Content, dimensions, location and language','Conteúdo, dimensões, localização e idioma'], ['Pack-out, identification and artwork version','Embalagem, identificação e versão da arte final'], ['What logo file should I send?','Que ficheiro de logótipo devo enviar?'], ['Information we receive','Informação que recebemos'], ['Communications:','Comunicações:'], ['Language preference','Preferência de idioma'], ['6. More information','6. Mais informações'], ['or use','ou utilize'], ['to change the preference.','para alterar a preferência.'], ['Can I add a private label and logo?','Posso adicionar uma marca própria e um logótipo?'], ['Can gym clothing carry a private label?','A roupa de ginásio pode levar uma marca própria?'],
@@ -727,6 +762,18 @@ const residualFragmentCopy = {
     ['From logo file to approved ','От файла логотипа до утверждённой упаковки '], ['Artwork','Макет'], ['High-resolution PNG or AI file','PNG высокого разрешения или файл AI'], ['Measured position, scale and orientation','Измеренные позиция, масштаб и ориентация'], ['Content, dimensions, location and language','Содержание, размеры, расположение и язык'], ['Pack-out, identification and artwork version','Упаковка, идентификация и версия макета'], ['What logo file should I send?','Какой файл логотипа отправить?'], ['Information we receive','Получаемая информация'], ['Communications:','Связь:'], ['Language preference','Языковые настройки'], ['6. More information','6. Дополнительная информация'], ['or use','или используйте'], ['to change the preference.','чтобы изменить выбор.'], ['Can I add a private label and logo?','Можно ли добавить собственную марку и логотип?'], ['Can gym clothing carry a private label?','Может ли одежда для тренировок иметь собственную марку?'],
     ['Contact Glory Star Wear','Связаться с Glory Star Wear'], ['Explore buyer support','Открыть поддержку покупателей'], ['Open common questions','Открыть частые вопросы'], ['Shipping preparation','Подготовка доставки'], ['Browse buyer guides','Открыть руководства для покупателей'], ['Browse product catalog','Открыть каталог'], ['From buyer brief to confirmed shipment','От брифа покупателя до подтверждённой доставки'], ['Product specification','Спецификация товара'], ['quality-control checkpoints','контрольные точки качества'], ['Starting a project','Начало проекта'], ['Analytics is opt-in','Аналитика включается по согласию'], ['2. Essential preference storage','2. Основное хранение настроек'], ['3. Optional Google Analytics','3. Необязательный Google Analytics'], ['1. Who is responsible','1. Ответственное лицо'], ['Discuss on WhatsApp','Обсудить в WhatsApp'], ['Still need help?','Нужна помощь?'], ['Send your question','Отправить вопрос'], ['Brand identity','Идентичность бренда'], ['Prepare branding','Подготовить брендирование'], ['Review quality','Проверить качество'],
     [' and ',' и '], [' &amp; ',' и '], [' or ',' или '], [' with ',' с '], [' from ',' из '], [' your ',' ваш '], [' you ',' вы '], [' should ',' нужно '], ['What ','Что '], ['How ','Как '], ['Why ','Почему '], ['Which ','Какой '], ['When ','Когда '], ['Where ','Где '], ['View ','Открыть '], ['Send ','Отправить '], ['Review ','Проверить '], ['Choose ','Выбрать '], ['Build ','Создать '], ['Prepare ','Подготовить '], ['Confirm ','Подтвердить '], ['Product route','Маршрут товара'], ['Material route','Маршрут материала'], ['Variation count','Число вариантов'], ['Brand scope','Объём брендирования']
+  ],
+  ru: [
+    ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Определите утверждённые референсы, этапы проверки, записи измерений, подтверждения и ответственного за выпуск отправки.'],
+    ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Утверждённые референсы, контрольные точки, объём проверки, подтверждения, обработка отклонений и ответственный за отправку.'],
+    ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'сообщения, файлы и последующая информация, которыми обмениваются напрямую по электронной почте, WhatsApp или другому согласованному каналу.'],
+    ['Align logos, labels and packaging', 'Согласуйте логотипы, этикетки и упаковку'],
+    ['Fit and movement', 'Посадка и движение'],
+    ['Meet Glory Star Wear', 'Познакомиться с Glory Star Wear'],
+    ['Explain the timing', 'Укажите сроки'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Просмотрите категории спортивной одежды и сохраните страницы товаров, соответствующие вашему направлению.'],
+    ['Confirm the style, measurements, fabric direction, construction details, color references, logo artwork and placement, labels and packaging expectations before the sample route begins.', 'Подтвердите модель, мерки, направление материала, детали конструкции, цветовые референсы, макет и размещение логотипа, этикетки и требования к упаковке до начала работы с образцом.'],
+    ['What logo files and branding details should I provide?', 'Какие файлы логотипа и данные по брендированию нужно предоставить?'],
   ],
   'zh-CN': [
     ['Discuss your branding brief','讨论您的品牌定制需求'], ['Discuss your yoga line','讨论您的瑜伽系列'], ['Discuss your workout set','讨论您的训练套装'], ['Discuss your shipment','讨论您的运输安排'], ['Discuss your ','讨论您的'],
@@ -756,6 +803,90 @@ residualFragmentCopy.ru.push(
 residualFragmentCopy['zh-CN'].push(
   ['Logo, label and packaging requirements','标志、标签与包装要求'], ['Thin-strap studio style','细肩带工作室款'], ['Minimal adjustable-strap style','简约可调节肩带款'], ['Neckline, side and back direction','领口、侧面与后背结构'], ['Manufacturer selection','生产商选择'], ['Visit buyer support','查看买家支持'], ['Site and catalog terms','网站与目录条款'], ['Starting a project','开始项目'], ['Brief, route, MOQ and samples','需求、路径、MOQ 与样品'], ['What information should I send with my first inquiry?','首次询价需要发送哪些信息？'], ['Complete workout set','完整训练套装'], ['size pairing','尺码搭配'], ['Activewear set manufacturing FAQ','运动套装生产常见问题'], ['How should sizes be planned for workout sets?','运动套装应如何规划尺码？'], ['Training tops','训练上衣'], ['Workout shorts','训练短裤'], ['Coordinated gym sets','协调的健身套装'], ['One sample record','一份样品记录'], ['Brand and delivery','品牌与交付'], ['Material and construction','面料与结构'], ['to prepare a comparable route brief.','以准备可比的项目路径需求。'], ['Destination and timing','目的地与时间'], ['JavaScript is required to prepare the structured message.','准备结构化消息需要启用 JavaScript。'], ['directly on','直接通过'], ['do not enter private information into the page URL.','请勿在页面 URL 中填写私人信息。'], ['Review shipment release','检查发货放行'], ['service and shipment details','服务与运输细节'], ['route availability by destination','按目的地确认运输路径'], ['Plan around shipment and booking details','围绕运输与订舱细节安排'], ['Selected style or custom development','已选款式或定制开发'], ['Colors, sizes and quantity split','颜色、尺码与数量分配'], ['Build a fabric brief','建立面料需求'], ['Coverage and color','覆盖度与颜色']
 );
+// Final authored fixes for short legacy labels and one long product paragraph
+// that otherwise survive the fragment pass as mixed-language text.
+const finalResidualCopy = {
+  fr: [
+    ['Share coverage, length, waistband and support preferences.', 'Partagez vos préférences de couverture, de longueur, de ceinture et de maintien.'],
+    ['Best for written briefs, public reference links and follow-up notes.', 'Idéal pour les briefs écrits, les liens de référence publics et les notes de suivi.'],
+    ['The high-performance fabric wicks away moisture, ensuring you stay dry and fresh throughout your exercise routine. The compression fit provides excellent support, enhancing muscle recovery and reducing fatigue for prolonged training sessions.', 'La matière haute performance évacue l’humidité pour vous garder au sec et au frais pendant votre routine d’exercice. La coupe compressive apporte un excellent maintien, favorise la récupération musculaire et réduit la fatigue lors des séances prolongées.'],
+    ['2. Essential preference storage', '2. Stockage essentiel des préférences'],
+    ['Language preference', 'Préférence de langue'],
+    ['Browse the product catalog', 'Parcourez le catalogue produit'],
+    ['Meet Glory Star Wear', 'Rencontrer Glory Star Wear'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Parcourez les catégories de vêtements de sport et enregistrez les pages produit adaptées à votre orientation.'],
+  ],
+  es: [
+    ['Share coverage, length, waistband and support preferences.', 'Comparte tus preferencias de cobertura, largo, cintura y soporte.'],
+    ['Best for written briefs, public reference links and follow-up notes.', 'Ideal para briefs escritos, enlaces de referencia públicos y notas de seguimiento.'],
+    ['Provide logotipo Diseño, placement y etiqueta expectations.', 'Proporciona el diseño del logotipo, la ubicación y los requisitos de las etiquetas.'],
+    ['The high-performance fabric wicks away moisture, ensuring you stay dry and fresh throughout your exercise routine. The compression fit provides excellent support, enhancing muscle recovery and reducing fatigue for prolonged training sessions.', 'El tejido de alto rendimiento evacua la humedad para mantenerte seco y fresco durante tu rutina de ejercicio. El ajuste compresivo proporciona una excelente sujeción, favorece la recuperación muscular y reduce la fatiga durante sesiones prolongadas.'],
+  ],
+  pt: [
+    ['Share coverage, length, waistband and support preferences.', 'Partilhe as suas preferências de cobertura, comprimento, cintura e suporte.'],
+    ['Best for written briefs, public reference links and follow-up notes.', 'Ideal para briefings escritos, links de referência públicos e notas de seguimento.'],
+    ['Provide logótipo Arte final, placement e etiqueta expectations.', 'Forneça a arte do logótipo, o posicionamento e os requisitos das etiquetas.'],
+    ['The high-performance fabric wicks away moisture, ensuring you stay dry and fresh throughout your exercise routine. The compression fit provides excellent support, enhancing muscle recovery and reducing fatigue for prolonged training sessions.', 'O tecido de alto desempenho afasta a humidade para o manter seco e fresco durante a sua rotina de exercício. O corte de compressão proporciona excelente suporte, favorece a recuperação muscular e reduz a fadiga em sessões prolongadas.'],
+  ],
+  ru: [
+    ['Share coverage, length, waistband and support preferences.', 'Опишите предпочтения по покрытию, длине, поясу и поддержке.'],
+    ['Best for written briefs, public reference links and follow-up notes.', 'Подходит для письменных брифов, открытых ссылок на референсы и последующих заметок.'],
+    ['Browse Товар каталог', 'Открыть каталог товаров'],
+    ['Browse Товар catalog', 'Открыть каталог товаров'],
+    ['The high-performance fabric wicks away moisture, ensuring you stay dry and fresh throughout your exercise routine. The compression fit provides excellent support, enhancing muscle recovery and reducing fatigue for prolonged training sessions.', 'Ткань высокой эффективности отводит влагу, сохраняя сухость и свежесть во время тренировок. Компрессионный крой обеспечивает отличную поддержку, помогает восстановлению мышц и снижает усталость при длительных занятиях.'],
+    ['2. Essential preference storage', '2. Основное хранение настроек'],
+    ['Language preference', 'Языковые предпочтения'],
+    ['Browse the product catalog', 'Открыть каталог товаров'],
+  ],
+  'zh-CN': [
+    ['Share coverage, length, waistband and support preferences.', '说明覆盖度、长度、腰头和支撑偏好。'],
+    ['Best for written briefs, public reference links and follow-up notes.', '适合整理书面需求、公开参考链接和后续备注。'],
+    ['The high-performance fabric wicks away moisture, ensuring you stay dry and fresh throughout your exercise routine. The compression fit provides excellent support, enhancing muscle recovery and reducing fatigue for prolonged training sessions.', '高性能面料吸走湿气，让您在训练过程中保持干爽清新。压力版型提供良好支撑，有助于肌肉恢复并减少长时间训练的疲劳。'],
+    ['Align logos, labels and packaging', '统一标志、标签和包装'],
+    ['Fit and movement', '版型与活动表现'],
+    ['Meet Glory Star Wear', '了解 Glory Star Wear'],
+    ['Browse activewear categories and save the product pages that fit your direction.', '浏览运动服品类，并保存符合您方向的产品页面。'],
+  ],
+};
+for (const [code, pairs] of Object.entries(finalResidualCopy)) residualFragmentCopy[code].push(...pairs);
+// A few legacy templates are already partly rewritten by the word-level pass
+// before the final visible-node guard runs. Replace those exact mixed results
+// here so the rendered copy remains fully native in every locale.
+const finalVisibleCopy = {
+  fr: [
+    ['Visuel, placement, étiquettes, Emballage, SKU identification et approval responsibility.', 'Visuel, emplacement, étiquettes, emballage, identification du SKU et responsabilité de validation.'],
+    ['Contrôlez les versions du visuel, le placement mesuré, les informations d’étiquette, l’emballage et la validation de l’échantillon physique.', 'Contrôlez les versions du visuel, l’emplacement mesuré, les informations d’étiquette, l’emballage et la validation de l’échantillon physique.'],
+    ['pliage, bag, insert, code-barres et SKU identification needs.', 'pliage, sac, insert, code-barres et besoins d’identification du SKU.'],
+    ['Placement', 'Emplacement'],
+  ],
+  es: [
+    ['Diseño, placement, etiquetas, Embalaje, SKU identification y approval responsibility.', 'Diseño, ubicación, etiquetas, embalaje, identificación del SKU y responsabilidad de aprobación.'],
+    ['Definir shared colors, contrast Detalles, logotipo scale y placement.', 'Define los colores compartidos, los detalles de contraste, la escala del logotipo y su ubicación.'],
+    ['Provide logotipo Diseño, placement y etiqueta expectations.', 'Proporciona el diseño del logotipo, la ubicación y las expectativas sobre las etiquetas.'],
+    ['Provide logo artwork, placement and label expectations.', 'Proporciona el diseño del logotipo, la ubicación y las expectativas sobre las etiquetas.'],
+    ['Check logotipo scale, placement, etiqueta y Embalaje orientación.', 'Comprueba la escala del logotipo, su ubicación, la etiqueta y la orientación del embalaje.'],
+    ['Placement', 'Ubicación'],
+    ['Variations', 'Variantes'],
+  ],
+  pt: [
+    ['Arte final, placement, etiquetas, Embalagem, SKU identification e approval responsibility.', 'Arte final, posicionamento, etiquetas, embalagem, identificação do SKU e responsabilidade pela aprovação.'],
+    ['Definir shared colors, contrast Detalhes, logótipo scale e placement.', 'Defina as cores partilhadas, os detalhes de contraste, a escala do logótipo e o posicionamento.'],
+    ['Provide logótipo Arte final, placement e etiqueta expectations.', 'Forneça a arte do logótipo, o posicionamento e as expectativas das etiquetas.'],
+    ['Provide logo artwork, placement and label expectations.', 'Forneça a arte do logótipo, o posicionamento e as expectativas das etiquetas.'],
+    ['Check logótipo scale, placement, etiqueta e Embalagem orientação.', 'Verifique a escala do logótipo, o posicionamento, a etiqueta e a orientação da embalagem.'],
+    ['Placement', 'Posicionamento'],
+    ['Variations', 'Variantes'],
+  ],
+  ru: [
+    ['Browse Товар каталог', 'Открыть каталог товаров'],
+    ['Browse Товар catalog', 'Открыть каталог товаров'],
+    ['Browse product catalog', 'Открыть каталог товаров'],
+    ['Placement', 'Размещение'],
+  ],
+  'zh-CN': [
+    ['Placement', '位置'],
+  ],
+};
 const localizedFaqJson = {
   fr:[['What logo file should I send for private-label activewear?','Quel fichier logo dois-je envoyer pour des vêtements de sport sous marque privée ?'],['What should a logo placement specification include?','Que doit contenir une spécification de placement du logo ?'],['What label information should an activewear brand prepare?','Quelles informations d’étiquette une marque de vêtements de sport doit-elle préparer ?'],['How should branding be approved before bulk production?','Comment valider le marquage avant la production en volume ?'],['Custom Activewear Logo, Labels & Packaging Guide','Guide du logo, des étiquettes et de l’emballage des vêtements de sport personnalisés']],
   es:[['What logo file should I send for private-label activewear?','¿Qué archivo de logotipo debo enviar para ropa deportiva de marca privada?'],['What should a logo placement specification include?','¿Qué debe incluir una especificación de colocación del logotipo?'],['What label information should an activewear brand prepare?','¿Qué información de etiquetas debe preparar una marca deportiva?'],['How should branding be approved before bulk production?','¿Cómo aprobar la marca antes de producir en volumen?'],['Custom Activewear Logo, Labels & Packaging Guide','Guía de logotipo, etiquetas y embalaje de ropa deportiva personalizada']],
@@ -1098,6 +1229,16 @@ for (const [code, pairs] of Object.entries(fallbackHeadingCopy)) residualFragmen
 // and keeps every locale's page structure aligned with English.
 const lateCompletionCopy = {
   fr: [
+    ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Définissez les références approuvées, les étapes d’inspection, les relevés de mesures, les preuves et l’autorité de mise à disposition de l’expédition.'],
+    ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Références approuvées, points de contrôle, périmètre d’inspection, preuves, gestion des écarts et autorité d’expédition.'],
+    ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'messages, fichiers et informations de suivi échangés directement par e-mail, WhatsApp ou un autre canal convenu.'],
+    ['Align logos, labels and packaging', 'Alignez les logos, les étiquettes et l’emballage'],
+    ['Fit and movement', 'Coupe et mouvement'],
+    ['Meet Glory Star Wear', 'Rencontrer Glory Star Wear'],
+    ['Explain the timing', 'Expliquer le calendrier'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Parcourez les catégories de vêtements de sport et enregistrez les pages produit adaptées à votre orientation.'],
+    ['Confirm the style, measurements, fabric direction, construction details, color references, logo artwork and placement, labels and packaging expectations before the sample route begins.', 'Confirmez le modèle, les mesures, l’orientation matière, les détails de construction, les références couleur, le visuel et le placement du logo, les étiquettes et les attentes d’emballage avant le début de l’échantillonnage.'],
+    ['What logo files and branding details should I provide?', 'Quels fichiers logo et détails de marque dois-je fournir ?'],
     ['Supply the requested high-resolution PNG or AI file. Name the approved version and preserve the original proportions.', 'Fournissez le fichier PNG haute résolution ou AI demandé. Indiquez la version approuvée et conservez les proportions originales.'],
     ['Compare identity, product fit, samples, quality control, commercial scope, communication and shipping evidence.', 'Comparez l’identité, l’adéquation du produit, les échantillons, le contrôle qualité, le périmètre commercial, la communication et les preuves d’expédition.'],
     ['Define training use, fit, fabric priorities, construction, branding and commercial scope.', 'Définissez l’usage d’entraînement, la coupe, les priorités matière, la construction, le marquage et le périmètre commercial.'],
@@ -1149,6 +1290,18 @@ const lateCompletionCopy = {
     ['List the leggings, bras, tops, shorts or sets required.', 'Liste os leggings, soutiens, tops, calções ou conjuntos necessários.'],
     ['Define activity and movement demands', 'Defina a atividade e as exigências de movimento'],
     ['What should I send before requesting a quote?', 'O que devo enviar antes de pedir um orçamento?'],
+  ],
+  ru: [
+    ['Define the approved references, inspection stages, measurement records, evidence and shipment-release authority.', 'Определите утверждённые референсы, этапы проверки, записи измерений, подтверждения и ответственного за выпуск отправки.'],
+    ['Approved references, checkpoints, inspection scope, evidence, deviation handling and shipment authority.', 'Утверждённые референсы, контрольные точки, объём проверки, подтверждения, обработка отклонений и ответственный за отправку.'],
+    ['messages, files and follow-up information exchanged directly by email, WhatsApp or another agreed channel.', 'сообщения, файлы и последующая информация, которыми обмениваются напрямую по электронной почте, WhatsApp или другому согласованному каналу.'],
+    ['Align logos, labels and packaging', 'Согласуйте логотипы, этикетки и упаковку'],
+    ['Fit and movement', 'Посадка и движение'],
+    ['Meet Glory Star Wear', 'Познакомиться с Glory Star Wear'],
+    ['Explain the timing', 'Укажите сроки'],
+    ['Browse activewear categories and save the product pages that fit your direction.', 'Просмотрите категории спортивной одежды и сохраните страницы товаров, соответствующие вашему направлению.'],
+    ['Confirm the style, measurements, fabric direction, construction details, color references, logo artwork and placement, labels and packaging expectations before the sample route begins.', 'Подтвердите модель, мерки, направление материала, детали конструкции, цветовые референсы, макет и размещение логотипа, этикетки и требования к упаковке до начала работы с образцом.'],
+    ['What logo files and branding details should I provide?', 'Какие файлы логотипа и данные по брендированию нужно предоставить?'],
   ],
   'zh-CN': [
     ['Check logo scale, placement, label and packaging direction.', '检查标志比例、位置、标签和包装方向。'],
