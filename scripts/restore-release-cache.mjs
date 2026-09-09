@@ -52,7 +52,7 @@ const rebuildFromSource = () => {
   console.warn("Immutable release artifacts are unavailable; rebuilding the release from the governed catalog source.");
   const rebuild = spawnSync(process.execPath, [path.join(root, "scripts", "remote-release-build.mjs")], {
     cwd: root,
-    env: process.env,
+    env: { ...process.env, SITE_OUTPUT_ROOT: publicRoot },
     encoding: "utf8",
     stdio: "inherit",
   });
