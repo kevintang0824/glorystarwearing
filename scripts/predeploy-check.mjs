@@ -91,6 +91,16 @@ if (!/^User-agent:\s*\*$/mi.test(robots) || !/^Allow:\s*\/$/mi.test(robots)) fai
 else pass("robots crawl permission");
 if (!/^Sitemap:\s*https:\/\/glorystarwearing\.com\/sitemap\.xml$/mi.test(robots)) fail("robots.txt does not advertise the canonical sitemap.");
 else pass("robots canonical sitemap");
+for (const bot of ["OAI-SearchBot", "Claude-SearchBot", "Claude-User", "Google-Extended", "PerplexityBot", "Perplexity-User"]) {
+  const policy = new RegExp(`^User-agent:\\s*${bot}\\s*[\\r\\n]+Allow:\\s*\\/\\s*$`, "mi");
+  if (!policy.test(robots)) fail(`robots.txt must allow the AI retrieval agent ${bot}.`);
+  else pass(`robots AI retrieval policy: ${bot}`);
+}
+for (const bot of ["GPTBot", "ClaudeBot", "CCBot"]) {
+  const policy = new RegExp(`^User-agent:\\s*${bot}\\s*[\\r\\n]+Disallow:\\s*\\/\\s*$`, "mi");
+  if (!policy.test(robots)) fail(`robots.txt must keep the training crawler ${bot} blocked.`);
+  else pass(`robots training policy: ${bot}`);
+}
 
 for (const route of ["products", "private-label-activewear", "about-glory-star-wear", "support", "contact-us", "request-a-quote"]) {
   const pagePath = path.join(root, route, "index.html");

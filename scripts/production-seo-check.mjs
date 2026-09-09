@@ -116,9 +116,9 @@ try {
     fail("Production robots.txt does not advertise the canonical sitemap.");
   }
   if (/^User-agent:\s*\*\s*[\r\n]+Disallow:\s*\/\s*$/mi.test(body)) fail("Production robots.txt blocks all crawlers.");
-  const blockedAiBots = [...body.matchAll(/^User-agent:\s*(GPTBot|ClaudeBot|Google-Extended|OAI-SearchBot|Claude-SearchBot)\s*[\r\n]+Disallow:\s*\/\s*$/gmi)]
+  const blockedAiBots = [...body.matchAll(/^User-agent:\s*(OAI-SearchBot|Claude-SearchBot|Claude-User|Google-Extended|PerplexityBot|Perplexity-User)\s*[\r\n]+Disallow:\s*\/\s*$/gmi)]
     .map((match) => match[1]);
-  if (blockedAiBots.length) warn(`Production robots.txt blocks named AI agents: ${blockedAiBots.join(", ")}. Review this against the AI citation policy.`);
+  if (blockedAiBots.length) warn(`Production robots.txt blocks AI retrieval agents: ${blockedAiBots.join(", ")}. Review this against the AI citation policy.`);
 } catch (error) {
   fail(`Could not fetch production robots.txt: ${error.message}`);
 }

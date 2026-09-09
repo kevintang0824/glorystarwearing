@@ -21,6 +21,8 @@
     "cache-media-d": "node scripts/cache-release-slice.mjs d",
     "cache-media-e": "node scripts/cache-release-slice.mjs e",
     "cache-media-f": "node scripts/cache-release-slice.mjs f",
+    "index-audit": "node scripts/product-index-audit.mjs --write",
+    "localized-index-audit": "node scripts/localized-product-index-audit.mjs",
     "release": "node scripts/verify-release-output.mjs"
   }
 }

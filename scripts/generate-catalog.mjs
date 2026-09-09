@@ -724,7 +724,9 @@ for (const product of catalog) {
   }
 
   const metaTitle = `${clipWords(product.title, 32)} · ${product.id} | Glory Star Wear`;
-  const metaDescription = truncate(`${product.title} for custom and private-label activewear collections. Review product details, SKU ${product.sku}, customization options and request a quote.`, 154);
+  // Put the unique SKU first so every catalog URL has a distinct search
+  // snippet even when several styles share the same editorial description.
+  const metaDescription = truncate(`SKU ${product.sku}: ${clipWords(product.title, 72)}. ${product.primary.label} style for custom and private-label activewear; review specs and request a quote.`, 154);
   const productSchema = {
     "@type": "Product",
     "@id": `${product.canonical}#product`,

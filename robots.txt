@@ -1,5 +1,35 @@
 User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=no,use=reference
 Allow: /
+
+# Permit crawlers used for search-result grounding and answer citations.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Keep model-training crawlers out of the site.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
 
 Sitemap: https://glorystarwearing.com/sitemap.xml
 Sitemap: https://glorystarwearing.com/sitemap-multilingual.xml

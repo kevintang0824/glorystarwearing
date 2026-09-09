@@ -12,6 +12,12 @@ const origin = 'https://glorystarwearing.com';
 const snapshotPath = path.join(sourceRoot, 'catalog-data/multilingual-catalog.json.gz');
 const version = '20260906-1';
 export const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const truncate = (value, maximum) => {
+  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+  if (text.length <= maximum) return text;
+  const clipped = text.slice(0, maximum - 1);
+  return `${clipped.slice(0, Math.max(clipped.lastIndexOf(' '), maximum - 22)).trim()}…`;
+};
 const decode = (value) => String(value ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'").replace(/&nbsp;/g,' ').trim();
 const json = (data) => JSON.stringify(data).replace(/</g, '\\u003c');
 const localPath = (language, route) => `${language.prefix ? `/${language.prefix}` : ''}${route}`;
@@ -144,6 +150,13 @@ const localizedProduct = (product, t, language) => ({
   pills: product.pills.map((label) => label === 'Seamless' ? t.attrs[0] : categoryName(t, label)),
   image: {...product.image, alt: `${productName(product, t)} – ${t.ui.gallery}`},
 });
+const localizedMetaSuffix = {
+  fr: 'Pour un projet de vêtements de sport sous marque privée ; consultez les caractéristiques et demandez un devis.',
+  es: 'Para proyectos de ropa deportiva de marca privada; revisa las especificaciones y solicita presupuesto.',
+  pt: 'Para projetos de roupa desportiva de marca própria; consulte as especificações e peça um orçamento.',
+  ru: 'Для проектов спортивной одежды под собственной маркой; изучите характеристики и запросите расчёт.',
+  'zh-CN': '适用于自有品牌运动服项目；查看规格并提交报价需求。',
+};
 
 const replaceExact = (html, replacements) => {
   for (const [english, localized] of replacements) {
@@ -272,6 +285,55 @@ const supplementalPageCopy = {
   ru: {'Product or reference style':'Модель или артикул','Branding and packaging':'Брендирование и упаковка','Review the':'Откройте','Review the sample and recorded specifications before approved bulk production begins.':'Проверьте образец и зафиксированные спецификации до утверждённого запуска серии.','For tactile branding where the fabric and placement allow it.':'Рельефное брендирование, если это позволяет ткань и место нанесения.','Plan label size, fold, colors, placement and sewing method.':'Определите размер, сгиб, цвета, место и способ пришивания этикетки.','Review the branding checklist':'Открыть чеклист брендирования','Share artwork and required copy before sampling.':'Перед образцами пришлите макеты и необходимые тексты.','SKU, images, sketch or tech pack.':'Артикул, изображения, эскиз или техпак.','Vector AI/PDF or a high-resolution transparent PNG.':'Векторный AI/PDF или прозрачный PNG высокого разрешения.','Colors, sizes, quantity, destination and target timing.':'Цвета, размеры, количество, место поставки и сроки.','Send the collection idea you want to develop.':'Пришлите идею коллекции для разработки.','Include your product direction, customization needs, estimated quantity, market and target timing.':'Укажите направление продукта, кастомизацию, примерный объём, рынок и сроки.','Coordinate tag stock, print finish, information hierarchy, bag material, size and closure with the collection presentation you want customers to receive.':'Согласуйте бумагу бирок, печать, структуру информации, материал, размер и застёжку пакетов с презентацией коллекции.','Confirm fiber content, care symbols, language and market requirements.':'Подтвердите состав, символы ухода, язык и требования рынка.','Confirm how each garment should be folded, identified and packed.':'Подтвердите, как складывать, маркировать и упаковывать каждое изделие.','Logo methods and label construction should be chosen for the fabric, placement, finish and care requirements of the garment.':'Выберите способ нанесения логотипа и конструкцию этикетки с учётом ткани, места, отделки и ухода.','Product information':'Информация о товаре','Care and composition labels':'Этикетки состава и ухода','Bag size, material and logo placement':'Размер, материал и место логотипа'},
   'zh-CN': {'Product or reference style':'产品或参考款式','Branding and packaging':'品牌定制与包装','Review the':'查看','Review the sample and recorded specifications before approved bulk production begins.':'在批准大货生产前，检查样品和已记录的规格。','For tactile branding where the fabric and placement allow it.':'面料和位置允许时，可采用触感品牌工艺。','Plan label size, fold, colors, placement and sewing method.':'规划标签尺寸、折法、颜色、位置和缝制方式。','Review the branding checklist':'查看品牌定制清单','Share artwork and required copy before sampling.':'打样前提供图稿和所需文字。','SKU, images, sketch or tech pack.':'货号、图片、草图或技术资料。','Vector AI/PDF or a high-resolution transparent PNG.':'矢量 AI/PDF 或高清透明 PNG。','Colors, sizes, quantity, destination and target timing.':'颜色、尺码、数量、目的地和目标时间。','Send the collection idea you want to develop.':'发送您希望开发的产品系列想法。','Include your product direction, customization needs, estimated quantity, market and target timing.':'请说明产品方向、定制需求、预计数量、目标市场和时间。','Coordinate tag stock, print finish, information hierarchy, bag material, size and closure with the collection presentation you want customers to receive.':'根据系列展示效果，统一协调吊牌纸张、印刷工艺、信息层级、包装袋材质、尺寸和封口。','Confirm fiber content, care symbols, language and market requirements.':'确认纤维成分、洗护符号、标签语言和市场要求。','Confirm how each garment should be folded, identified and packed.':'确认每件服装的折叠、标识和包装方式。','Logo methods and label construction should be chosen for the fabric, placement, finish and care requirements of the garment.':'根据服装面料、位置、工艺和洗护要求选择标志工艺与标签结构。','Product information':'产品信息','Care and composition labels':'洗护与成分标签','Bag size, material and logo placement':'包装袋尺寸、材质和标志位置'}
 };
+// Evidence language is deliberately explicit: it strengthens entity clarity
+// without turning reference images or unverified customer material into claims.
+for (const [code, labels] of Object.entries({
+  fr: {
+    'Verification-first information':'Informations vérifiables d’abord',
+    'Start with facts you can check.':'Commencez par des faits vérifiables.',
+    'Glory Star Wear is the customer-facing brand of Xiamen Guangxingheng Import & Export Co., Ltd., based in Xiamen, Fujian, China. The site publishes activewear categories, product references and a defined project workflow for private-label, OEM and ODM discussions.':'Glory Star Wear est la marque présentée aux clients de Xiamen Guangxingheng Import & Export Co., Ltd., basée à Xiamen, Fujian, Chine. Le site présente des catégories de vêtements de sport, des références produit et un parcours défini pour les projets de marque privée, OEM et ODM.',
+    'Style-specific material, fit, branding, MOQ, timing and quality scope are confirmed against the project brief and approved sample. Request the records relevant to your product and destination market before placing an order.':'La matière, la coupe, le marquage, le MOQ, les délais et le périmètre qualité sont confirmés selon le brief et l’échantillon approuvé. Demandez les documents pertinents pour votre produit et votre marché de destination avant de commander.',
+    'Request the records':'Demander les documents',
+    'Quality control guide':'Guide du contrôle qualité',
+    'Client identity and case results are published only with permission. The examples on this page are construction references, not client endorsements.':'L’identité des clients et les résultats de cas ne sont publiés qu’avec autorisation. Les exemples de cette page illustrent la construction et ne constituent pas des recommandations clients.'
+  },
+  es: {
+    'Verification-first information':'Información verificable primero',
+    'Start with facts you can check.':'Empieza por hechos que puedas comprobar.',
+    'Glory Star Wear is the customer-facing brand of Xiamen Guangxingheng Import & Export Co., Ltd., based in Xiamen, Fujian, China. The site publishes activewear categories, product references and a defined project workflow for private-label, OEM and ODM discussions.':'Glory Star Wear es la marca de cara al cliente de Xiamen Guangxingheng Import & Export Co., Ltd., con sede en Xiamen, Fujian, China. El sitio publica categorías de ropa deportiva, referencias de producto y un flujo de proyecto definido para conversaciones de marca privada, OEM y ODM.',
+    'Style-specific material, fit, branding, MOQ, timing and quality scope are confirmed against the project brief and approved sample. Request the records relevant to your product and destination market before placing an order.':'El material, ajuste, marca, MOQ, plazos y alcance de calidad de cada modelo se confirman con el brief y la muestra aprobada. Solicita los documentos relevantes para tu producto y mercado de destino antes de hacer un pedido.',
+    'Request the records':'Solicitar los documentos',
+    'Quality control guide':'Guía de control de calidad',
+    'Client identity and case results are published only with permission. The examples on this page are construction references, not client endorsements.':'La identidad de clientes y los resultados de casos solo se publican con permiso. Los ejemplos de esta página son referencias de construcción, no recomendaciones de clientes.'
+  },
+  pt: {
+    'Verification-first information':'Informação verificável primeiro',
+    'Start with facts you can check.':'Comece por factos que pode verificar.',
+    'Glory Star Wear is the customer-facing brand of Xiamen Guangxingheng Import & Export Co., Ltd., based in Xiamen, Fujian, China. The site publishes activewear categories, product references and a defined project workflow for private-label, OEM and ODM discussions.':'A Glory Star Wear é a marca apresentada ao cliente da Xiamen Guangxingheng Import & Export Co., Ltd., sediada em Xiamen, Fujian, China. O site apresenta categorias de roupa desportiva, referências de produto e um fluxo de projeto definido para conversas de marca própria, OEM e ODM.',
+    'Style-specific material, fit, branding, MOQ, timing and quality scope are confirmed against the project brief and approved sample. Request the records relevant to your product and destination market before placing an order.':'O material, ajuste, marca, MOQ, prazos e âmbito de qualidade de cada modelo são confirmados face ao briefing e à amostra aprovada. Solicite os documentos relevantes para o seu produto e mercado de destino antes de encomendar.',
+    'Request the records':'Solicitar os documentos',
+    'Quality control guide':'Guia de controlo de qualidade',
+    'Client identity and case results are published only with permission. The examples on this page are construction references, not client endorsements.':'A identidade dos clientes e os resultados de casos só são publicados com autorização. Os exemplos desta página são referências de construção, não recomendações de clientes.'
+  },
+  ru: {
+    'Verification-first information':'Сначала проверяемые сведения',
+    'Start with facts you can check.':'Начните с фактов, которые можно проверить.',
+    'Glory Star Wear is the customer-facing brand of Xiamen Guangxingheng Import & Export Co., Ltd., based in Xiamen, Fujian, China. The site publishes activewear categories, product references and a defined project workflow for private-label, OEM and ODM discussions.':'Glory Star Wear — клиентский бренд компании Xiamen Guangxingheng Import & Export Co., Ltd. из Сямыня, Фуцзянь, Китай. На сайте опубликованы категории спортивной одежды, товарные референсы и понятный процесс обсуждения проектов под собственной маркой, OEM и ODM.',
+    'Style-specific material, fit, branding, MOQ, timing and quality scope are confirmed against the project brief and approved sample. Request the records relevant to your product and destination market before placing an order.':'Материал, посадка, брендирование, MOQ, сроки и параметры качества конкретной модели подтверждаются по брифу и утверждённому образцу. До заказа запросите документы, относящиеся к вашему товару и рынку назначения.',
+    'Request the records':'Запросить документы',
+    'Quality control guide':'Руководство по контролю качества',
+    'Client identity and case results are published only with permission. The examples on this page are construction references, not client endorsements.':'Имена клиентов и результаты проектов публикуются только с разрешения. Примеры на этой странице показывают конструкцию и не являются рекомендациями клиентов.'
+  },
+  'zh-CN': {
+    'Verification-first information':'先发布可核验信息',
+    'Start with facts you can check.':'从可以核验的事实开始。',
+    'Glory Star Wear is the customer-facing brand of Xiamen Guangxingheng Import & Export Co., Ltd., based in Xiamen, Fujian, China. The site publishes activewear categories, product references and a defined project workflow for private-label, OEM and ODM discussions.':'Glory Star Wear 是厦门广兴恒进出口有限公司面向客户的品牌，公司位于中国福建厦门。网站公开运动服品类、产品参考和自有品牌、OEM、ODM 项目的明确沟通流程。',
+    'Style-specific material, fit, branding, MOQ, timing and quality scope are confirmed against the project brief and approved sample. Request the records relevant to your product and destination market before placing an order.':'每个款式的面料、版型、品牌定制、MOQ、时间和质量范围，都会根据项目需求与确认样品核实。下单前，请索取与您的产品和目标市场相关的记录。',
+    'Request the records':'索取相关记录',
+    'Quality control guide':'质量控制指南',
+    'Client identity and case results are published only with permission. The examples on this page are construction references, not client endorsements.':'客户身份和项目结果仅在获得许可后公开。本页面的示例用于说明产品结构，不代表客户背书。'
+  }
+})) Object.assign(supplementalPageCopy[code], labels);
 const featureTermCopy = {
   fr:{'breathable':'respirant','quick dry':'séchage rapide','quick-drying':'séchage rapide','moisture wicking':'évacuation de l’humidité','moisture-wicking':'évacuation de l’humidité','high waist':'taille haute','high-waisted':'taille haute','slim fit':'coupe ajustée','loose fit':'coupe ample','with removable pads':'avec coques amovibles','removable pads':'coques amovibles','removable pad':'coque amovible','built-in liner':'doublure intégrée','built in bra':'soutien-gorge intégré','sports bra':'brassière de sport','fitness bra':'brassière fitness','gym shorts':'short de salle','yoga pants':'pantalon de yoga','workout jumpsuit':'combinaison d’entraînement','tank top':'débardeur','crop tank top':'débardeur court','lightweight jacket':'veste légère','super soft fabric':'tissu très doux','soft and skin-friendly':'doux et agréable sur la peau','medium support':'maintien moyen','side pockets':'poches latérales','keep warm':'garde la chaleur','sun protection':'protection solaire','cross waist':'taille croisée','full-length leggings':'leggings pleine longueur','recycled':'recyclé','fabric':'tissu','high elastic':'forte élasticité'},
   es:{'breathable':'transpirable','quick dry':'secado rápido','quick-drying':'secado rápido','moisture wicking':'evacuación de humedad','moisture-wicking':'evacuación de humedad','high waist':'cintura alta','high-waisted':'cintura alta','slim fit':'corte ajustado','loose fit':'corte holgado','with removable pads':'con copas extraíbles','removable pads':'copas extraíbles','removable pad':'copa extraíble','built-in liner':'forro integrado','built in bra':'sujetador integrado','sports bra':'sujetador deportivo','fitness bra':'sujetador fitness','gym shorts':'short de gimnasio','yoga pants':'pantalón de yoga','workout jumpsuit':'mono deportivo','tank top':'camiseta sin mangas','crop tank top':'top corto','lightweight jacket':'chaqueta ligera','super soft fabric':'tejido muy suave','soft and skin-friendly':'suave y agradable para la piel','medium support':'soporte medio','side pockets':'bolsillos laterales','keep warm':'abriga','sun protection':'protección solar','cross waist':'cintura cruzada','full-length leggings':'leggings de largo completo','recycled':'reciclado','fabric':'tejido','high elastic':'alta elasticidad'},
@@ -1025,16 +1087,25 @@ const finalVisiblePatternCopy = {
     [/^Placement$/i, '位置'],
   ],
 };
-const applyFinalVisibleCopy = (html, language) => html.replace(/>([^<>]*)</g, (full, text) => {
-  const leading = text.match(/^\s*/)?.[0] || '';
-  const trailing = text.match(/\s*$/)?.[0] || '';
-  const trimmed = text.trim();
-  if (!trimmed) return full;
-  const exact = (finalVisibleCopy[language.code] || []).find(([from]) => from === trimmed);
-  if (exact) return `>${leading}${escape(exact[1])}${trailing}<`;
-  const pattern = (finalVisiblePatternCopy[language.code] || []).find(([from]) => from.test(trimmed));
-  return pattern ? `>${leading}${escape(pattern[1])}${trailing}<` : full;
-});
+const applyFinalVisibleCopy = (html, language) => {
+  const protectedBlocks = [];
+  html = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, (block) => {
+    const marker = `__GSW_FINAL_BLOCK_${protectedBlocks.length}__`;
+    protectedBlocks.push(block);
+    return marker;
+  });
+  html = html.replace(/>([^<>]*)</g, (full, text) => {
+    const leading = text.match(/^\s*/)?.[0] || '';
+    const trailing = text.match(/\s*$/)?.[0] || '';
+    const trimmed = text.trim();
+    if (!trimmed) return full;
+    const exact = (finalVisibleCopy[language.code] || []).find(([from]) => from === trimmed);
+    if (exact) return `>${leading}${escape(exact[1])}${trailing}<`;
+    const pattern = (finalVisiblePatternCopy[language.code] || []).find(([from]) => from.test(trimmed));
+    return pattern ? `>${leading}${escape(pattern[1])}${trailing}<` : full;
+  });
+  return html.replace(/__GSW_FINAL_BLOCK_(\d+)__/g, (_, index) => protectedBlocks[Number(index)] || '');
+};
 const localizedFaqJson = {
   fr:[['What logo file should I send for private-label activewear?','Quel fichier logo dois-je envoyer pour des vêtements de sport sous marque privée ?'],['What should a logo placement specification include?','Que doit contenir une spécification de placement du logo ?'],['What label information should an activewear brand prepare?','Quelles informations d’étiquette une marque de vêtements de sport doit-elle préparer ?'],['How should branding be approved before bulk production?','Comment valider le marquage avant la production en volume ?'],['Custom Activewear Logo, Labels & Packaging Guide','Guide du logo, des étiquettes et de l’emballage des vêtements de sport personnalisés']],
   es:[['What logo file should I send for private-label activewear?','¿Qué archivo de logotipo debo enviar para ropa deportiva de marca privada?'],['What should a logo placement specification include?','¿Qué debe incluir una especificación de colocación del logotipo?'],['What label information should an activewear brand prepare?','¿Qué información de etiquetas debe preparar una marca deportiva?'],['How should branding be approved before bulk production?','¿Cómo aprobar la marca antes de producir en volumen?'],['Custom Activewear Logo, Labels & Packaging Guide','Guía de logotipo, etiquetas y embalaje de ropa deportiva personalizada']],
@@ -1914,14 +1985,17 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
 
   const localizedTitle=product ? productName(product,t) : page[0];
   const localizedLead=product ? t.ui.productIntro : page[1];
+  const localizedMeta=product
+    ? truncate(`SKU ${product.sku}: ${localizedTitle}. ${localizedProduct(product,t,language).primaryLabel}. ${localizedMetaSuffix[language.code] || 'For custom and private-label activewear projects; review specs and request a quote.'}`, 154)
+    : localizedLead;
   if(localizedTitle) {
     html=html.replace(/<title>[\s\S]*?<\/title>/,`<title>${escape(localizedTitle)} | Glory Star Wear</title>`)
       .replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i,`$1${escape(localizedTitle)}$2`)
       .replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i,`$1${escape(localizedTitle)}$2`);
   }
   if(localizedLead) {
-    html=html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i,`$1${escape(localizedLead)}$2`)
-      .replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i,`$1${escape(localizedLead)}$2`)
+    html=html.replace(/(<meta\s+name="description"\s+content=")[^"]*(")/i,`$1${escape(localizedMeta)}$2`)
+      .replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/i,`$1${escape(localizedMeta)}$2`)
       .replace(/(<p\b[^>]*class="[^"]*(?:lead|intro)[^"]*"[^>]*>)[\s\S]*?(<\/p>)/i,`$1${escape(localizedLead)}$2`);
   }
   // Keep the source page structure and copy intact. Older builds replaced
@@ -1960,7 +2034,7 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
   // page copy wins; its English vocabulary also detects mixed legacy lines.
   html = localizeRemainingPageText(html, language, pageKey, product);
 
-  html = localizeJsonLd(html, language, t, {title: localizedTitle, lead: localizedLead, product});
+  html = localizeJsonLd(html, language, t, {title: localizedTitle, lead: localizedMeta, product});
   // Keep the registered brand spelling intact in titles, headings and legacy
   // copy. Residual word dictionaries translate common “wear” nouns, which
   // must never alter the company name.
