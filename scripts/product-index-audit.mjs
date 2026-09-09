@@ -38,7 +38,13 @@ const pages = productDirectories.map((slug) => {
   if (!/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?\"@type\"\s*:\s*\"Product\"/i.test(html)) flags.push("product-schema");
   if (!images.length) flags.push("no-image");
   if (words < 350) flags.push(`short-${words}-words`);
-  return { slug, route, file, title, description, h1, canonical, sku, words, images: images.length, flags };
+  const hardFailure = flags.some((flag) => ["canonical", "robots", "product-schema", "no-image"].includes(flag));
+  const recommendedAction = hardFailure
+    ? "fix-before-index"
+    : flags.length
+      ? "improve-and-monitor"
+      : "keep-and-monitor";
+  return { slug, route, file, title, description, h1, canonical, sku, words, images: images.length, flags, recommendedAction };
 });
 
 const duplicateGroups = (key) => {
@@ -67,6 +73,7 @@ for (const group of [...duplicateDescriptions, ...duplicateH1s, ...duplicateTitl
 
 const keepCount = pages.length - reviewRoutes.size;
 const countFlag = (prefix) => pages.filter((page) => page.flags.some((flag) => flag === prefix || flag.startsWith(`${prefix}-`))).length;
+const countAction = (action) => pages.filter((page) => page.recommendedAction === action).length;
 const listGroups = (label, groups) => {
   if (!groups.length) return `- ${label}: none`;
   const lines = groups.map((group) => `  - ${group.length} pages: ${group.map((page) => page.route).join(", ")}`);
@@ -82,6 +89,9 @@ Generated: ${generatedDate}
 - Product detail pages audited: **${pages.length}**
 - Basic keep candidates: **${keepCount}**
 - Review candidates: **${reviewRoutes.size}**
+- Keep and monitor: **${countAction("keep-and-monitor")}**
+- Improve and monitor: **${countAction("improve-and-monitor")}**
+- Fix before indexing: **${countAction("fix-before-index")}**
 - Unique titles: **${uniqueCount(duplicateTitles)} / ${pages.length}**
 - Unique meta descriptions: **${uniqueCount(duplicateDescriptions)} / ${pages.length}**
 - Unique H1 values: **${uniqueCount(duplicateH1s)} / ${pages.length}**
@@ -100,6 +110,10 @@ ${listGroups("Duplicate title values", duplicateTitles)}
 ### Structural or thin-page flags
 
 ${pages.filter((page) => page.flags.length).map((page) => `- ${page.route} — ${page.flags.join(", ")}`).join("\n") || "- none"}
+
+### Recommended action by page
+
+${pages.filter((page) => page.recommendedAction !== "keep-and-monitor").map((page) => `- ${page.route} — ${page.recommendedAction}`).join("\n") || "- none"}
 
 ## Index policy
 

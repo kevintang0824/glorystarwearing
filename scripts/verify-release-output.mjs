@@ -119,6 +119,13 @@ for (const relative of ["assets/multilingual.js", "assets/multilingual.css", "as
     fail(`Multilingual asset is missing or stale: ${relative}`);
   }
 }
+for (const relative of ["robots.txt", "llms.txt"]) {
+  const source = path.join(root, relative);
+  const output = path.join(publicRoot, relative);
+  if (!fs.existsSync(output) || !fs.readFileSync(source).equals(fs.readFileSync(output))) {
+    fail(`Release policy file is missing or stale: ${relative}`);
+  }
+}
 for (const relative of releaseImageAssets) {
   const source = path.join(root, relative);
   const output = path.join(publicRoot, relative);

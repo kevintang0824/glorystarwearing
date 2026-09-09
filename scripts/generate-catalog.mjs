@@ -381,9 +381,18 @@ const organization = {
   name: "Glory Star Wear",
   legalName: "厦门广兴恒进出口有限公司",
   url: `${canonicalBase}/`,
+  description: "Custom activewear and sportswear project support for private-label, OEM and ODM buyers.",
   telephone: ["+86 180 2075 5949"],
   email: "kevin@glorystarwears.com",
   address: { "@type": "PostalAddress", addressLocality: "Xiamen", addressRegion: "Fujian Province", addressCountry: "CN" },
+  contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: "+86 180 2075 5949", availableLanguage: ["en", "zh"] },
+  sameAs: [
+    "https://www.instagram.com/glorystarwear",
+    "https://www.tiktok.com/@glorystarwear",
+    "https://www.pinterest.com/glorystarwear/",
+    "https://www.facebook.com/Glory-Star-wear-102609358109451/",
+  ],
+  knowsAbout: ["Activewear development", "Private-label sportswear", "OEM and ODM project coordination", "Sampling and quality-control planning"],
   logo: {
     "@type": "ImageObject",
     "@id": `${canonicalBase}/#logo`,
@@ -724,6 +733,7 @@ for (const product of catalog) {
   }
 
   const metaTitle = `${clipWords(product.title, 32)} · ${product.id} | Glory Star Wear`;
+  const productHeading = `${product.title} · ${product.id}`;
   // Put the unique SKU first so every catalog URL has a distinct search
   // snippet even when several styles share the same editorial description.
   const metaDescription = truncate(`SKU ${product.sku}: ${clipWords(product.title, 72)}. ${product.primary.label} style for custom and private-label activewear; review specs and request a quote.`, 154);
@@ -737,13 +747,18 @@ for (const product of catalog) {
     manufacturer: { "@id": organization["@id"] },
     brand: { "@type": "Brand", name: "Glory Star Wear" },
     url: product.canonical,
+    mainEntityOfPage: { "@id": `${product.canonical}#webpage` },
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Catalog category", value: product.primary.label },
+      { "@type": "PropertyValue", name: "Project route", value: "Private label, OEM and ODM review" },
+    ],
   };
   if (!product.mediaReview) productSchema.image = product.media.map((image) => `${canonicalBase}${image.path}`);
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
       organization,
-      { "@type": "WebPage", "@id": `${product.canonical}#webpage`, url: product.canonical, name: metaTitle, description: metaDescription, about: { "@id": `${product.canonical}#product` }, inLanguage: "en-US" },
+      { "@type": "WebPage", "@id": `${product.canonical}#webpage`, url: product.canonical, name: metaTitle, description: metaDescription, about: { "@id": `${product.canonical}#product` }, mainEntity: { "@id": `${product.canonical}#product` }, isPartOf: { "@id": catalogCanonical + "#webpage" }, inLanguage: "en-US" },
       { "@type": "BreadcrumbList", itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: `${canonicalBase}/` },
         { "@type": "ListItem", position: 2, name: "Products", item: catalogCanonical },
@@ -797,7 +812,7 @@ ${header({ current: "products", interest: product.primary.interest })}
         <div class="product-gallery product-gallery--primary" role="region" aria-label="Primary product image">${galleryPrimary}</div>
         <article class="product-summary">
           <p class="eyebrow">Custom &amp; private-label activewear</p>
-          <h1>${html(product.title)}</h1>
+          <h1>${html(productHeading)}</h1>
           <div class="product-pills">${product.pills.map((pill) => `<span class="product-pill">${html(pill)}</span>`).join("")}<span class="product-pill">SKU ${html(product.sku)}</span></div>
           <p class="product-summary__lead">${html(product.summary)}</p>
           <div class="product-summary__actions"><a class="button" href="https://wa.me/8618020755949?text=${whatsappText}" data-analytics-event="whatsapp_click" data-analytics-method="whatsapp">Ask about this SKU</a><a class="button secondary" href="${html(quoteUrl)}">Request a quote</a></div>

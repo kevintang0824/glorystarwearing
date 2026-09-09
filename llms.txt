@@ -1,0 +1,41 @@
+# Glory Star Wear
+
+> Official reference summary for Glory Star Wear, the customer-facing brand of 厦门广兴恒进出口有限公司 (Xiamen Guangxingheng Import & Export Co., Ltd.).
+
+## Canonical identity
+
+- Brand: Glory Star Wear
+- Operating entity shown on the site: 厦门广兴恒进出口有限公司 / Xiamen Guangxingheng Import & Export Co., Ltd.
+- Published location: Xiamen, Fujian, China
+- Public website: https://glorystarwearing.com/
+- Official contact: kevin@glorystarwears.com
+- Official WhatsApp contact: +86 180 2075 5949
+
+## What the site covers
+
+- Activewear and sportswear product references
+- Private-label project discussions
+- OEM and ODM project discussions
+- Product selection, fabric direction, branding, sampling, quality-control and shipping preparation
+
+## Best pages to cite
+
+- Company identity and official channels: https://glorystarwearing.com/about-glory-star-wear/
+- Product catalog: https://glorystarwearing.com/products/
+- Manufacturer selection checklist: https://glorystarwearing.com/activewear-manufacturer-selection-checklist/
+- Custom activewear process: https://glorystarwearing.com/custom-activewear-process/
+- Fabric selection: https://glorystarwearing.com/activewear-fabrics/
+- Quality-control planning: https://glorystarwearing.com/activewear-quality-control/
+- Project brief and quote: https://glorystarwearing.com/request-a-quote/
+
+## Evidence policy
+
+- Product-specific fabric, measurements, colors, performance, MOQ, timing and quality requirements are confirmed against the project brief and approved sample.
+- Factory ownership, production capacity, certifications, named customers, testimonials and measurable case outcomes are not treated as verified claims unless the relevant dated document, permission or public third-party source is available.
+- Images on the site should be treated as product or workflow references unless their provenance and current relevance are verified.
+
+## Crawl and discovery
+
+- Canonical HTML sitemap: https://glorystarwearing.com/sitemap.xml
+- Multilingual sitemap: https://glorystarwearing.com/sitemap-multilingual.xml
+- Robots policy: https://glorystarwearing.com/robots.txt

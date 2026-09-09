@@ -76,6 +76,9 @@ try {
     if (!globalHeaders.some((header) => header.key.toLowerCase() === required.toLowerCase())) fail(`vercel.json is missing ${required}.`);
     else pass(`Vercel ${required}`);
   }
+  const contentSignal = globalHeaders.find((header) => header.key.toLowerCase() === "content-signal")?.value ?? "";
+  if (contentSignal !== "search=yes,ai-input=yes,ai-train=no,use=reference") fail("vercel.json is missing the governed Content-Signal retrieval policy.");
+  else pass("Vercel Content-Signal retrieval policy");
   const assetCache = config.headers?.find((rule) => rule.source === "/wp-content/(.*)")?.headers ?? [];
   const assetCacheValue = assetCache.find((header) => header.key.toLowerCase() === "cache-control")?.value ?? "";
   const browserMaxAge = Number(assetCacheValue.match(/(?:^|,)\s*max-age=(\d+)/i)?.[1] ?? Number.NaN);
@@ -100,6 +103,22 @@ for (const bot of ["GPTBot", "ClaudeBot", "CCBot"]) {
   const policy = new RegExp(`^User-agent:\\s*${bot}\\s*[\\r\\n]+Disallow:\\s*\\/\\s*$`, "mi");
   if (!policy.test(robots)) fail(`robots.txt must keep the training crawler ${bot} blocked.`);
   else pass(`robots training policy: ${bot}`);
+}
+
+const llmsPath = path.join(root, "llms.txt");
+if (!fs.existsSync(llmsPath)) fail("llms.txt is missing.");
+else {
+  const llms = fs.readFileSync(llmsPath, "utf8");
+  for (const required of [
+    "# Glory Star Wear",
+    "https://glorystarwearing.com/about-glory-star-wear/",
+    "https://glorystarwearing.com/products/",
+    "https://glorystarwearing.com/sitemap.xml",
+    "Factory ownership, production capacity, certifications, named customers",
+  ]) {
+    if (!llms.includes(required)) fail(`llms.txt is missing the required reference: ${required}`);
+  }
+  if (!failures.some((message) => message.startsWith("llms.txt is missing"))) pass("AI reference summary llms.txt");
 }
 
 for (const route of ["products", "private-label-activewear", "about-glory-star-wear", "support", "contact-us", "request-a-quote"]) {
