@@ -133,10 +133,12 @@ for (const relative of releaseImageAssets) {
     fail(`Release image is missing or stale: ${relative}`);
   }
 }
+const multilingualVersion = fs.readFileSync(path.join(root, "index.html"), "utf8").match(/\/assets\/multilingual\.js\?v=([^"']+)/)?.[1];
+if (!multilingualVersion) fail("Source homepage is missing the multilingual asset version.");
 for (const relative of canonicalPages(publicRoot)) {
   const page = fs.readFileSync(path.join(publicRoot, relative), "utf8");
   for (const asset of ["multilingual.js", "multilingual.css"]) {
-    if (page.split(`/assets/${asset}?v=20260906-1`).length !== 2) fail(`Expected one ${asset} reference in ${relative}.`);
+    if (!multilingualVersion || page.split(`/assets/${asset}?v=${multilingualVersion}`).length !== 2) fail(`Expected one ${asset} reference in ${relative}.`);
   }
   if (!page.includes('data-language="fr"')) fail(`Missing native language links in ${relative}.`);
   if (relative === "404.html") continue;

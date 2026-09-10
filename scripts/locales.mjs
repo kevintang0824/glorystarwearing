@@ -17,7 +17,7 @@ copy.fr = {
  privacyBanner:{title:'Vos préférences de mesure d’audience',text:'Avec votre accord, Google Analytics nous aide à comprendre les visites. Les pages et demandes de renseignements restent disponibles sans cette mesure.',decline:'Refuser',accept:'Accepter'},
  pages:{
  '':'Vêtements de sport pour votre marque|Sélection, développement et personnalisation de vêtements de sport avec Glory Star Wear.',
- 'products':'Catalogue de vêtements de sport|Découvrez 1 002 références pour préparer votre collection. Recherchez un modèle, une catégorie ou une référence.',
+'products':'Catalogue de vêtements de sport personnalisables|Découvrez 1 002 références pour préparer votre collection. Recherchez un modèle, une catégorie ou une référence.',
  'private-label-activewear':'Votre marque, jusque dans les détails|Partez d’un modèle du catalogue ou de votre propre dossier technique.|Personnalisez les couleurs, le logo, les étiquettes, les étiquettes suspendues et l’emballage.|Pour un développement OEM ou ODM, précisez la coupe, la construction et les matières attendues.|Envoyez vos fichiers de marque et validez les finitions sur échantillon avant la production.',
  'yoga-wear-manufacturer':'Développer une collection de yoga|Associez liberté de mouvement, coupe et identité de marque.|Présentez les usages prévus : yoga, pilates ou quotidien.|Évaluez l’élasticité, l’opacité et le confort sur l’échantillon.|Coordonnez leggings, brassières et hauts dans les tailles et couleurs choisies.',
  'sports-bra-manufacturer':'Brassières de sport personnalisées|Définissez le maintien et la construction adaptés à votre collection.|Précisez l’activité, la coupe, les bretelles et les coques souhaitées.|Contrôlez l’aisance, le maintien et les mesures lors des essayages.|Validez les matières et les détails de marque avant de confirmer la commande.',
@@ -52,7 +52,7 @@ copy.es = {
  privacyBanner:{title:'Tus preferencias de análisis',text:'Con tu permiso, Google Analytics nos ayuda a entender las visitas. Puedes consultar las páginas y contactar con nosotros sin aceptar este análisis.',decline:'Rechazar',accept:'Aceptar'},
  pages:{
  '':'Ropa deportiva para tu marca|Selección, desarrollo y personalización de ropa deportiva con Glory Star Wear.',
- 'products':'Catálogo de ropa deportiva|Explora 1.002 referencias para preparar tu colección. Busca un modelo, una categoría o una referencia.',
+'products':'Catálogo de ropa deportiva personalizable|Explora 1.002 referencias para preparar tu colección. Busca un modelo, una categoría o una referencia.',
  'private-label-activewear':'Tu marca en cada detalle|Empieza con un modelo del catálogo o con tu propio diseño.|Personaliza colores, logotipo, etiquetas y embalaje.|Para proyectos OEM u ODM, define el corte, la confección y los tejidos.|Envía tus archivos de marca y aprueba los acabados de la muestra antes de producir.',
  'yoga-wear-manufacturer':'Desarrolla tu colección de yoga|Combina libertad de movimiento, ajuste e identidad de marca.|Indica el uso previsto: yoga, pilates o uso diario.|Evalúa elasticidad, opacidad y comodidad en la muestra.|Coordina leggings, sujetadores y tops en los colores y tallas elegidos.',
  'sports-bra-manufacturer':'Sujetadores deportivos personalizados|Define la sujeción y la confección que necesita tu colección.|Especifica la actividad, el corte, los tirantes y las copas.|Comprueba el ajuste, la sujeción y las medidas durante las pruebas.|Aprueba el tejido y los detalles de marca antes de confirmar el pedido.',
@@ -87,7 +87,7 @@ copy.pt = {
  privacyBanner:{title:'As suas preferências de análise',text:'Com a sua autorização, o Google Analytics ajuda-nos a compreender as visitas. Pode consultar o site e contactar a equipa sem aceitar esta análise.',decline:'Recusar',accept:'Aceitar'},
  pages:{
  '':'Roupa desportiva para a sua marca|Seleção, desenvolvimento e personalização de roupa desportiva com a Glory Star Wear.',
- 'products':'Catálogo de roupa desportiva|Explore 1 002 referências para preparar a sua coleção. Pesquise modelos, categorias ou referências.',
+'products':'Catálogo de roupa desportiva personalizável|Explore 1 002 referências para preparar a sua coleção. Pesquise modelos, categorias ou referências.',
  'private-label-activewear':'A sua marca em cada detalhe|Comece com um modelo do catálogo ou com o seu próprio projeto.|Personalize cores, logótipo, etiquetas e embalagem.|Para projetos OEM ou ODM, defina o corte, a confeção e os tecidos.|Envie os ficheiros da marca e aprove os acabamentos na amostra antes de produzir.',
  'yoga-wear-manufacturer':'Desenvolva a sua coleção de yoga|Combine liberdade de movimento, ajuste e identidade de marca.|Indique a utilização prevista: yoga, pilates ou uso diário.|Avalie elasticidade, opacidade e conforto na amostra.|Coordene leggings, soutiens e tops nas cores e tamanhos escolhidos.',
  'sports-bra-manufacturer':'Soutiens desportivos personalizados|Defina o suporte e a construção adequados à sua coleção.|Especifique a atividade, o corte, as alças e as copas pretendidas.|Verifique o ajuste, o suporte e as medidas nos ensaios.|Aprove o tecido e os detalhes da marca antes de confirmar a encomenda.',
@@ -122,7 +122,7 @@ copy.ru = {
  privacyBanner:{title:'Настройки аналитики',text:'С вашего разрешения Google Analytics помогает анализировать посещения. Просмотр сайта и обращения доступны и без аналитики.',decline:'Отклонить',accept:'Разрешить'},
  pages:{
  '':'Спортивная одежда под вашим брендом|Подбор, разработка и оформление спортивной одежды с Glory Star Wear.',
- 'products':'Каталог спортивной одежды|В каталоге 1 002 модели для вашей коллекции. Ищите по категории, названию или артикулу.',
+'products':'Каталог спортивной одежды под заказ|В каталоге 1 002 модели для вашей коллекции. Ищите по категории, названию или артикулу.',
  'private-label-activewear':'Ваш бренд в каждой детали|Выберите модель из каталога или начните с собственного технического задания.|Согласуйте цвета, логотип, вшивные и навесные этикетки, упаковку.|Для OEM и ODM уточните крой, конструкцию и материалы.|Пришлите файлы бренда и утвердите отделку на образце до производства.',
  'yoga-wear-manufacturer':'Коллекция одежды для йоги|Объедините удобство движений, посадку и стиль вашего бренда.|Определите назначение: йога, пилатес или повседневная носка.|Проверьте эластичность, непрозрачность и комфорт на образце.|Согласуйте легинсы, бюстгальтеры и топы по цветам и размерам.',
  'sports-bra-manufacturer':'Спортивные бюстгальтеры под вашим брендом|Выберите подходящие поддержку и конструкцию.|Укажите вид активности, крой, бретели и чашки.|Во время примерки проверьте посадку, поддержку и размеры.|Утвердите материал и оформление перед подтверждением заказа.',
@@ -157,7 +157,7 @@ copy['zh-CN'] = {
  privacyBanner:{title:'选择访问统计偏好',text:'获得您的同意后，我们会使用 Google Analytics 了解网站访问情况。拒绝统计不影响浏览产品、阅读指南或联系我们。',decline:'拒绝统计',accept:'同意统计'},
  pages:{
  '':'为您的品牌打造运动服系列|与 Glory Star Wear 一起完成运动服选款、开发和品牌定制。',
- 'products':'运动服产品目录|浏览 1,002 款产品，通过品类、款式或货号，为您的品牌筛选合适的产品方向。',
+'products':'定制运动服产品目录|浏览 1,002 款产品，通过品类、款式或货号，为您的品牌筛选合适的产品方向。',
  'private-label-activewear':'把品牌细节落实到每件产品|选择现有参考款式，或从您自己的设计资料开始。|可讨论颜色、标志、织唛、洗水标、吊牌及包装袋等定制内容。|OEM 或 ODM 开发需要明确版型、结构、面料与工艺要求。|提供品牌文件，并在大货生产前通过样品确认关键细节。',
  'yoga-wear-manufacturer':'开发您的瑜伽服系列|兼顾活动舒适度、版型与品牌风格。|明确产品用于瑜伽、普拉提还是日常穿着。|通过样品检查弹性、遮盖性和穿着舒适度。|统筹瑜伽裤、运动内衣及上衣的颜色与尺码搭配。',
  'sports-bra-manufacturer':'运动内衣定制|根据您的系列定位，确定支撑需求与结构。|说明运动场景、版型、肩带及胸垫要求。|在试穿中检查贴合度、支撑感及尺寸。|确认面料与品牌细节后，再落实订单要求。',

@@ -11,6 +11,34 @@ const sourceRoot = path.resolve(import.meta.dirname, '..');
 const origin = 'https://glorystarwearing.com';
 const snapshotPath = path.join(sourceRoot, 'catalog-data/multilingual-catalog.json.gz');
 const version = '20260906-1';
+const releaseDate = process.env.SITE_RELEASE_DATE || new Date().toISOString().slice(0, 10);
+const homepageAltReplacements = new Map([
+  ['sports bra wholesale customized sports bras sports bra manufacturers personalized sports bra', 'Custom sports bra styles for private-label activewear collections'],
+  ['athletic tank tops private label women&#039;s clothing wholesale fitness wear women&#039;s square neck tank top', "Women's square-neck athletic tank top for private-label collections"],
+  ['custom shorts manufacturer sweatpants manufacturer wholesale workout apparel custom workout clothing custom gym apparel quality athletic wear gym fit clothing', 'Custom shorts and activewear bottoms from the Glory Star Wear collection'],
+  ['wholesale leggings suppliers Leggings Manufacturer high quality leggings wholesale workout leggings no front seam wholesale leggings distributors custom leggings with logo', 'Custom leggings with logo options for private-label activewear brands'],
+  ['Athletic Apparel Manufacturers apparel manufacturers wholesale workout apparel athletic one piece jumpsuit athletic jumpsuit womensjumpsuit', "Women's athletic one-piece jumpsuit from the custom activewear collection"],
+  ['wholesale activewear sets yoga workout sets yoga outfit sets skims workout sets', 'Coordinated yoga and workout activewear sets'],
+  ['athleisure manufacturers athleisure wholesale vendors custom athletic apparel manufacturers', 'Custom athleisure apparel for active lifestyle collections'],
+  ['Wholesale Beachwear Suppliers Swimming Bikini private label swimsuit manufacturers', 'Private-label swimwear and beachwear collection'],
+  ['activewear manufacturer usa clothing manufacturer private label sports clothing manufacturers usa designing workout clothes how to start a fitness apparel line', 'Private-label sportswear development support for growing fitness apparel brands'],
+  ['fabric supplier gym clothing manufacturers activewear clothing manufacturers fitness apparel clothing sports wear wholesale sport clothing manufacturers athletic wear manufacturers', 'Activewear fabric and sportswear production details for wholesale buyers'],
+  ['private label activewear create your own gym wear how to start a fitness apparel line private label styles unlimited active wear exercise wear wholesale', 'Private-label activewear styles for custom gym and exercise wear programs'],
+  ['Glory Star Wear private label high-support sports bra', 'High-support sports bra from the Glory Star Wear collection'],
+  ['Glory Star Wear private label seamless workout tank top', 'Seamless workout tank top from the Glory Star Wear collection'],
+  ['Wholesale Gym Shorts Private Label Yoga Clothing Supplier', 'Private-label gym shorts for yoga and training collections'],
+  ['Wholesale Capri Leggings activewear Manufacturer Glory Star Wear', 'Capri leggings from the Glory Star Wear activewear collection'],
+  ['Leggings VS Yoga Pants Wholesale Gym Clothing Manufacturers', 'Leggings and yoga pants comparison styles'],
+  ['MFG Shorts Trademark Sportswear Glory Star Wear', 'MFG shorts from the Glory Star Wear sportswear collection'],
+  ['Workout Tank Tops Private Label Gym Clothing Seamless Workout Clothes Supplier', 'Seamless workout tank tops for private-label gymwear'],
+  ['Workout Short Sleeve Tops Seamless Activewear Supplier', 'Seamless short-sleeve workout tops'],
+  ['Seamless Leggings Manufacturers Private Label Sports Apparel', 'Seamless leggings for private-label sportswear'],
+  ['Flared One Piece Workout Suit Athletic Wear Suppliers', 'Flared one-piece workout suit'],
+]);
+const cleanHomepageAlt = (html) => {
+  for (const [from, to] of homepageAltReplacements) html = html.replaceAll(`alt="${from}"`, `alt="${to}"`);
+  return html;
+};
 export const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const truncate = (value, maximum) => {
   const text = String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -751,6 +779,14 @@ const localizeCatalogPage = (html, language, t, products) => {
     .replace(/(<label\b[^>]*for="catalog-search"[^>]*>)[\s\S]*?(<\/label>)/i, `$1${escape(i.catalog.searchLabel)}$2`)
     .replace(/(<p\b[^>]*data-catalog-status[^>]*>)[\s\S]*?(<\/p>)/i, `$1${escape(i.catalog.found.replace('{total}', '1002').replace('{visible}', '24'))}$2`)
     .replace(/(<button\b[^>]*data-catalog-more[^>]*>)[\s\S]*?(<\/button>)/i, `$1${escape(i.catalog.loadMore)}$2`);
+  const catalogH1 = {
+    fr: 'Catalogue de vêtements de sport personnalisables',
+    es: 'Catálogo de ropa deportiva personalizable',
+    pt: 'Catálogo de roupa desportiva personalizável',
+    ru: 'Каталог спортивной одежды под заказ',
+    'zh-CN': '定制运动服产品目录',
+  }[language.code];
+  if (catalogH1) html = html.replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escape(catalogH1)}$2`);
   return html;
 };
 
@@ -2033,6 +2069,16 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
   // Run the authored residual pass after the phrase dictionaries so complete
   // page copy wins; its English vocabulary also detects mixed legacy lines.
   html = localizeRemainingPageText(html, language, pageKey, product);
+  if (pageKey === 'products') {
+    const finalCatalogH1 = {
+      fr: 'Catalogue de vêtements de sport personnalisables',
+      es: 'Catálogo de ropa deportiva personalizable',
+      pt: 'Catálogo de roupa desportiva personalizável',
+      ru: 'Каталог спортивной одежды под заказ',
+      'zh-CN': '定制运动服产品目录',
+    }[language.code];
+    if (finalCatalogH1) html = html.replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escape(finalCatalogH1)}$2`);
+  }
 
   html = localizeJsonLd(html, language, t, {title: localizedTitle, lead: localizedMeta, product});
   // Keep the registered brand spelling intact in titles, headings and legacy
@@ -2071,7 +2117,7 @@ function buildLocalized(outputRoot,snapshot) {
     });
     write(`${language.prefix}/404.html`,cloneEnglishPage(language,'/',fs.readFileSync(path.join(sourceRoot,'404.html'),'utf8'),{pageKey:'',products}));
   }
-  write('sitemap-multilingual.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url=>`<url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`);
+  write('sitemap-multilingual.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url=>`<url><loc>${url}</loc><lastmod>${releaseDate}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   write('multilingual-manifest.json',JSON.stringify({version:3,languages:languages.map(({code,prefix})=>({code,prefix})),sourcePages:1026,localizedPages:urls.length,productsPerLanguage:snapshot.products.length,translationService:false,interfaceParity:'english-page-clone'},null,2));
   let robots=fs.readFileSync(path.join(outputRoot,'robots.txt'),'utf8');
   if(!robots.includes('/sitemap-multilingual.xml')) robots+=`\nSitemap: ${origin}/sitemap-multilingual.xml\n`;
@@ -2082,9 +2128,10 @@ export function prepareMultilingualRelease() {
   const outputRoot=path.join(sourceRoot,'public');
   const snapshot=JSON.parse(zlib.gunzipSync(fs.readFileSync(snapshotPath)));
   if(snapshot.version!==2 || snapshot.products.length!==1002) throw new Error('Invalid multilingual catalogue snapshot.');
-  for(const relative of canonicalPages(sourceRoot).filter(file=>!file.startsWith('products/')).concat('robots.txt','sitemap.xml')) {
+  for(const relative of canonicalPages(sourceRoot).filter(file=>!file.startsWith('products/')).concat('robots.txt','sitemap.xml','llms.txt')) {
     fs.mkdirSync(path.dirname(path.join(outputRoot,relative)),{recursive:true});
-    fs.copyFileSync(path.join(sourceRoot,relative),path.join(outputRoot,relative));
+    if (relative === 'index.html') fs.writeFileSync(path.join(outputRoot,relative), cleanHomepageAlt(fs.readFileSync(path.join(sourceRoot,relative),'utf8')));
+    else fs.copyFileSync(path.join(sourceRoot,relative),path.join(outputRoot,relative));
   }
   for(const [relative,html] of Object.entries(snapshot.files)) {
     if(!/^products\/(?:[a-z0-9-]+\/index\.html|index\.html|catalog-index\.json|catalog-manifest\.json)$/.test(relative)) throw new Error(`Invalid snapshot path: ${relative}`);
