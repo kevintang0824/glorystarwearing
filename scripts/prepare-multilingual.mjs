@@ -2111,6 +2111,10 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
     }[language.code];
     if (finalCatalogH1) html = html.replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escape(finalCatalogH1)}$2`);
   }
+  if (product) {
+    const finalProductH1 = localizedProduct(product, t, language).title;
+    html = html.replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escape(finalProductH1)}$2`);
+  }
 
   html = localizeJsonLd(html, language, t, {title: localizedTitle, lead: localizedMeta, product});
   // Keep the registered brand spelling intact in titles, headings and legacy
