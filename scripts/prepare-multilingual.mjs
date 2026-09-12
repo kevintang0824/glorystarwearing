@@ -1873,6 +1873,16 @@ const localizeRemainingPageText = (html, language, pageKey, product = null) => {
 const localizeProductPage = (html, language, t, product, products) => {
   const i = languageInterface(language.code);
   const localized = localizedProduct(product, t, language);
+  const localizedReference = language.code === 'zh-CN'
+    ? `${localized.title}（货号 ${product.sku}）`
+    : `${localized.title} (SKU ${product.sku})`;
+  const localizedProductIntro = {
+    fr: `Pour préparer une présélection, utilisez les informations de ${localizedReference}, puis confirmez les mesures, la matière, la construction, les coloris et le marquage lors de l’échantillonnage.`,
+    es: `Para preparar una selección, usa la información de ${localizedReference} y confirma después las medidas, el tejido, la confección, los colores y la marca durante las muestras.`,
+    pt: `Para preparar uma seleção, utilize a informação de ${localizedReference} e confirme depois as medidas, o tecido, a construção, as cores e a marca durante as amostras.`,
+    ru: `Для предварительного выбора используйте данные модели ${localizedReference}, затем подтвердите размеры, материал, конструкцию, цвета и брендирование при работе с образцом.`,
+    'zh-CN': `可根据${localizedReference}中的信息进行初步选款，再在打样时确认尺寸、面料、结构、颜色和品牌标识要求。`,
+  }[language.code];
   html = replaceExact(html, [...sharedText(t), ...Object.entries(i.common || {})]);
   html = replaceExact(html, [
     ['Custom & private-label activewear', i.common['Custom & private-label activewear']],
@@ -1891,7 +1901,25 @@ const localizeProductPage = (html, language, t, product, products) => {
   for (const value of titleVariants.filter(Boolean)) html = html.split(value).join(escape(localized.title));
   let pillIndex=0;
   html = html.replace(/<span class="product-pill">[\s\S]*?<\/span>/gi, () => `<span class="product-pill">${escape(pillIndex++ === 0 ? localized.primaryLabel : product.sku)}</span>`);
-  html = html.replace(/(<p class="product-summary__microcopy">)[\s\S]*?(<\/p>)/i, `$1${escape(t.ui.confirm)} <a href="${language.prefix ? `/${language.prefix}` : ''}/activewear-moq-sampling/">${escape(i.common['MOQ and sampling guide'])}</a> ${escape(i.common['before requesting project-specific terms.'])}$2`);
+  html = html.replace(/(<p class="product-summary__microcopy">)[\s\S]*?(<\/p>)/i, `$1${escape(localizedReference)} — ${escape(t.ui.confirm)} <a href="${language.prefix ? `/${language.prefix}` : ''}/activewear-moq-sampling/">${escape(i.common['MOQ and sampling guide'])}</a> ${escape(i.common['before requesting project-specific terms.'])}$2`);
+  if (localizedProductIntro) {
+    html = html.replace(/(<div class="product-description">[\s\S]*?<h2>[^<]*<\/h2><p>)[\s\S]*?(<\/p><div class="product-description__copy">)/i, `$1${escape(localizedProductIntro)}$2`);
+  }
+  const relatedSection = html.match(/<section class="related-products">[\s\S]*?<\/section>/i)?.[0] || '';
+  const relatedSkus = [...relatedSection.matchAll(/<p class="catalog-card__meta">\s*<span>[^<]*<\/span>\s*<span>([^<]+)<\/span>/gi)]
+    .map((match) => decode(match[1]).trim())
+    .filter(Boolean)
+    .slice(0, 2);
+  const localizedRelatedIntro = relatedSkus.length >= 2 ? {
+    fr: `Comparez cette référence ${localized.primaryLabel.toLowerCase()} avec les références ${relatedSkus.join(' et ')} pour préparer une demande multi-modèle.`,
+    es: `Compara esta referencia de ${localized.primaryLabel.toLowerCase()} con los modelos ${relatedSkus.join(' y ')} al preparar una consulta con varios modelos.`,
+    pt: `Compare esta referência de ${localized.primaryLabel.toLowerCase()} com os modelos ${relatedSkus.join(' e ')} ao preparar uma consulta com vários modelos.`,
+    ru: `Сравните эту модель категории «${localized.primaryLabel}» с артикулами ${relatedSkus.join(' и ')} при подготовке запроса на несколько моделей.`,
+    'zh-CN': `准备多款项目需求时，可将这款${localized.primaryLabel}与货号 ${relatedSkus.join('、')} 一起比较。`,
+  }[language.code] : null;
+  if (localizedRelatedIntro) {
+    html = html.replace(/(<p class="section-intro">)[\s\S]*?(<\/p>)/i, `$1${escape(localizedRelatedIntro)}$2`);
+  }
   html = html.replace(/(<p class="footer-brand__note">)[\s\S]*?(<\/p>)/i, `$1${escape(t.ui.brandNote)}$2`);
   html = html.replace(/(Private-label activewear development, sampling and bulk production support from Xiamen, China\.)/g, escape(t.ui.brandNote));
   html = html.replace(/(© 2026 Glory Star Wear\. )All rights reserved\./g, `$1${escape(t.ui.rights)}`);
