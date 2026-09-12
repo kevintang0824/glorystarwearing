@@ -780,6 +780,18 @@ for (const product of catalog) {
   const featureCopy = product.features.map((feature) => feature.heading
     ? `<section class="product-description__feature"><h3>${html(feature.heading)}</h3><p>${html(feature.body)}</p></section>`
     : `<p>${html(feature.body)}</p>`).join("");
+  const focusLabels = [...new Set(product.features
+    .map((feature) => feature.heading)
+    .filter(Boolean)
+    .map((heading) => heading.trim()))].slice(0, 2);
+  const focusText = focusLabels.length
+    ? focusLabels.map((label) => label.toLowerCase()).join(" and ")
+    : product.pills.map((pill) => pill.toLowerCase()).join(" and ");
+  const sampleVerificationNote = `${product.mediaReview ? "The downloaded media for this SKU could not be matched safely and is pending image verification. " : ""}For ${product.title}, reconfirm fabric, measurements, colors and any performance claims on the approved sample. Review the MOQ and sampling guide before requesting project-specific terms.`;
+  const shortlistingNote = `Use the recorded ${focusText} details for ${product.title} (SKU ${product.sku}) to build a shortlist, then confirm measurements, fabric, construction, color standards and branding requirements during sampling.`;
+  const relatedIntro = related.length >= 2
+    ? `Compare this ${product.primary.label.toLowerCase()} reference with SKUs ${related[0].sku} and ${related[1].sku} when planning a multi-style project inquiry.`
+    : `Compare this ${product.primary.label.toLowerCase()} reference with adjacent styles and include multiple SKUs in one project inquiry.`;
   const page = `<!doctype html>
 <html lang="en-US">
 <head>
@@ -816,14 +828,14 @@ ${header({ current: "products", interest: product.primary.interest })}
           <div class="product-pills">${product.pills.map((pill) => `<span class="product-pill">${html(pill)}</span>`).join("")}<span class="product-pill">SKU ${html(product.sku)}</span></div>
           <p class="product-summary__lead">${html(product.summary)}</p>
           <div class="product-summary__actions"><a class="button" href="https://wa.me/8618020755949?text=${whatsappText}" data-analytics-event="whatsapp_click" data-analytics-method="whatsapp">Ask about this SKU</a><a class="button secondary" href="${html(quoteUrl)}">Request a quote</a></div>
-          <p class="product-summary__microcopy">${product.mediaReview ? "The downloaded media for this SKU could not be matched safely and is pending image verification. " : ""}Fabric, measurements, colors and performance claims are reconfirmed on the approved sample. Review the <a href="/activewear-moq-sampling/">MOQ and sampling guide</a> before requesting project-specific terms.</p>
+          <p class="product-summary__microcopy">${html(sampleVerificationNote).replace("MOQ and sampling guide", '<a href="/activewear-moq-sampling/">MOQ and sampling guide</a>')}</p>
         </article>
         ${gallerySecondary ? `<div class="product-gallery product-gallery--secondary" role="region" aria-label="Additional product views">${gallerySecondary}</div>` : ""}
       </div>
     </section>
-    <section class="product-information"><div class="wrap product-information__grid"><div class="product-description"><p class="eyebrow">Style brief</p><h2>Product information</h2><p>Use these details to shortlist the style, then confirm measurements, fabric, construction, color standards and branding requirements during sampling.</p><div class="product-description__copy">${featureCopy}</div></div><aside class="product-specs"><h2>At a glance</h2><dl><div><dt>Style code</dt><dd>${html(product.sku)}</dd></div><div><dt>Category</dt><dd>${html(product.primary.label)}</dd></div><div><dt>Material direction</dt><dd>${html(product.material)}</dd></div><div><dt>Customization</dt><dd>Logo, labels, colors, size range and packaging can be reviewed for your project.</dd></div><div><dt>MOQ &amp; sampling</dt><dd><a href="/activewear-moq-sampling/">Confirmed from the style, material, colors, sizes, branding and quantity split.</a></dd></div><div><dt>Project process</dt><dd><a href="/custom-activewear-process/">Brief, specification, sampling, approval and shipment.</a></dd></div></dl></aside></div></section>
+    <section class="product-information"><div class="wrap product-information__grid"><div class="product-description"><p class="eyebrow">Style brief</p><h2>Product information</h2><p>${html(shortlistingNote).replace("MOQ and sampling guide", '<a href="/activewear-moq-sampling/">MOQ and sampling guide</a>')}</p><div class="product-description__copy">${featureCopy}</div></div><aside class="product-specs"><h2>At a glance</h2><dl><div><dt>Style code</dt><dd>${html(product.sku)}</dd></div><div><dt>Category</dt><dd>${html(product.primary.label)}</dd></div><div><dt>Material direction</dt><dd>${html(product.material)}</dd></div><div><dt>Customization</dt><dd>Logo, labels, colors, size range and packaging can be reviewed for your project.</dd></div><div><dt>MOQ &amp; sampling</dt><dd><a href="/activewear-moq-sampling/">Confirmed from the style, material, colors, sizes, branding and quantity split.</a></dd></div><div><dt>Project process</dt><dd><a href="/custom-activewear-process/">Brief, specification, sampling, approval and shipment.</a></dd></div></dl></aside></div></section>
     <section class="trust-strip" aria-label="Customization workflow"><div class="wrap trust-grid"><div class="trust-item"><strong>01 · Select</strong>Reference the SKU and target colorways</div><div class="trust-item"><strong>02 · Customize</strong>Confirm fabric, logo, labels and packaging</div><div class="trust-item"><strong>03 · Sample</strong>Review fit, measurements and construction</div><div class="trust-item"><strong>04 · Produce</strong>Approve the sample before bulk production</div></div></section>
-    <section class="related-products"><div class="wrap"><div class="section-head"><div><p class="eyebrow">More ${html(product.primary.label)}</p><h2>Related product styles</h2></div><p class="section-intro">Compare adjacent styles and include multiple SKUs in one project inquiry.</p></div><div class="catalog-grid">${related.map((relatedProduct) => card(relatedProduct, 100)).join("")}</div><p class="related-products__all"><a class="button secondary" href="/products/?category=${product.primary.id}">View all ${html(product.primary.label)}</a></p></div></section>
+    <section class="related-products"><div class="wrap"><div class="section-head"><div><p class="eyebrow">More ${html(product.primary.label)}</p><h2>Related product styles</h2></div><p class="section-intro">${html(relatedIntro)}</p></div><div class="catalog-grid">${related.map((relatedProduct) => card(relatedProduct, 100)).join("")}</div><p class="related-products__all"><a class="button secondary" href="/products/?category=${product.primary.id}">View all ${html(product.primary.label)}</a></p></div></section>
     <section class="cta"><div class="wrap cta-grid"><div><h2>Quote this style for your collection.</h2><p>Send SKU ${html(product.sku)} with colors, sizes, logo placement and estimated quantities.</p></div><a class="button" href="https://wa.me/8618020755949?text=${whatsappText}" data-analytics-event="whatsapp_click" data-analytics-method="whatsapp">Start on WhatsApp</a></div></section>
   </main>
 ${footer}
