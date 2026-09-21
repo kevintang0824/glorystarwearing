@@ -8,9 +8,35 @@ const blogRoot = path.join(root, "blog");
 const outputBlogRoot = path.join(publicRoot, "blog");
 const restore = spawnSync(process.execPath, [path.join(root, "scripts", "restore-release-cache.mjs")], {
   cwd: root,
-  stdio: "inherit",
+  encoding: "utf8",
 });
-if (restore.status !== 0) process.exit(restore.status || 1);
+if (restore.stdout) process.stdout.write(restore.stdout);
+if (restore.stderr) process.stderr.write(restore.stderr);
+if (restore.status !== 0) {
+  const restoreOutput = (restore.stdout || "") + (restore.stderr || "");
+  if (!restoreOutput.includes("Release core is stale for")) process.exit(restore.status || 1);
+
+  console.warn("Refreshing stale canonical pages from the checked-out source before release verification.");
+  const sourceSitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const routes = [...sourceSitemap.matchAll(/<loc>\s*https:\/\/glorystarwearing\.com(\/[^<]*)\s*<\/loc>/gi)]
+    .map((match) => match[1])
+    .filter((route) => !route.startsWith("/products/"));
+  for (const route of routes) {
+    const relative = route === "/" ? "index.html" : path.join(route.replace(/^\/|\/$/g, ""), "index.html");
+    const source = path.resolve(root, relative);
+    const output = path.resolve(publicRoot, relative);
+    if (!source.startsWith(root + path.sep) || !output.startsWith(publicRoot + path.sep) || !fs.existsSync(source)) {
+      throw new Error("A canonical source page is missing or unsafe: " + route);
+    }
+    fs.mkdirSync(path.dirname(output), { recursive: true });
+    fs.copyFileSync(source, output);
+  }
+  const verification = spawnSync(process.execPath, [path.join(root, "scripts", "verify-release-output.mjs")], {
+    cwd: root,
+    stdio: "inherit",
+  });
+  if (verification.status !== 0) process.exit(verification.status || 1);
+}
 if (path.dirname(outputBlogRoot) !== publicRoot || path.basename(outputBlogRoot) !== "blog") {
   throw new Error("Refusing to write the blog outside the Vercel output directory.");
 }
