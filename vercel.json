@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node scripts/restore-release-cache.mjs",
+  "buildCommand": "node scripts/restore-release-cache-with-blog.mjs",
   "outputDirectory": "public",
   "trailingSlash": true,
   "redirects": [

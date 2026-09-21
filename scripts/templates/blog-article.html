@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITLE}} | Glory Star Wear</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <link rel="canonical" href="{{CANONICAL}}">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{TITLE}}">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:url" content="{{CANONICAL}}">
+  <meta property="article:published_time" content="{{PUBLISHED}}">
+  <script type="application/ld+json">{{SCHEMA}}</script>
+  <style>
+    body{margin:0;color:#222;font:17px/1.75 Arial,sans-serif}a{color:#6b7358}
+    header,footer{padding:20px 24px;border-bottom:1px solid #e6e4df}
+    main{width:min(800px,calc(100% - 48px));margin:38px auto 88px}
+    .eyebrow{color:#6b7358;text-transform:uppercase;letter-spacing:.1em;font-size:13px;font-weight:700}
+    h1{font-size:clamp(35px,6vw,58px);line-height:1.1;margin:10px 0 16px}
+    .dek{font-size:21px;color:#4c5255}
+    .byline{font-size:14px;color:#5e6468;padding:16px 0 24px;border-bottom:1px solid #e7e5e0}
+    section{margin:36px 0}h2{font-size:28px;line-height:1.25}
+    .callout,.sources{background:#f6f6f2;padding:22px 24px;border-radius:8px;margin:30px 0}
+    details{border-top:1px solid #e7e5e0;padding:16px 0}summary{font-weight:700;cursor:pointer}
+    .sources li{margin:8px 0}
+    @media(max-width:640px){body{font-size:16px}main{width:calc(100% - 36px);margin-top:25px}.dek{font-size:18px}h2{font-size:24px}}
+  </style>
+</head>
+<body>
+  <header><a href="/">Glory Star Wear</a> · <a href="/blog/">Blog</a></header>
+  <main>
+    <nav><a href="/">Home</a> / <a href="/blog/">Blog</a> / {{KEYWORD}}</nav>
+    <article>
+      <p class="eyebrow">Activewear product field note</p>
+      <h1>{{TITLE}}</h1>
+      <p class="dek">{{EXCERPT}}</p>
+      <div class="byline"><time datetime="{{PUBLISHED}}">{{DATE}}</time> · {{WORD_COUNT}} words · Focus keyword: {{KEYWORD}}</div>
+      <p>{{INTRODUCTION}}</p>
+      <aside class="callout"><strong>What this article covers</strong><br>{{TOPIC_ANGLE}}</aside>
+      {{SECTIONS}}
+      <section><h2>Putting the decision into practice</h2><p>{{CONCLUSION}}</p></section>
+      <section><h2>Frequently asked questions</h2>{{FAQS}}</section>
+      <section><h2>Related reading</h2><p>{{RELATED}}</p></section>
+      <section class="sources">
+        <h2>Community discussions that inspired this article</h2>
+        <p>These public Reddit conversations are informal individual experiences. They are context for this article, not scientific evidence or endorsements.</p>
+        <ul>{{CITATIONS}}</ul>
+      </section>
+    </article>
+  </main>
+  <footer><a href="/">Glory Star Wear</a> · <a href="/contact-us/">Contact</a></footer>
+</body>
+</html>

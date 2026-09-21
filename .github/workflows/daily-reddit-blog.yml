@@ -1,0 +1,53 @@
+name: Daily Reddit blog
+on:
+  schedule:
+    # 09:00 Asia/Shanghai.
+    - cron: "0 1 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: daily-reddit-blog
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_1lsLPmalu7YaM68wgv9n1LSg
+      VERCEL_PROJECT_ID: prj_N5XwBu6sTAst3qto4q2QN5CambP5
+    steps:
+      - name: Check out production branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Find a Reddit topic and publish one article
+        id: article
+        run: node scripts/reddit-daily-blog.mjs
+      - name: Commit the article to GitHub
+        if: steps.article.outputs.published == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish daily Reddit-inspired blog"
+            git push origin HEAD:main
+          fi
+      - name: Install Vercel CLI
+        if: steps.article.outputs.published == 'true'
+        run: npm install --global vercel@58.9.1
+      - name: Pull production build settings
+        if: steps.article.outputs.published == 'true'
+        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build the production site
+        if: steps.article.outputs.published == 'true'
+        run: vercel build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy the article and site to Vercel
+        if: steps.article.outputs.published == 'true'
+        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
