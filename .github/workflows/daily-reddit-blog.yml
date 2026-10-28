@@ -1,8 +1,10 @@
 name: Daily Reddit blog
 on:
-  schedule:
-    # 09:00 Asia/Shanghai.
-    - cron: "0 1 * * *"
+  # Schedule paused 2026-10-28 at owner request; run manually from the Actions tab.
+  # To re-enable daily 09:00 Asia/Shanghai runs, restore:
+  # schedule:
+  #   - cron: "0 1 * * *"
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency:
