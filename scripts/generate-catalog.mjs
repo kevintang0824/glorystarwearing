@@ -404,6 +404,28 @@ const organization = {
   },
 };
 
+// Keep the public entity profile identical across the homepage, editorial
+// pages, catalogue index and product detail pages. The values are limited to
+// facts already published in the site source and reference files.
+const enrichOrganizationJsonLd = (markup) => markup.replace(
+  /(<script\b[^>]*type=["']application\/ld\+json["'][^>]*>)([\s\S]*?)(<\/script>)/gi,
+  (full, start, body, end) => {
+    try {
+      const data = JSON.parse(body);
+      const nodes = [data, ...(Array.isArray(data?.["@graph"]) ? data["@graph"] : [])];
+      for (const node of nodes) {
+        if (node?.["@type"] !== "Organization") continue;
+        node.contactPoint = organization.contactPoint;
+        node.sameAs = organization.sameAs;
+        node.knowsAbout = organization.knowsAbout;
+      }
+      return `${start}${jsonScript(data)}${end}`;
+    } catch {
+      return full;
+    }
+  },
+);
+
 const imagesRoot = path.join(sourceRoot, "images");
 const allowedImageExtension = /\.(?:jpe?g|png|webp)$/i;
 const galleryFailures = [];
@@ -630,6 +652,7 @@ const collectionSchema = {
   "@context": "https://schema.org",
   "@graph": [
     organization,
+    { "@type": "WebSite", "@id": `${canonicalBase}/#website`, url: `${canonicalBase}/`, name: "Glory Star Wear", publisher: { "@id": organization["@id"] }, inLanguage: "en-US" },
     { "@type": "CollectionPage", "@id": `${catalogCanonical}#webpage`, url: catalogCanonical, name: "Custom Activewear Product Catalog", description: catalogDescription, about: { "@id": organization["@id"] }, inLanguage: "en-US" },
     { "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${canonicalBase}/` },
@@ -662,6 +685,7 @@ const catalogPage = `<!doctype html>
   <link rel="canonical" href="${catalogCanonical}">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Glory Star Wear">
   <meta property="og:title" content="Custom Activewear Product Catalog">
   <meta property="og:description" content="${html(catalogDescription)}">
   <meta property="og:url" content="${catalogCanonical}">
@@ -670,7 +694,7 @@ const catalogPage = `<!doctype html>
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/assets/brand/glorystarwear-favicon-32.png" sizes="32x32">
   <link rel="stylesheet" href="/assets/seo-pages.css?v=20260828-3">
-  <link rel="stylesheet" href="/assets/catalog.css?v=20260828-10">
+  <link rel="stylesheet" href="/assets/catalog.css?v=20260917-1">
   ${analytics}
   <script defer src="/assets/seo-pages.js?v=20260828-2"></script>
   <script defer src="/assets/catalog.js?v=20260828-11"></script>
@@ -737,6 +761,10 @@ for (const product of catalog) {
   // Put the unique SKU first so every catalog URL has a distinct search
   // snippet even when several styles share the same editorial description.
   const metaDescription = truncate(`SKU ${product.sku}: ${clipWords(product.title, 72)}. ${product.primary.label} style for custom and private-label activewear; review specs and request a quote.`, 154);
+  const productProperties = product.features
+    .filter((feature) => feature.heading && feature.body)
+    .slice(0, 8)
+    .map((feature) => ({ "@type": "PropertyValue", name: feature.heading, value: feature.body }));
   const productSchema = {
     "@type": "Product",
     "@id": `${product.canonical}#product`,
@@ -745,12 +773,13 @@ for (const product of catalog) {
     sku: product.sku,
     category: product.primary.label,
     manufacturer: { "@id": organization["@id"] },
-    brand: { "@type": "Brand", name: "Glory Star Wear" },
+    brand: { "@type": "Brand", "@id": `${canonicalBase}/#brand`, name: "Glory Star Wear" },
     url: product.canonical,
     mainEntityOfPage: { "@id": `${product.canonical}#webpage` },
     additionalProperty: [
       { "@type": "PropertyValue", name: "Catalog category", value: product.primary.label },
       { "@type": "PropertyValue", name: "Project route", value: "Private label, OEM and ODM review" },
+      ...productProperties,
     ],
   };
   if (!product.mediaReview) productSchema.image = product.media.map((image) => `${canonicalBase}${image.path}`);
@@ -792,7 +821,7 @@ for (const product of catalog) {
   const relatedIntro = related.length >= 2
     ? `Compare this ${product.primary.label.toLowerCase()} reference with SKUs ${related[0].sku} and ${related[1].sku} when planning a multi-style project inquiry.`
     : `Compare this ${product.primary.label.toLowerCase()} reference with adjacent styles and include multiple SKUs in one project inquiry.`;
-  const page = `<!doctype html>
+  const page = enrichOrganizationJsonLd(`<!doctype html>
 <html lang="en-US">
 <head>
   <meta charset="utf-8">
@@ -802,15 +831,21 @@ for (const product of catalog) {
   <link rel="canonical" href="${product.canonical}">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta property="og:type" content="product">
-  <meta property="og:title" content="${html(product.title)}">
+  <meta property="og:site_name" content="Glory Star Wear">
+  <meta property="og:title" content="${html(metaTitle)}">
   <meta property="og:description" content="${html(product.summary)}">
   <meta property="og:url" content="${product.canonical}">
   <meta property="og:image" content="${canonicalBase}${product.media[0].path}">
   <meta property="og:image:alt" content="${html(product.media[0].alt)}">
+  <meta property="og:image:width" content="${product.media[0].width}">
+  <meta property="og:image:height" content="${product.media[0].height}">
+  <meta property="og:image:type" content="${product.media[0].path.endsWith('.webp') ? 'image/webp' : product.media[0].path.endsWith('.png') ? 'image/png' : 'image/jpeg'}">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${html(metaTitle)}">
+  <meta name="twitter:description" content="${html(product.summary)}">
   <link rel="icon" href="/assets/brand/glorystarwear-favicon-32.png" sizes="32x32">
   <link rel="stylesheet" href="/assets/seo-pages.css?v=20260828-3">
-  <link rel="stylesheet" href="/assets/catalog.css?v=20260828-5">
+  <link rel="stylesheet" href="/assets/catalog.css?v=20260917-1">
   ${analytics}
   <script defer src="/assets/seo-pages.js?v=20260828-2"></script>
   <script type="application/ld+json">${jsonScript(schema)}</script>
@@ -840,7 +875,7 @@ ${header({ current: "products", interest: product.primary.interest })}
   </main>
 ${footer}
 </body>
-</html>`;
+</html>`);
   const outputDirectory = path.join(productsOutput, product.routeSlug);
   fs.mkdirSync(outputDirectory, { recursive: true });
   fs.writeFileSync(path.join(outputDirectory, "index.html"), page);
@@ -848,16 +883,21 @@ ${footer}
 
 const sitemapPath = path.join(root, "sitemap.xml");
 let sitemap = fs.readFileSync(sitemapPath, "utf8");
+sitemap = sitemap.replace(
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+);
 sitemap = sitemap.replace(/\s*<url>\s*<loc>https:\/\/glorystarwearing\.com\/products\/[^<]*<\/loc>[\s\S]*?<\/url>/g, "");
 const catalogSitemap = [
   `  <url>\n    <loc>${catalogCanonical}</loc>\n    <lastmod>${releaseDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>`,
-  ...catalog.map((product) => `  <url>\n    <loc>${product.canonical}</loc>\n    <lastmod>${releaseDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`),
+  ...catalog.map((product) => `  <url>\n    <loc>${product.canonical}</loc>\n    <lastmod>${releaseDate}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n    ${product.mediaReview ? "" : `<image:image><image:loc>${canonicalBase}${product.media[0].path}</image:loc><image:title>${html(product.title)}</image:title></image:image>`}\n  </url>`),
 ].join("\n");
 sitemap = sitemap.replace(/\s*<\/urlset>\s*$/, `\n${catalogSitemap}\n</urlset>\n`);
 fs.writeFileSync(sitemapPath, sitemap);
 
 const homepagePath = path.join(root, "index.html");
 let homepage = fs.readFileSync(homepagePath, "utf8");
+homepage = enrichOrganizationJsonLd(homepage);
 const homepageRoutes = new Map([
   ["/#products", "/products/"],
   ["/#sports-bras", "/products/?category=sports-bras"],
@@ -939,6 +979,7 @@ for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
   const pagePath = path.join(root, entry.name, "index.html");
   if (!fs.existsSync(pagePath)) continue;
   let page = fs.readFileSync(pagePath, "utf8");
+  page = enrichOrganizationJsonLd(page);
   page = page
     .replace(/\/assets\/seo-pages\.css(?:\?v=[^"']*)?/g, "/assets/seo-pages.css?v=20260828-3")
     .replace(/\/assets\/seo-pages\.js(?:\?v=[^"']*)?/g, "/assets/seo-pages.js?v=20260828-2")

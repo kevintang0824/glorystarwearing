@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{TITLE}} | Glory Star Wear</title>
   <meta name="description" content="{{DESCRIPTION}}">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+  <link rel="icon" href="/assets/brand/glorystarwear-favicon-32.png" type="image/png">
   <link rel="canonical" href="{{CANONICAL}}">
   <meta property="og:type" content="article">
   <meta property="og:title" content="{{TITLE}}">
@@ -16,6 +18,8 @@
     body{margin:0;color:#222;font:17px/1.75 Arial,sans-serif}a{color:#6b7358}
     header,footer{padding:20px 24px;border-bottom:1px solid #e6e4df}
     main{width:min(800px,calc(100% - 48px));margin:38px auto 88px}
+    .skip-link{position:absolute;left:-10000px;top:8px;background:#fff;padding:10px;z-index:10}.skip-link:focus{left:8px}
+    nav[aria-label="Breadcrumb"]{font-size:14px}
     .eyebrow{color:#6b7358;text-transform:uppercase;letter-spacing:.1em;font-size:13px;font-weight:700}
     h1{font-size:clamp(35px,6vw,58px);line-height:1.1;margin:10px 0 16px}
     .dek{font-size:21px;color:#4c5255}
@@ -28,14 +32,15 @@
   </style>
 </head>
 <body>
-  <header><a href="/">Glory Star Wear</a> · <a href="/blog/">Blog</a></header>
-  <main>
-    <nav><a href="/">Home</a> / <a href="/blog/">Blog</a> / {{KEYWORD}}</nav>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header><nav aria-label="Primary navigation"><a href="/">Glory Star Wear</a> · <a href="/blog/">Blog</a></nav></header>
+  <main id="main-content">
+    <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / <span>{{KEYWORD}}</span></nav>
     <article>
       <p class="eyebrow">Activewear product field note</p>
       <h1>{{TITLE}}</h1>
       <p class="dek">{{EXCERPT}}</p>
-      <div class="byline"><time datetime="{{PUBLISHED}}">{{DATE}}</time> · {{WORD_COUNT}} words · Focus keyword: {{KEYWORD}}</div>
+      <div class="byline">Published by Glory Star Wear · <time datetime="{{PUBLISHED}}">{{DATE}}</time></div>
       <p>{{INTRODUCTION}}</p>
       <aside class="callout"><strong>What this article covers</strong><br>{{TOPIC_ANGLE}}</aside>
       {{SECTIONS}}
@@ -49,6 +54,7 @@
       </section>
     </article>
   </main>
-  <footer><a href="/">Glory Star Wear</a> · <a href="/contact-us/">Contact</a></footer>
+  <footer><a href="/">Glory Star Wear</a> · <a href="/contact-us/">Contact</a> · <a href="/privacy-policy/">Privacy Policy</a> · <a href="/terms-of-use/">Terms of Use</a> · <a href="/cookie-policy/">Cookie Notice</a></footer>
+  <script defer src="/assets/privacy-controls.js" data-measurement-id="GT-W6K5676W"></script>
 </body>
 </html>

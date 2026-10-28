@@ -6,6 +6,8 @@ const origin = "https://glorystarwearing.com";
 const args = process.argv.slice(2);
 const submit = args.includes("--submit");
 const verifyProduction = submit || args.includes("--verify-production");
+const timeoutMs = Number(process.env.INDEXNOW_FETCH_TIMEOUT_MS ?? 15000);
+const concurrency = Math.max(1, Number(process.env.INDEXNOW_URL_CONCURRENCY ?? 24));
 const requestedUrls = [];
 
 for (let index = 0; index < args.length; index += 1) {
@@ -40,6 +42,18 @@ if (keyCandidates.length !== 1) {
 const keyFile = keyCandidates[0];
 const key = keyFile.slice(0, -4);
 const allowed = new Set(sitemapUrls);
+const fetchWithTimeout = async (url, options = {}) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+};
 const urlList = requestedUrls.length ? [...new Set(requestedUrls)] : sitemapUrls;
 const invalidUrls = urlList.filter((value) => {
   try {
@@ -71,7 +85,9 @@ if (!verifyProduction) {
   process.exit(0);
 }
 
-const keyResponse = await fetch(payload.keyLocation, { headers: { "user-agent": "GloryStarWear-IndexNow/1.0" } });
+const keyResponse = await fetchWithTimeout(payload.keyLocation, {
+  headers: { "user-agent": "GloryStarWear-IndexNow/1.0" },
+});
 const productionKey = (await keyResponse.text()).trim();
 if (keyResponse.status !== 200 || productionKey !== key) {
   console.error(`ERROR: production key verification failed (HTTP ${keyResponse.status}). Deploy the matching key file before submission.`);
@@ -79,12 +95,31 @@ if (keyResponse.status !== 200 || productionKey !== key) {
 }
 
 const unavailable = [];
-for (const url of urlList) {
-  const response = await fetch(url, { redirect: "follow", headers: { "user-agent": "GloryStarWear-IndexNow/1.0" } });
-  if (response.status !== 200 || response.url.replace(/\/$/, "") !== url.replace(/\/$/, "")) {
-    unavailable.push(`${url} (HTTP ${response.status} → ${response.url})`);
+let nextUrlIndex = 0;
+const checkUrl = async () => {
+  while (nextUrlIndex < urlList.length) {
+    const currentIndex = nextUrlIndex;
+    nextUrlIndex += 1;
+    const url = urlList[currentIndex];
+    try {
+      const response = await fetchWithTimeout(url, {
+        redirect: "follow",
+        headers: { "user-agent": "GloryStarWear-IndexNow/1.0" },
+      });
+      const finalUrl = response.url;
+      if (response.body) await response.body.cancel();
+      if (response.status !== 200 || finalUrl.replace(/\/$/, "") !== url.replace(/\/$/, "")) {
+        unavailable.push(url + " (HTTP " + response.status + " → " + finalUrl + ")");
+      }
+    } catch (error) {
+      unavailable.push(url + " (" + error.message + ")");
+    }
+    if ((currentIndex + 1) % 100 === 0 || currentIndex + 1 === urlList.length) {
+      console.log("Verified " + (currentIndex + 1) + "/" + urlList.length + " production URLs...");
+    }
   }
-}
+};
+await Promise.all(Array.from({ length: Math.min(concurrency, urlList.length) }, checkUrl));
 if (unavailable.length) {
   console.error(`ERROR: refusing IndexNow submission because ${unavailable.length} canonical URL(s) are not live at their final 200 URL:`);
   for (const item of unavailable) console.error(`- ${item}`);

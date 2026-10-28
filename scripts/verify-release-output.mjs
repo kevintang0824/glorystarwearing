@@ -47,6 +47,28 @@ const productPages = fs.existsSync(productsRoot)
   : [];
 if (productPages.length !== 1002) fail(`Release contains ${productPages.length} product pages; expected 1002.`);
 
+const parseJsonLdNodes = (html) => html.split('<script type="application/ld+json">').slice(1).flatMap((part) => {
+  try {
+    const data = JSON.parse(part.split('</script>')[0]);
+    return data?.["@graph"] || [data];
+  } catch {
+    return [];
+  }
+});
+const structuredEnhancementFailures = [];
+for (const entry of productPages) {
+  const productPath = path.join(productsRoot, entry.name, "index.html");
+  const nodes = parseJsonLdNodes(fs.readFileSync(productPath, "utf8"));
+  const product = nodes.find((node) => node?.["@type"] === "Product");
+  const organization = nodes.find((node) => node?.["@type"] === "Organization");
+  if (!Array.isArray(product?.additionalProperty) || !product.brand?.["@id"] || !organization?.contactPoint) {
+    structuredEnhancementFailures.push(entry.name);
+  }
+}
+if (structuredEnhancementFailures.length) {
+  fail(`Product structured-data enhancements are incomplete on ${structuredEnhancementFailures.length} page(s).`);
+}
+
 try {
   const catalogIndex = JSON.parse(fs.readFileSync(path.join(productsRoot, "catalog-index.json"), "utf8"));
   const routes = catalogIndex.map((product) => product?.route);
@@ -82,6 +104,11 @@ try {
   const sitemap = fs.readFileSync(path.join(publicRoot, "sitemap.xml"), "utf8");
   const sitemapUrls = [...sitemap.matchAll(/<loc>\s*https:\/\/glorystarwearing\.com\//g)].length;
   if (sitemapUrls !== 1026) fail(`Release sitemap contains ${sitemapUrls} canonical URLs; expected 1026.`);
+  if (!sitemap.includes('xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"')) {
+    fail("Release sitemap is missing the image namespace.");
+  }
+  const sitemapImageLocs = [...sitemap.matchAll(/<image:loc>\s*https:\/\/glorystarwearing\.com\//g)].length;
+  if (sitemapImageLocs !== 1002) fail(`Release sitemap contains ${sitemapImageLocs} product image entries; expected 1002.`);
 } catch (error) {
   fail(`Release sitemap is missing or invalid: ${error.message}`);
 }

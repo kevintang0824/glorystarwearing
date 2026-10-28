@@ -116,14 +116,21 @@ if (missingAssets.size) {
 const cssFiles = [];
 const htmlFiles = [];
 const specialHtmlFiles = [];
+const noindexHtmlFiles = [];
 const walk = (directory) => {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     if ([".catalog-build", ".git", ".vercel", ".wrangler", "public"].includes(entry.name)) continue;
     const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory() && directory === path.join(root, "scripts") && entry.name === "templates") continue;
     if (entry.isDirectory()) walk(entryPath);
     else if (entry.name.endsWith(".css")) cssFiles.push(entryPath);
     else if (entry.name === "404.html" && directory === root) specialHtmlFiles.push(entryPath);
-    else if (entry.name.endsWith(".html")) htmlFiles.push(entryPath);
+    else if (entry.name.endsWith(".html")) {
+      const source = fs.readFileSync(entryPath, "utf8");
+      const robots = source.match(/<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b)[^>]*>/i);
+      if (robots) noindexHtmlFiles.push(entryPath);
+      else htmlFiles.push(entryPath);
+    }
   }
 };
 walk(root);
@@ -233,8 +240,8 @@ for (const pagePath of htmlFiles) {
   if (label === "index.html") {
     const cleanH1 = page.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]
       .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().toLowerCase() ?? "";
-    if (cleanH1 !== "custom activewear manufacturer in china") {
-      add("error", "homepage-intent", `Homepage H1 must be Custom Activewear Manufacturer in China; found ${cleanH1 || "(missing)"}.`);
+    if (!/^custom activewear manufacturer in (?:china|xiamen, china)$/i.test(cleanH1)) {
+      add("error", "homepage-intent", `Homepage H1 must identify the custom activewear manufacturer and China location; found ${cleanH1 || "(missing)"}.`);
     }
     const unsupportedClaims = [
       ["1000-brand-partners", /1000\+?[^<]{0,60}brand partners|brand partners[^<]{0,60}1000\+?/i],
@@ -433,6 +440,11 @@ for (const pagePath of htmlFiles) {
       structuredNodes.push(data, ...(Array.isArray(data["@graph"]) ? data["@graph"] : []));
     } catch (error) { add("error", "invalid-json-ld", `${label}: ${error.message}`); }
   }
+  const structuredIds = structuredNodes.map((node) => node?.["@id"]).filter(Boolean);
+  const duplicateStructuredIds = [...new Set(structuredIds.filter((id, index) => structuredIds.indexOf(id) !== index))];
+  if (duplicateStructuredIds.length) {
+    add("error", "duplicate-json-ld-ids", `${label}: duplicate structured-data @id values: ${duplicateStructuredIds.join(", ")}.`);
+  }
   if (canonical) {
     const declaredDates = [];
     for (const property of ["og:updated_time", "article:modified_time"]) {
@@ -604,6 +616,42 @@ if (!fs.existsSync(sitemapPath)) {
   const sitemap = fs.readFileSync(sitemapPath, "utf8");
   const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
   const sitemapModified = new Map([...sitemap.matchAll(/<url>\s*<loc>(.*?)<\/loc>\s*<lastmod>(.*?)<\/lastmod>/gs)].map((match) => [match[1], match[2]]));
+  const expectedSitemapUrls = new Set(urls);
+  try {
+    const posts = JSON.parse(fs.readFileSync(path.join(root, "blog", "posts.json"), "utf8"));
+    if (!Array.isArray(posts)) throw new Error("blog/posts.json must contain an array.");
+    if (posts.length) {
+      const blogUrl = "https://glorystarwearing.com/blog/";
+      expectedSitemapUrls.add(blogUrl);
+      sitemapModified.set(blogUrl, posts.map((post) => post.date).sort().at(-1));
+      const blogIndex = fs.readFileSync(path.join(root, "blog", "index.html"), "utf8");
+      if (/<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b)[^>]*>/i.test(blogIndex)) {
+        add("error", "published-blog-noindex", "The blog archive must be indexable once it lists published articles.");
+      }
+    } else if (urls.includes("https://glorystarwearing.com/blog/")) {
+      add("error", "empty-blog-sitemap", "The empty blog archive must stay out of sitemap.xml until an article is published.");
+    }
+    for (const post of posts) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(post?.date || "") || !/^[a-z0-9-]+$/.test(post?.slug || "")) {
+        add("error", "blog-manifest", "blog/posts.json contains an invalid publication date or slug.");
+        continue;
+      }
+      const articleUrl = `https://glorystarwearing.com/blog/${post.date}-${post.slug}/`;
+      const articlePath = path.join(root, "blog", `${post.date}-${post.slug}`, "index.html");
+      if (post.path !== `/blog/${post.date}-${post.slug}/` || !fs.existsSync(articlePath)) {
+        add("error", "blog-article-target", `${articleUrl} is missing its generated article page or manifest path.`);
+      } else {
+        const article = fs.readFileSync(articlePath, "utf8");
+        if (/<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b)[^>]*>/i.test(article)) {
+          add("error", "published-article-noindex", `${articleUrl} is marked noindex despite being in the published manifest.`);
+        }
+      }
+      expectedSitemapUrls.add(articleUrl);
+      sitemapModified.set(articleUrl, post.date);
+    }
+  } catch (error) {
+    add("error", "blog-manifest", `Could not read blog/posts.json: ${error.message}`);
+  }
   if (!urls.includes("https://glorystarwearing.com/")) {
     add("error", "homepage-sitemap", "The canonical homepage is absent from sitemap.xml.");
   }
@@ -612,8 +660,15 @@ if (!fs.existsSync(sitemapPath)) {
     const expected = pathname ? path.join(root, pathname, "index.html") : htmlPath;
     if (!fs.existsSync(expected)) add("error", "sitemap-target", `${url} has no matching static HTML file.`);
   }
+  for (const pagePath of noindexHtmlFiles) {
+    const page = fs.readFileSync(pagePath, "utf8");
+    const canonical = page.match(/<link\b[^>]*rel=["']canonical["'][^>]*href=["']([^"']+)["'][^>]*>/i)?.[1];
+    if (canonical && urls.includes(canonical)) {
+      add("error", "noindex-sitemap", `${path.relative(root, pagePath)} is noindex but appears in sitemap.xml.`);
+    }
+  }
   for (const canonical of pageCanonicals.keys()) {
-    if (!urls.includes(canonical)) add("error", "sitemap-coverage", `${canonical} is canonical but absent from sitemap.xml.`);
+    if (!expectedSitemapUrls.has(canonical)) add("error", "sitemap-coverage", `${canonical} is canonical but absent from the core sitemap and blog release overlay.`);
   }
   for (const [canonical, modified] of articleModifiedByCanonical) {
     if (sitemapModified.get(canonical) !== modified) add("error", "sitemap-article-date", `${canonical}: sitemap lastmod must match Article dateModified ${modified}.`);

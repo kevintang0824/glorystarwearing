@@ -1,0 +1,333 @@
+/* Small, synchronous shell used before the deferred Elementor bundles arrive. */
+:root {
+  --ast-global-color-3: #4b4f58;
+  --ast-global-color-4: #f5f5f5;
+  --ast-global-color-5: #fff;
+  --e-global-color-primary: #000;
+  --e-global-color-secondary: #333;
+  --e-global-color-text: #333;
+  --e-global-color-accent: #e48a6e;
+  --e-global-typography-primary-font-family: Arial, sans-serif;
+  --e-global-typography-primary-font-weight: 600;
+}
+
+html {
+  overflow-x: clip;
+}
+
+body.home {
+  margin: 0;
+  overflow-x: clip;
+  text-rendering: optimizeLegibility;
+}
+
+body.home #page,
+body.home #content,
+body.home .site-content,
+body.home .ast-container,
+body.home #primary,
+body.home .content-area.primary,
+body.home .site-main,
+body.home .entry-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+body.home .content-area.primary {
+  flex: 1 1 auto;
+  margin: 0 !important;
+}
+
+body.home .elementor {
+  width: 100%;
+}
+
+body.home .elementor-element-18aaed2,
+body.home .elementor-element-18aaed2 > .e-con-inner,
+body.home .elementor-element-17e04bb,
+body.home .elementor-element-17e04bb > .elementor-widget-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+body.home .elementor-element-18aaed2 {
+  display: flex;
+  flex-direction: column;
+}
+
+body.home .elementor-element-18aaed2 > .e-con-inner {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+}
+
+body.home .elementor-element-17e04bb {
+  flex: 0 0 auto;
+  aspect-ratio: 1640 / 924;
+}
+
+body.home .elementor-element-17e04bb .qodef-qi-swiper-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  visibility: visible;
+}
+
+body.home .elementor-element-17e04bb .swiper-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+body.home .elementor-element-17e04bb .swiper-slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+body.home .elementor-element-17e04bb .qodef-e-inner,
+body.home .elementor-element-17e04bb .qodef-e-inner-holder,
+body.home .elementor-element-17e04bb .qodef-e-inner-holder > a,
+body.home .elementor-element-17e04bb picture,
+body.home .elementor-element-17e04bb picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body.home .elementor-element-17e04bb picture img {
+  object-fit: cover;
+  object-position: center;
+}
+
+body.home .swiper-wrapper {
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+
+body.home .elementor-element-d3b1ec3 .swiper-slide {
+  width: 16.666667%;
+  flex: 0 0 16.666667%;
+}
+
+body.home .elementor-element-e7d62ed .swiper-slide {
+  width: 25%;
+  flex: 0 0 25%;
+}
+
+body.home .elementor-element-3d044f3 .qodef-qi-woo-shortcode .swiper-slide {
+  width: 20%;
+  flex: 0 0 20%;
+}
+
+body.home .elementor-element-17e04bb .swiper-button-prev,
+body.home .elementor-element-17e04bb .swiper-button-next {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  place-items: center;
+  color: #bdbdbd;
+  cursor: pointer;
+}
+
+body.home .elementor-element-17e04bb .swiper-button-prev {
+  left: 8px;
+}
+
+body.home .elementor-element-17e04bb .swiper-button-next {
+  right: 8px;
+}
+
+body.home .elementor-element-17e04bb .swiper-button-prev i,
+body.home .elementor-element-17e04bb .swiper-button-next i {
+  font-size: 20px;
+}
+
+body.home img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* The two flip cards are interactive copy blocks, not content images. Keep
+   their hover surface decorative without making a CSS background an LCP
+   candidate on a small viewport. */
+body.home .elementor-flip-box__back {
+  background-image: linear-gradient(135deg, #f4eee9, #d8c6bb) !important;
+}
+
+body.home .elementor-element-2d3c520 .elementor-flip-box__back {
+  background-image: linear-gradient(135deg, #e7efe8, #bfd0c3) !important;
+}
+
+/* Keep controls self-contained so the homepage does not need the 100 KB
+   Elementor icon font or the 160 KB Font Awesome bundle. */
+body.home .elementor-field-group .elementor-select-wrapper::before {
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  content: "";
+  font-family: inherit;
+  transform: translateY(-65%) rotate(45deg);
+}
+
+body.home .eicon-caret-down,
+body.home .eicon-chevron-left,
+body.home .eicon-chevron-right,
+body.home .fas,
+body.home .far,
+body.home .fab {
+  display: inline-grid;
+  width: 1em;
+  height: 1em;
+  place-items: center;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 1em;
+  font-style: normal;
+  line-height: 1;
+}
+
+body.home .eicon-caret-down {
+  width: .55em;
+  height: .55em;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  font-size: 1em;
+  transform: rotate(45deg) translate(-.08em, -.08em);
+}
+
+body.home .eicon-chevron-left::before,
+body.home .eicon-chevron-right::before,
+body.home .fas::before,
+body.home .far::before,
+body.home .fab::before {
+  display: block;
+}
+
+body.home .eicon-chevron-left::before,
+body.home .eicon-chevron-right::before {
+  width: .5em;
+  height: .5em;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  content: "";
+}
+
+body.home .eicon-chevron-left::before { transform: rotate(135deg); }
+body.home .eicon-chevron-right::before { transform: rotate(-45deg); }
+body.home .fa-times::before { content: "×"; font-size: 1.35em; }
+body.home .fa-chevron-left::before { content: "‹"; font-size: 1.35em; }
+body.home .fa-chevron-right::before { content: "›"; font-size: 1.35em; }
+body.home .fa-user::before { content: "•"; font-size: 1.4em; }
+body.home .fa-envelope::before { content: "✉"; font-size: .9em; }
+body.home .fa-map-marker-alt::before { content: "⌖"; font-size: 1.2em; }
+body.home .fa-instagram::before { content: "IG"; font-size: .62em; font-weight: 800; }
+body.home .fa-whatsapp::before { content: "WA"; font-size: .58em; font-weight: 800; }
+body.home .fa-tiktok::before { content: "TT"; font-size: .58em; font-weight: 800; }
+body.home .fa-pinterest::before { content: "P"; font-size: .78em; font-weight: 800; }
+body.home .fa-facebook::before { content: "f"; font-size: .95em; font-weight: 800; }
+
+/* Keep the catalogue enquiry modal functional without loading the full UAEL stylesheet. */
+body.home .uael-modal {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.home .uael-modal.uael-show {
+  z-index: 9999;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+body.home .uael-modal .uael-content {
+  position: relative;
+  z-index: 2;
+  width: min(800px, calc(100vw - 28px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  background: #fff;
+}
+
+body.home .uael-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  background: rgba(0, 0, 0, .75);
+  transition: opacity .2s ease;
+}
+
+body.home .uael-modal.uael-show ~ .uael-overlay {
+  visibility: visible;
+  opacity: 1;
+}
+
+body.home .uael-modal-close {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+html.uael-modal-open { overflow: hidden; }
+
+@media (max-width: 767px) {
+  body.home .elementor-element-d3b1ec3 .swiper-slide,
+  body.home .elementor-element-e7d62ed .swiper-slide,
+  body.home .elementor-element-3d044f3 .qodef-qi-woo-shortcode .swiper-slide {
+    width: 50%;
+    flex-basis: 50%;
+  }
+
+  body.home .elementor-element-17e04bb .swiper-button-prev,
+  body.home .elementor-element-17e04bb .swiper-button-next {
+    width: 28px;
+    height: 28px;
+    margin-top: -14px;
+  }
+
+  body.home .elementor-element-17e04bb .swiper-button-prev {
+    left: 4px;
+  }
+
+  body.home .elementor-element-17e04bb .swiper-button-next {
+    right: 4px;
+  }
+}
+
+@media (min-width: 768px) {
+  body.home #new-arrivals,
+  body.home #about,
+  body.home #customize,
+  body.home #contact {
+    content-visibility: auto;
+    contain-intrinsic-size: 900px;
+  }
+}

@@ -46,11 +46,17 @@ fs.mkdirSync(outputBlogRoot, { recursive: true });
 fs.copyFileSync(path.join(blogRoot, "index.html"), path.join(outputBlogRoot, "index.html"));
 const posts = JSON.parse(fs.readFileSync(path.join(blogRoot, "posts.json"), "utf8"));
 if (!Array.isArray(posts)) throw new Error("blog/posts.json must contain an array.");
-const urls = ["https://glorystarwearing.com/blog/"];
 for (const post of posts) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(post.date || "") || !/^[a-z0-9-]+$/.test(post.slug || "")) {
     throw new Error("A blog manifest entry has an invalid date or slug.");
   }
+}
+const urls = [];
+if (posts.length) {
+  const latestDate = posts.map((post) => post.date).sort().at(-1);
+  urls.push({ url: "https://glorystarwearing.com/blog/", lastmod: latestDate });
+}
+for (const post of posts) {
   const relative = post.date + "-" + post.slug + "/index.html";
   const source = path.join(blogRoot, relative);
   const output = path.join(outputBlogRoot, relative);
@@ -59,7 +65,10 @@ for (const post of posts) {
   }
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.copyFileSync(source, output);
-  urls.push("https://glorystarwearing.com/blog/" + post.date + "-" + post.slug + "/");
+  urls.push({
+    url: "https://glorystarwearing.com/blog/" + post.date + "-" + post.slug + "/",
+    lastmod: post.date,
+  });
 }
 
 const sitemapPath = path.join(publicRoot, "sitemap.xml");
@@ -68,10 +77,22 @@ if (!/<urlset\b/.test(sitemap) || !/<\/urlset>\s*$/.test(sitemap)) {
   throw new Error("The restored sitemap is missing a complete urlset.");
 }
 const existing = new Set([...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/g)].map((match) => match[1]));
-const additions = [...new Set(urls)].filter((url) => !existing.has(url));
+const additions = [...new Map(urls.map((entry) => [entry.url, entry])).values()]
+  .filter((entry) => !existing.has(entry.url));
 if (additions.length) {
-  const xml = additions.map((url) => "  <url><loc>" + url + "</loc></url>").join("\n");
+  const xml = additions.map(({ url, lastmod }) => "  <url><loc>" + url + "</loc><lastmod>" + lastmod + "</lastmod></url>").join("\n");
   sitemap = sitemap.replace(/<\/urlset>\s*$/, xml + "\n</urlset>\n");
   fs.writeFileSync(sitemapPath, sitemap);
 }
+const releasedUrls = new Set([...sitemap.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/g)].map((match) => match[1]));
+const missingBlogUrls = urls.filter(({ url }) => !releasedUrls.has(url));
+if (missingBlogUrls.length) {
+  throw new Error("The release sitemap is missing blog URL(s): " + missingBlogUrls.map(({ url }) => url).join(", "));
+}
+const seoAudit = spawnSync(process.execPath, [path.join(root, "scripts", "seo-audit.mjs")], {
+  cwd: root,
+  encoding: "utf8",
+  stdio: "inherit",
+});
+if (seoAudit.status !== 0) process.exit(seoAudit.status || 1);
 console.log("Blog deployment overlay ready: " + posts.length + " article(s), " + additions.length + " sitemap URL(s) added.");

@@ -28,6 +28,8 @@
 | `/products/` | 产品中心 | custom activewear product catalog | private label activewear styles | 生产已验证；长期索引价值待真实数据确认（2026-08-29） |
 | `/products/{product-slug}-{id}/` | 产品详情模板（1,002 页） | 具体产品名 / SKU | custom、private label 与采购规格 | 生产已验证；逐页意图与长期索引价值待证据确认（2026-08-29） |
 | `/faq/` | 常见问题中心 | custom activewear FAQ | MOQ、打样、面料、品牌、质控与运输 | 生产已验证；与指南页查询边界待 GSC 验证（2026-08-29） |
+| `/blog/` | 编辑文章归档 | activewear product field notes | 已发布文章入口；空归档保持 noindex 且不进 sitemap | 有首篇文章后再纳入索引；2026-10-07 生产页仍为空，修复已进入本地候选 |
+| `/blog/{YYYY-MM-DD}-{slug}/` | 编辑文章 | 每篇文章独立的信息型长尾问题，例如样品验收或项目 brief | 支持最匹配的商业指南，不复用其 manufacturer/service 主词 | 仅发布清单中的文章可索引；长尾需求仍需用 GSC 验证 |
 
 Privacy Policy、Terms of Use 与 Cookie Notice 是辅助治理页面，不分配增长关键词；其内容和法律适用性必须由负责人或合格专业方确认。
 

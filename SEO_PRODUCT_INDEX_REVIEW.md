@@ -1,21 +1,21 @@
 # Product index review
 
-Generated: 2026-09-09
+Generated: 2026-09-17
 
 ## Scope
 
 - Product detail pages audited: **1002**
-- Basic keep candidates: **999**
-- Review candidates: **3**
-- Keep and monitor: **999**
-- Improve and monitor: **3**
+- Basic keep candidates: **1002**
+- Review candidates: **0**
+- Keep and monitor: **1002**
+- Improve and monitor: **0**
 - Fix before indexing: **0**
 - Unique titles: **1002 / 1002**
 - Unique meta descriptions: **1002 / 1002**
 - Unique H1 values: **1002 / 1002**
 - Pages with Product JSON-LD: **1002 / 1002**
 - Pages with at least one image: **1002 / 1002**
-- Pages below 350 rendered words: **3**
+- Pages below 350 rendered words: **0**
 
 ## Review queues
 
@@ -27,15 +27,11 @@ Generated: 2026-09-09
 
 ### Structural or thin-page flags
 
-- /products/activewear-style-59001/ — short-349-words
-- /products/outfit-for-yoga-gym-shorts-58341/ — short-348-words
-- /products/slouch-cotton-scrunch-knee-high-long-socks-40715/ — short-336-words
+- none
 
 ### Recommended action by page
 
-- /products/activewear-style-59001/ — improve-and-monitor
-- /products/outfit-for-yoga-gym-shorts-58341/ — improve-and-monitor
-- /products/slouch-cotton-scrunch-knee-high-long-socks-40715/ — improve-and-monitor
+- none
 
 ## Index policy
 

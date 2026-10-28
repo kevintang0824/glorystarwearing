@@ -13,6 +13,8 @@ The workflow keeps one post per Shanghai calendar day. A retry on the same day r
 
 After article generation, the workflow commits the blog files to main, builds the production output with the existing release build, overlays the blog pages and sitemap entries, and deploys to Vercel.
 
+The empty blog archive remains `noindex,follow` and is omitted from the release sitemap until the first article exists. Once posts are present, the archive and article URLs are added with publication dates, and the release build runs the site SEO audit before deployment.
+
 ## Editorial rules
 
 - Reddit provides qualitative topic signals, not evidence of general product performance.

@@ -149,6 +149,33 @@ fs.rmSync(stagingRoot, { recursive: true, force: true });
 
 prepareMultilingualRelease();
 
+// Policy files are part of the tracked site source, not the media cache. Keep
+// them synchronized in every cache-backed release before validation.
+for (const relative of ["robots.txt", "llms.txt"]) {
+  fs.copyFileSync(path.join(root, relative), path.join(publicRoot, relative));
+}
+
+// The homepage uses generated responsive variants outside the governed
+// catalogue media shards. Copy those source assets into cache-backed releases
+// so the optimized srcset does not point at files missing from public/.
+const sourceUploads = path.join(root, "wp-content", "uploads");
+const copyResponsiveHomepageAssets = (directory) => {
+  if (!fs.existsSync(directory)) return;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const source = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      copyResponsiveHomepageAssets(source);
+      continue;
+    }
+    if (!/-\d+(?:w)?\.webp$/i.test(entry.name)) continue;
+    const relative = path.relative(root, source);
+    const destination = path.join(publicRoot, relative);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(source, destination);
+  }
+};
+copyResponsiveHomepageAssets(sourceUploads);
+
 const verification = spawnSync(process.execPath, [path.join(root, "scripts", "verify-release-output.mjs")], {
   cwd: root,
   encoding: "utf8",

@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Activewear Manufacturing Blog | Glory Star Wear</title>
   <meta name="description" content="Practical notes on activewear fabrics, product development, sampling, and quality control.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+  <link rel="icon" href="/assets/brand/glorystarwear-favicon-32.png" type="image/png">
   <link rel="canonical" href="https://glorystarwearing.com/blog/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Activewear Manufacturing Blog | Glory Star Wear">
   <meta property="og:description" content="Practical notes on activewear fabrics, product development, sampling, and quality control.">
   <meta property="og:url" content="https://glorystarwearing.com/blog/">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Glory Star Wear Activewear Manufacturing Blog","url":"https://glorystarwearing.com/blog/","publisher":{"@type":"Organization","name":"Glory Star Wear","url":"https://glorystarwearing.com/"}}</script>
+  <script type="application/ld+json">{{SCHEMA}}</script>
   <style>
     body{margin:0;color:#222;font:17px/1.7 Arial,sans-serif}a{color:#6b7358}
     header,footer{padding:20px 24px;border-bottom:1px solid #e6e4df}
     main{width:min(900px,calc(100% - 48px));margin:70px auto 100px}
+    .skip-link{position:absolute;left:-10000px;top:8px;background:#fff;padding:10px;z-index:10}.skip-link:focus{left:8px}
+    nav[aria-label="Breadcrumb"]{font-size:14px;margin-bottom:32px}
     .eyebrow{color:#6b7358;text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:700}
     h1{font-size:clamp(36px,6vw,58px);line-height:1.1;margin:12px 0}
     .lede{font-size:19px;color:#5f6468;max-width:720px}
@@ -22,13 +26,16 @@
   </style>
 </head>
 <body>
-  <header><a href="/">Glory Star Wear</a></header>
-  <main>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header><nav aria-label="Primary navigation"><a href="/">Glory Star Wear</a> · <a href="/blog/">Blog</a></nav></header>
+  <main id="main-content">
+    <nav aria-label="Breadcrumb"><a href="/">Home</a> / <span>Blog</span></nav>
     <p class="eyebrow">Field notes for activewear brands</p>
     <h1>Activewear product and manufacturing insights</h1>
     <p class="lede">Practical answers about fit, fabrics, sampling, and production planning, developed from questions raised in public apparel communities.</p>
     {{POST_LIST}}
   </main>
-  <footer><a href="/">Glory Star Wear</a> · <a href="/contact-us/">Contact</a></footer>
+  <footer><a href="/">Glory Star Wear</a> · <a href="/contact-us/">Contact</a> · <a href="/privacy-policy/">Privacy Policy</a> · <a href="/terms-of-use/">Terms of Use</a> · <a href="/cookie-policy/">Cookie Notice</a></footer>
+  <script defer src="/assets/privacy-controls.js" data-measurement-id="GT-W6K5676W"></script>
 </body>
 </html>
