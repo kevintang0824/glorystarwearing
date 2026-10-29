@@ -6,7 +6,12 @@ const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
 const blogRoot = path.join(root, "blog");
 const outputBlogRoot = path.join(publicRoot, "blog");
-const restore = spawnSync(process.execPath, [path.join(root, "scripts", "restore-release-cache.mjs")], {
+// Explicit local recovery after generation completed but a packaging check
+// failed. Reuse is gated by the complete release verifier, never by existence.
+const restoreScript = process.env.GSW_REUSE_VERIFIED_RELEASE === "1"
+  ? "verify-release-output.mjs"
+  : "restore-release-cache.mjs";
+const restore = spawnSync(process.execPath, [path.join(root, "scripts", restoreScript)], {
   cwd: root,
   encoding: "utf8",
 });

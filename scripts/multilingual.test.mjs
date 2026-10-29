@@ -42,11 +42,18 @@ test('every language clones the complete English interface and uses no runtime t
       }
     }
   }
-  assert.match(read('zh-cn/index.html'),/为您的品牌打造运动服系列/);
-  assert.match(read('fr/index.html'),/Vêtements de sport pour votre marque/);
-  assert.match(read('es/index.html'),/Ropa deportiva para tu marca/);
-  assert.match(read('pt/index.html'),/Roupa desportiva para a sua marca/);
-  assert.match(read('ru/index.html'),/Спортивная одежда под вашим брендом/);
+  const homepageHeadings = {
+    'zh-cn': '中国厦门运动服定制生产商',
+    fr: 'Fabricant de vêtements de sport personnalisés à Xiamen, en Chine',
+    es: 'Fabricante de ropa deportiva personalizada en Xiamen, China',
+    pt: 'Fabricante de roupa desportiva personalizada em Xiamen, China',
+    ru: 'Производитель спортивной одежды под заказ в Сямыне, Китай',
+  };
+  for (const [prefix, expected] of Object.entries(homepageHeadings)) {
+    const dom = new JSDOM(read(`${prefix}/index.html`));
+    assert.equal(dom.window.document.querySelector('h1')?.textContent.trim(), expected, `${prefix} homepage heading`);
+    dom.window.close();
+  }
 });
 
 test('language selector keeps the current product, query and fragment',()=>{

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { canonicalPages, releaseImageAssets } from "./prepare-multilingual.mjs";
 import { languages } from "./locales.mjs";
+import { editorialSource } from "./editorial-localization.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
@@ -169,12 +170,15 @@ for (const relative of canonicalPages(publicRoot)) {
   }
   if (!page.includes('data-language="fr"')) fail(`Missing native language links in ${relative}.`);
   if (relative === "404.html") continue;
+  // Held editorial pages are compared with their validated translation source,
+  // while every other page must still match the current English structure.
+  const translationSource = editorialSource(relative, () => page);
   for (const language of languages.slice(1)) {
     const translatedPath = path.join(publicRoot, language.prefix, relative);
     if (!fs.existsSync(translatedPath)) { fail(`Missing language page ${language.prefix}/${relative}`); continue; }
     const localized = fs.readFileSync(translatedPath, "utf8");
     for (const tag of ["section", "article", "img", "form", "input", "textarea", "details", "figure"]) {
-      const sourceCount = (page.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
+      const sourceCount = (translationSource.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
       const localizedCount = (localized.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
       if (localizedCount !== sourceCount) fail(`Interface parity failed for ${language.prefix}/${relative}: ${tag} ${localizedCount}/${sourceCount}`);
     }
