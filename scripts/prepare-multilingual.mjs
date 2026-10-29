@@ -6,12 +6,12 @@ import { languages, copy, categoryKeys, guideRoutes } from './locales.mjs';
 import { languageInterface } from './interface-copy.mjs';
 import { pageCopy } from './page-copy.mjs';
 import { legacyPhraseExtra } from './legacy-copy-extra.mjs';
+import { editorialSource, editorialLastmod } from './editorial-localization.mjs';
 
 const sourceRoot = path.resolve(import.meta.dirname, '..');
 const origin = 'https://glorystarwearing.com';
 const snapshotPath = path.join(sourceRoot, 'catalog-data/multilingual-catalog.json.gz');
 const version = '20260906-1';
-const releaseDate = process.env.SITE_RELEASE_DATE || new Date().toISOString().slice(0, 10);
 const homepageAltReplacements = new Map([
   ['sports bra wholesale customized sports bras sports bra manufacturers personalized sports bra', 'Custom sports bra styles for private-label activewear collections'],
   ['athletic tank tops private label women&#039;s clothing wholesale fitness wear women&#039;s square neck tank top', "Women's square-neck athletic tank top for private-label collections"],
@@ -573,6 +573,9 @@ const localizePagePhrases = (html, language) => {
   for (const [english, localized] of Object.entries(phrases).sort((a, b) => b[0].length - a[0].length)) {
     if (!english || localized == null || english === localized) continue;
     const escaped = english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Skip absent phrases before scanning every visible text node. The broad
+    // case-insensitive check also covers label matches and encoded phrases.
+    if (!new RegExp(escaped, 'i').test(html) && !html.includes(escape(english))) continue;
     const replacement = markTranslation(localized);
     html = html.replace(new RegExp(`>${escaped}<`, 'g'), `>${replacement}<`)
       .replace(new RegExp(`(>\\s*)${escaped}(?=\\s|<)`, 'g'), `$1${replacement}`)
@@ -605,6 +608,7 @@ const localizePagePhrases = (html, language) => {
   for (const [english, localized] of Object.entries(extraPhrases).sort((a, b) => b[0].length - a[0].length)) {
     if (!english || localized == null || english === localized) continue;
     const escaped = english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!new RegExp(escaped, 'i').test(html) && !html.includes(escape(english))) continue;
     const boundaryPattern = /^[A-Za-z]/.test(english) && /[A-Za-z]$/.test(english)
       ? new RegExp(`(?<![A-Za-z])${escaped}(?![A-Za-z])`, 'g')
       : new RegExp(escaped, 'g');
@@ -617,6 +621,7 @@ const localizePagePhrases = (html, language) => {
   for (const [english, localized] of [...fragments].sort((a, b) => b[0].length - a[0].length)) {
     if (!english || localized == null || english === localized) continue;
     const escaped = english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!new RegExp(escaped, 'i').test(html) && !html.includes(escape(english))) continue;
     const boundaryPattern = /^[A-Za-z]/.test(english) && /[A-Za-z]$/.test(english)
       ? new RegExp(`(?<![A-Za-z])${escaped}(?![A-Za-z])`, 'gi')
       : new RegExp(escaped, 'gi');
@@ -631,6 +636,7 @@ const localizePagePhrases = (html, language) => {
   for (const [english, localized] of Object.entries(words).sort((a, b) => b[0].length - a[0].length)) {
     if (!english || localized == null || english === localized) continue;
     const escaped = english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!new RegExp(escaped, 'i').test(html) && !html.includes(escape(english))) continue;
     const boundaryPattern = new RegExp(`(?<![A-Za-z])${escaped}(?![A-Za-z])`, 'gi');
     html = html.replace(/>([^<>]*)</g, (full, text) => `>${text.replace(boundaryPattern, escape(localized))}<`);
   }
@@ -2187,6 +2193,8 @@ function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,
 
 function buildLocalized(outputRoot,snapshot) {
   const urls=[];
+  const sourceDates = new Map([...fs.readFileSync(path.join(sourceRoot, 'sitemap.xml'), 'utf8').matchAll(/<url>\s*<loc>https:\/\/glorystarwearing\.com([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)].map((match) => [match[1], match[2]]));
+  const lastmodByUrl = new Map();
   const write=(file,html)=>{const dest=path.join(outputRoot,file);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,html)};
   for(const language of languages.slice(1)) {
     const t=copy[language.code],u=t.ui,base=`/${language.prefix}`;
@@ -2195,17 +2203,19 @@ function buildLocalized(outputRoot,snapshot) {
     for(const [key] of Object.entries(t.pages)) {
       const route=key?`/${key}/`:'/';
       const relative=key?`${key}/index.html`:'index.html';
-      const source=key==='products' ? snapshot.files['products/index.html'] : fs.readFileSync(path.join(sourceRoot,relative),'utf8');
+      const source=key==='products' ? snapshot.files['products/index.html'] : editorialSource(relative, () => fs.readFileSync(path.join(sourceRoot,relative),'utf8'));
       write(`${language.prefix}/${relative}`,cloneEnglishPage(language,route,source,{pageKey:key,products}));
       urls.push(`${origin}${base}${route}`);
+      lastmodByUrl.set(`${origin}${base}${route}`, editorialLastmod(relative, sourceDates.get(route)));
     }
     snapshot.products.forEach((product)=>{
       write(`${language.prefix}${product.route}index.html`,cloneEnglishPage(language,product.route,snapshot.files[`${product.route.slice(1)}index.html`],{product,products}));
       urls.push(`${origin}${base}${product.route}`);
+      lastmodByUrl.set(`${origin}${base}${product.route}`, editorialLastmod(`${product.route.slice(1)}index.html`, sourceDates.get(product.route)));
     });
     write(`${language.prefix}/404.html`,cloneEnglishPage(language,'/',fs.readFileSync(path.join(sourceRoot,'404.html'),'utf8'),{pageKey:'',products}));
   }
-  write('sitemap-multilingual.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url=>`<url><loc>${url}</loc><lastmod>${releaseDate}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+  write('sitemap-multilingual.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(url=>`<url><loc>${url}</loc><lastmod>${lastmodByUrl.get(url)}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   write('multilingual-manifest.json',JSON.stringify({version:3,languages:languages.map(({code,prefix})=>({code,prefix})),sourcePages:1026,localizedPages:urls.length,productsPerLanguage:snapshot.products.length,translationService:false,interfaceParity:'english-page-clone'},null,2));
   let robots=fs.readFileSync(path.join(outputRoot,'robots.txt'),'utf8');
   if(!robots.includes('/sitemap-multilingual.xml')) robots+=`\nSitemap: ${origin}/sitemap-multilingual.xml\n`;

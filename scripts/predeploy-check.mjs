@@ -29,11 +29,13 @@ run(process.execPath, ["--check", "scripts/remote-release-build.mjs"]);
 run(process.execPath, ["--check", "scripts/cache-release-slice.mjs"]);
 run(process.execPath, ["--check", "scripts/verify-release-output.mjs"]);
 run(process.execPath, ["--check", "scripts/restore-release-cache.mjs"]);
+run(process.execPath, ["--check", "scripts/restore-release-cache-with-blog.mjs"]);
 run(process.execPath, ["--check", "assets/seo-pages.js"]);
 run(process.execPath, ["--check", "assets/privacy-controls.js"]);
 run(process.execPath, ["--check", "assets/catalog.js"]);
 run(process.execPath, ["--check", "assets/multilingual.js"]);
 run(process.execPath, ["--check", "scripts/prepare-multilingual.mjs"]);
+run(process.execPath, ["--test", "scripts/editorial-localization.test.mjs"]);
 run(process.execPath, ["--check", "scripts/locales.mjs"]);
 run(process.execPath, ["--check", "assets/localized-site.js"]);
 run("xmllint", ["--noout", "sitemap.xml"]);
@@ -56,9 +58,9 @@ try {
   const config = JSON.parse(fs.readFileSync(vercelPath, "utf8"));
   if (config.trailingSlash !== true) fail("vercel.json must canonicalize directory routes with trailingSlash: true.");
   else pass("Vercel trailing-slash canonicalization");
-  if (config.buildCommand !== "node scripts/restore-release-cache.mjs" || config.outputDirectory !== "public") {
-    fail("vercel.json must use the governed immutable release restore and public output directory.");
-  } else pass("Vercel governed immutable release restore");
+  if (config.buildCommand !== "node scripts/restore-release-cache-with-blog.mjs" || config.outputDirectory !== "public") {
+    fail("vercel.json must use the governed release restore with blog overlay and public output directory.");
+  } else pass("Vercel governed release restore with blog overlay");
   const redirects = Array.isArray(config.redirects) ? config.redirects : [];
   const hasHostRedirect = (source, destination) => redirects.some((redirect) =>
     redirect.source === source &&
@@ -81,12 +83,19 @@ try {
   else pass("Vercel Content-Signal retrieval policy");
   const assetCache = config.headers?.find((rule) => rule.source === "/wp-content/(.*)")?.headers ?? [];
   const assetCacheValue = assetCache.find((header) => header.key.toLowerCase() === "cache-control")?.value ?? "";
-  const browserMaxAge = Number(assetCacheValue.match(/(?:^|,)\s*max-age=(\d+)/i)?.[1] ?? Number.NaN);
+  const browserMaxAge = Number(assetCacheValue.match(/(?:^|,)\s*max-age=(\d+)\s*(?:,|$)/i)?.[1] ?? Number.NaN);
   if (!assetCacheValue || /immutable/i.test(assetCacheValue) || !Number.isFinite(browserMaxAge) || browserMaxAge > 604800) {
     fail("Stable-name /wp-content assets need a revalidating browser cache of at most seven days and must not be immutable.");
   } else pass("Vercel revalidating asset cache");
 } catch (error) {
   fail(`vercel.json cannot be parsed: ${error.message}`);
+}
+
+for (const relative of ["scripts/restore-release-cache-with-blog.mjs", "blog/posts.json", "blog/index.html", "scripts/templates/blog-index.html", "scripts/templates/blog-article.html"]) {
+  const sourcePath = path.join(root, relative);
+  if (!fs.existsSync(sourcePath) || !fs.statSync(sourcePath).isFile() || fs.statSync(sourcePath).size === 0) {
+    fail(`Blog release input is missing or empty: ${relative}.`);
+  } else pass(`${relative} packaged for blog releases`);
 }
 
 const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");

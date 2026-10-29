@@ -20,3 +20,10 @@ Maintenance:
 - Catalogue generation and the immutable release-cache build both preserve and regenerate the language versions.
 - `node scripts/verify-release-output.mjs` checks page completeness, language declarations, canonicals, reciprocal links and the absence of runtime translation services.
 - `node --test scripts/multilingual.test.mjs` checks native language navigation, URL context, keyboard behavior, catalogue filtering and inquiry generation.
+# Editorial updates on October 29, 2026
+
+Seven English pages now contain expanded buyer guidance. Their previous English source is retained in `catalog-data/editorial-source-baseline.json.gz` for the existing five authored language mappings. `editorial-localization.mjs` validates each source hash and date before generation. This prevents new English paragraphs from becoming generic fallback text in other languages.
+
+To translate a held page, add reviewed locale mappings for all new copy, remove that page from the baseline, then compare the rendered locale pages and FAQ structured data. Company identity, contacts, navigation or policy corrections must also be applied to held sources; this is a content baseline, not permission to leave facts stale.
+
+The multilingual sitemap now uses the actual source modification date (or the retained editorial date), rather than refreshing every URL on every build. Check this contract with `node --test scripts/editorial-localization.test.mjs`.
