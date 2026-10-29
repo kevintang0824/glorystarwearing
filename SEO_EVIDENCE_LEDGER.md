@@ -29,3 +29,9 @@ This is the publication gate for factory evidence, cases and third-party referen
 ## AI / search publication rule
 
 Use concrete facts, source links, dates and scope qualifiers. Label samples as references. Never use an unrelated brand image as a customer reference, and never imply that a workflow illustration proves current factory ownership or capacity.
+
+## Owner-confirmed leggings terms — October 30, 2026
+
+- The owner confirmed in this chat: “现有款每款 5 件，颜色和尺码可混” and “打样7个工作日”. Publish the 5-piece minimum for existing leggings styles, with mixed colors and sizes; do not extend it to custom designs, materials or logo services without confirmation.
+- Sampling lead time: 7 working days. The start date, revision scope, production and transport schedules were not supplied; do not invent them.
+- Fabric percentages are taken from the site’s existing SKU-specific catalog: SP3003 RXW (90% nylon / 10% spandex), SPTZ9639 ZC-1 (78% nylon / 22% spandex), SPWX26036+wx26035+wx26034 FNK-1 (75% nylon / 25% spandex). These remain catalog references to reconfirm on the approved sample, not proof of every style or performance. Competitor fabric specifications are not evidence of our product composition.
