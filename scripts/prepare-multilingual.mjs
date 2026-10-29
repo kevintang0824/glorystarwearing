@@ -7,6 +7,7 @@ import { languageInterface } from './interface-copy.mjs';
 import { pageCopy } from './page-copy.mjs';
 import { legacyPhraseExtra } from './legacy-copy-extra.mjs';
 import { editorialSource, editorialLastmod } from './editorial-localization.mjs';
+import { authoredEditorialPage } from './authored-editorial.mjs';
 
 const sourceRoot = path.resolve(import.meta.dirname, '..');
 const origin = 'https://glorystarwearing.com';
@@ -2111,6 +2112,8 @@ const localizeLegacyProductTitles = (html, products) => {
 };
 
 export function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,products=[]}={}) {
+  const authored = !product && authoredEditorialPage(language, route === '/' ? 'index.html' : `${route.slice(1)}index.html`);
+  if (authored) return authored.html;
   const t=copy[language.code], page=t.pages[pageKey]?.split('|') || [];
   let html=sourceHtml
     .replace(/<html\s+lang="[^"]+"/,`<html lang="${language.code}"`)
@@ -2223,7 +2226,7 @@ function buildLocalized(outputRoot,snapshot) {
       const source=key==='products' ? snapshot.files['products/index.html'] : editorialSource(relative, () => fs.readFileSync(path.join(sourceRoot,relative),'utf8'));
       write(`${language.prefix}/${relative}`,cloneEnglishPage(language,route,source,{pageKey:key,products}));
       urls.push(`${origin}${base}${route}`);
-      lastmodByUrl.set(`${origin}${base}${route}`, editorialLastmod(relative, sourceDates.get(route)));
+      lastmodByUrl.set(`${origin}${base}${route}`, authoredEditorialPage(language, relative)?.lastmod ?? editorialLastmod(relative, sourceDates.get(route)));
     }
     snapshot.products.forEach((product)=>{
       write(`${language.prefix}${product.route}index.html`,cloneEnglishPage(language,product.route,snapshot.files[`${product.route.slice(1)}index.html`],{product,products}));

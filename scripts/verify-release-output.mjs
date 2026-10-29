@@ -3,6 +3,7 @@ import path from "node:path";
 import { canonicalPages, releaseImageAssets } from "./prepare-multilingual.mjs";
 import { languages } from "./locales.mjs";
 import { editorialSource } from "./editorial-localization.mjs";
+import { authoredEditorialPage } from "./authored-editorial.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
@@ -180,11 +181,13 @@ for (const relative of canonicalPages(publicRoot)) {
   if (relative === "404.html") continue;
   // Held editorial pages are compared with their validated translation source,
   // while every other page must still match the current English structure.
-  const translationSource = editorialSource(relative, () => page);
   for (const language of languages.slice(1)) {
+    const authored = authoredEditorialPage(language, relative);
+    const translationSource = authored?.html ?? editorialSource(relative, () => page);
     const translatedPath = path.join(publicRoot, language.prefix, relative);
     if (!fs.existsSync(translatedPath)) { fail(`Missing language page ${language.prefix}/${relative}`); continue; }
     const localized = fs.readFileSync(translatedPath, "utf8");
+    if (authored && localized !== authored.html) fail(`Stale authored editorial page: ${language.prefix}/${relative}`);
     for (const tag of ["section", "article", "img", "form", "input", "textarea", "details", "figure"]) {
       const sourceCount = (translationSource.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;
       const localizedCount = (localized.match(new RegExp(`<${tag}\\b`, "gi")) || []).length;

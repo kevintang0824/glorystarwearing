@@ -696,7 +696,7 @@ const catalogPage = `<!doctype html>
   <link rel="stylesheet" href="/assets/seo-pages.css?v=20260828-3">
   <link rel="stylesheet" href="/assets/catalog.css?v=20260917-1">
   ${analytics}
-  <script defer src="/assets/seo-pages.js?v=20260828-2"></script>
+  <script defer src="/assets/seo-pages.js?v=20261030-1"></script>
   <script defer src="/assets/catalog.js?v=20260828-11"></script>
   <script type="application/ld+json">${jsonScript(collectionSchema)}</script>
 </head>
@@ -847,7 +847,7 @@ for (const product of catalog) {
   <link rel="stylesheet" href="/assets/seo-pages.css?v=20260828-3">
   <link rel="stylesheet" href="/assets/catalog.css?v=20260917-1">
   ${analytics}
-  <script defer src="/assets/seo-pages.js?v=20260828-2"></script>
+  <script defer src="/assets/seo-pages.js?v=20261030-1"></script>
   <script type="application/ld+json">${jsonScript(schema)}</script>
 </head>
 <body class="catalog-page">
@@ -982,7 +982,7 @@ for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
   page = enrichOrganizationJsonLd(page);
   page = page
     .replace(/\/assets\/seo-pages\.css(?:\?v=[^"']*)?/g, "/assets/seo-pages.css?v=20260828-3")
-    .replace(/\/assets\/seo-pages\.js(?:\?v=[^"']*)?/g, "/assets/seo-pages.js?v=20260828-2")
+    .replace(/\/assets\/seo-pages\.js(?:\?v=[^"']*)?/g, "/assets/seo-pages.js?v=20261030-1")
     .replace(/<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=GT-W6K5676W"><\/script>\s*<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}gtag\("js",new Date\(\)\);gtag\("config","GT-W6K5676W"\);<\/script>/gi, analytics.trim())
     .replace(/<footer class="site-footer">[\s\S]*?<\/footer>/i, footer.trim());
   if (page.includes('class="nav-links"')) {

@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const shellHeader = document.querySelector(".site-header:not(.site-header--catalog-showcase)");
   const shellNavigation = shellHeader?.querySelector(".nav-links");
-  if (shellNavigation) {
+  if (shellNavigation) shellHeader.classList.add("site-header--unified");
+  // Localized HTML already has authored labels and same-language routes.
+  // Rebuilding it from the English menu silently sent buyers out of their locale.
+  if (shellNavigation && /^en(?:-|$)/i.test(document.documentElement.lang)) {
     const existingQuoteHref = shellNavigation.querySelector(".button")?.getAttribute("href") || "/request-a-quote/";
     const currentPath = window.location.pathname.replace(/\/+$/, "") || "/";
     const shellLinks = [

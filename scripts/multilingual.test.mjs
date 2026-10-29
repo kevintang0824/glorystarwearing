@@ -19,6 +19,21 @@ function runMenu(dom) {
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded',{bubbles:true}));
 }
 
+test('shared page initialization preserves all five localized navigation menus', () => {
+  const script = fs.readFileSync(path.join(root, 'assets/seo-pages.js'), 'utf8');
+  for (const language of languages.slice(1)) {
+    const file = `${language.prefix}/custom-leggings-manufacturer/index.html`;
+    const dom = domFor(file, `https://glorystarwearing.com/${language.prefix}/custom-leggings-manufacturer/`);
+    const nav = () => [...dom.window.document.querySelectorAll('.nav-links a')].map(a => [a.textContent.trim(), a.getAttribute('href')]);
+    const before = nav();
+    dom.window.eval(script);
+    dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+    assert.deepEqual(nav(), before, `${language.code}: preserve native labels and destinations`);
+    assert.ok(nav().every(([, href]) => href.startsWith(`/${language.prefix}/`)));
+    dom.window.close();
+  }
+});
+
 const structure=(html)=>Object.fromEntries(['section','article','img','form','input','textarea','details','figure'].map(tag=>[tag,(html.match(new RegExp(`<${tag}\\b`,'gi'))||[]).length]));
 
 test('every language clones the complete English interface and uses no runtime translation provider',()=>{

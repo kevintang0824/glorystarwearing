@@ -27,3 +27,9 @@ Seven English pages now contain expanded buyer guidance. Their previous English 
 To translate a held page, add reviewed locale mappings for all new copy, remove that page from the baseline, then compare the rendered locale pages and FAQ structured data. Company identity, contacts, navigation or policy corrections must also be applied to held sources; this is a content baseline, not permission to leave facts stale.
 
 The multilingual sitemap now uses the actual source modification date (or the retained editorial date), rather than refreshing every URL on every build. Check this contract with `node --test scripts/editorial-localization.test.mjs`.
+
+## Authored French leggings page — October 30, 2026
+
+The leggings guide now has a complete French document in `scripts/templates/editorial/fr/custom-leggings-manufacturer/index.html`. `authored-editorial.mjs` registers its revision date and checks its language, canonical and schema date. Both regular generation and release verification use this document directly, without the legacy phrase translator. Keep its navigation, assets, company identity and contact information synchronized when the shared shell changes.
+
+The previous English leggings source is the eighth entry in the translation baseline. Spanish, Portuguese, Russian and Chinese continue using that source until their expanded content is translated and checked. Only the revised English and French leggings sitemap entries advance to October 30. Run `node --test scripts/authored-editorial.test.mjs` to check regeneration and exact visible FAQ/schema agreement.
