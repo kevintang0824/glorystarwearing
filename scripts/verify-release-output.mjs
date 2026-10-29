@@ -57,6 +57,14 @@ const parseJsonLdNodes = (html) => html.split('<script type="application/ld+json
   }
 });
 const structuredEnhancementFailures = [];
+const productRoutes = new Set(productPages.map(entry => `/products/${entry.name}/`));
+const hasBrokenProductReference = (value, prefix) => {
+  if (Array.isArray(value)) return value.some(item => hasBrokenProductReference(item, prefix));
+  if (value && typeof value === "object") return Object.values(value).some(item => hasBrokenProductReference(item, prefix));
+  if (typeof value !== "string" || !value.startsWith(`https://glorystarwearing.com/${prefix}/products/`)) return false;
+  const route = new URL(value).pathname.slice(prefix.length + 1);
+  return route !== "/products/" && !productRoutes.has(route);
+};
 for (const entry of productPages) {
   const productPath = path.join(productsRoot, entry.name, "index.html");
   const nodes = parseJsonLdNodes(fs.readFileSync(productPath, "utf8"));
@@ -188,6 +196,9 @@ for (const relative of canonicalPages(publicRoot)) {
       fail(`Incorrect language or canonical in ${language.prefix}/${relative}`);
     }
     if (localized.split('hreflang="x-default"').length !== 2) fail(`Missing alternate languages in ${language.prefix}/${relative}`);
+    if (hasBrokenProductReference(parseJsonLdNodes(localized), language.prefix)) {
+      fail(`Broken product URL in structured data: ${language.prefix}/${relative}`);
+    }
     if (/translate\.google|gtranslate|googtrans|TranslateElement/.test(localized)) fail(`Unexpected translation service in ${language.prefix}/${relative}`);
     if (/\b(?:src|href|data-[\w-]+)="(?:wp-content|wp-includes)\//.test(localized)) {
       fail(`Locale-relative shared asset URL in ${language.prefix}/${relative}`);

@@ -36,6 +36,86 @@
       ],
       "destination": "https://glorystarwearing.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/fr/products/slouch-coton-scrunch-knee-high-long-socks-40715/",
+      "destination": "/fr/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/fr/products/polyamide-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/fr/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/es/products/slouch-algod%C3%B3n-scrunch-knee-high-long-socks-40715/",
+      "destination": "/es/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/es/products/slouch-algodón-scrunch-knee-high-long-socks-40715/",
+      "destination": "/es/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/es/products/poliamida-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/es/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/pt/products/slouch-algod%C3%A3o-scrunch-knee-high-long-socks-40715/",
+      "destination": "/pt/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/pt/products/slouch-algodão-scrunch-knee-high-long-socks-40715/",
+      "destination": "/pt/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/pt/products/poliamida-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/pt/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/ru/products/slouch-%D1%85%D0%BB%D0%BE%D0%BF%D0%BE%D0%BA-scrunch-knee-high-long-socks-40715/",
+      "destination": "/ru/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/ru/products/slouch-хлопок-scrunch-knee-high-long-socks-40715/",
+      "destination": "/ru/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/ru/products/%D0%BF%D0%BE%D0%BB%D0%B8%D0%B0%D0%BC%D0%B8%D0%B4-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/ru/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/ru/products/полиамид-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/ru/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/zh-cn/products/slouch-%E6%A3%89-scrunch-knee-high-long-socks-40715/",
+      "destination": "/zh-cn/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/zh-cn/products/slouch-棉-scrunch-knee-high-long-socks-40715/",
+      "destination": "/zh-cn/products/slouch-cotton-scrunch-knee-high-long-socks-40715/",
+      "permanent": true
+    },
+    {
+      "source": "/zh-cn/products/%E9%94%A6%E7%BA%B6-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/zh-cn/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
+    },
+    {
+      "source": "/zh-cn/products/锦纶-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "destination": "/zh-cn/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/",
+      "permanent": true
     }
   ],
   "headers": [

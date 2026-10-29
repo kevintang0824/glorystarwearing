@@ -35,7 +35,7 @@ run(process.execPath, ["--check", "assets/privacy-controls.js"]);
 run(process.execPath, ["--check", "assets/catalog.js"]);
 run(process.execPath, ["--check", "assets/multilingual.js"]);
 run(process.execPath, ["--check", "scripts/prepare-multilingual.mjs"]);
-run(process.execPath, ["--test", "scripts/editorial-localization.test.mjs"]);
+run(process.execPath, ["--test", "scripts/editorial-localization.test.mjs", "scripts/multilingual-urls.test.mjs"]);
 run(process.execPath, ["--check", "scripts/locales.mjs"]);
 run(process.execPath, ["--check", "assets/localized-site.js"]);
 run("xmllint", ["--noout", "sitemap.xml"]);

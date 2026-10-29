@@ -12,6 +12,12 @@ const sourceRoot = path.resolve(import.meta.dirname, '..');
 const origin = 'https://glorystarwearing.com';
 const snapshotPath = path.join(sourceRoot, 'catalog-data/multilingual-catalog.json.gz');
 const version = '20260906-1';
+// These localized products had material words translated inside schema URLs.
+// Keep their repair date without advancing unrelated pages on every build.
+const schemaUrlFixRoutes = new Set([
+  '/products/slouch-cotton-scrunch-knee-high-long-socks-40715/',
+  '/products/nylon-workout-tote-bag-travel-shoulder-bags-for-women-40070/',
+]);
 const homepageAltReplacements = new Map([
   ['sports bra wholesale customized sports bras sports bra manufacturers personalized sports bra', 'Custom sports bra styles for private-label activewear collections'],
   ['athletic tank tops private label women&#039;s clothing wholesale fitness wear women&#039;s square neck tank top', "Women's square-neck athletic tank top for private-label collections"],
@@ -199,11 +205,22 @@ const replaceExact = (html, replacements) => {
   return html;
 };
 
-const replaceTextContent = (html, replacements) => html.replace(/>([^<>]*)</g, (full, text) => {
-  let localized = text;
-  for (const [pattern, value] of replacements) localized = localized.replace(pattern, value);
-  return `>${localized}<`;
-});
+export const replaceTextContent = (html, replacements) => {
+  // Script text is not visible copy. Translating material words inside JSON-LD
+  // changed product URLs (for example slouch-cotton to slouch-хлопок).
+  // Structured data has its own key-aware translation pass below.
+  const blocks = [];
+  html = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, (block) => {
+    blocks.push(block);
+    return `__GSW_TEXT_BLOCK_${blocks.length - 1}__`;
+  });
+  html = html.replace(/>([^<>]*)</g, (full, text) => {
+    let localized = text;
+    for (const [pattern, value] of replacements) localized = localized.replace(pattern, value);
+    return `>${localized}<`;
+  });
+  return html.replace(/__GSW_TEXT_BLOCK_(\d+)__/g, (_, index) => blocks[Number(index)]);
+};
 
 const formOptionCopy = {
   fr: {'Select one':'Sélectionnez une option','Build up the brand now-need sample order':'Lancement de marque — besoin d’échantillons','Ask for private label on our instock styles':'Demander une marque privée sur nos modèles en stock','Need to custom make your own design':'Créer votre propre modèle','Looking for new gymwear vendor':'Rechercher un nouveau fournisseur','Where did you learn about us?':'Comment nous avez-vous connus ?','Google Search':'Recherche Google','Bing or another search engine':'Bing ou autre moteur de recherche','AI assistant':'Assistant IA','Instagram or Facebook':'Instagram ou Facebook','Friend or referral':'Ami ou recommandation','Trade show or event':'Salon ou événement','Direct or other':'Direct ou autre','Private label activewear':'Vêtements de sport sous marque privée','Logo, labels and packaging':'Logo, étiquettes et emballage','Gym wear':'Vêtements pour la salle','Yoga wear':'Vêtements de yoga','Sports bras':'Brassières de sport','Custom leggings':'Leggings personnalisés','Activewear sets':'Ensembles de sport','Fabric development':'Développement des matières','Quality control':'Contrôle qualité','Shipping options':'Options d’expédition','Other activewear':'Autres vêtements de sport','Selected styles / private label':'Modèles sélectionnés / marque privée','Custom design / OEM-ODM':'Création personnalisée / OEM-ODM','Replacing a supplier':'Remplacement d’un fournisseur','Sample evaluation':'Évaluation d’un échantillon'},
@@ -2093,7 +2110,7 @@ const localizeLegacyProductTitles = (html, products) => {
   });
 };
 
-function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,products=[]}={}) {
+export function cloneEnglishPage(language, route, sourceHtml, {pageKey='',product=null,products=[]}={}) {
   const t=copy[language.code], page=t.pages[pageKey]?.split('|') || [];
   let html=sourceHtml
     .replace(/<html\s+lang="[^"]+"/,`<html lang="${language.code}"`)
@@ -2211,7 +2228,8 @@ function buildLocalized(outputRoot,snapshot) {
     snapshot.products.forEach((product)=>{
       write(`${language.prefix}${product.route}index.html`,cloneEnglishPage(language,product.route,snapshot.files[`${product.route.slice(1)}index.html`],{product,products}));
       urls.push(`${origin}${base}${product.route}`);
-      lastmodByUrl.set(`${origin}${base}${product.route}`, editorialLastmod(`${product.route.slice(1)}index.html`, sourceDates.get(product.route)));
+      const sourceDate = editorialLastmod(`${product.route.slice(1)}index.html`, sourceDates.get(product.route));
+      lastmodByUrl.set(`${origin}${base}${product.route}`, schemaUrlFixRoutes.has(product.route) && sourceDate < '2026-10-30' ? '2026-10-30' : sourceDate);
     });
     write(`${language.prefix}/404.html`,cloneEnglishPage(language,'/',fs.readFileSync(path.join(sourceRoot,'404.html'),'utf8'),{pageKey:'',products}));
   }
