@@ -21,12 +21,15 @@ export function renderProductEditorial(relative, source) {
   const page = schema['@graph'].find(n => n['@type'] === 'WebPage');
   if (product.sku !== entry.sku || product.url !== origin + route) throw new Error(`Product editorial SKU mismatch: ${relative}`);
   const title = `${entry.title} · ${entry.id} | Glory Star Wear`;
-  Object.assign(product, {name:entry.title,description:entry.summary,material:entry.material,size:entry.size});
+  Object.assign(product, {name:entry.title,description:entry.summary,material:entry.material});
+  if (entry.size) product.size = entry.size;
+  else delete product.size;
+  const sizeDisplay = entry.size || "Size range not listed; request a size chart.";
   // The brand and project coordinator are known; an actual manufacturing entity is not verified.
   delete product.manufacturer;
   product.additionalProperty = product.additionalProperty.filter(p => !['Material','Feature','Function','Size range','Color options'].includes(p.name)).concat([
     { '@type':'PropertyValue',name:'Material',value:entry.material },
-    { '@type':'PropertyValue',name:'Size range',value:entry.size },
+    ...(entry.size ? [{ '@type':'PropertyValue',name:'Size range',value:entry.size }] : []),
     { '@type':'PropertyValue',name:'Color options',value:entry.colors },
     { '@type':'PropertyValue',name:'Construction reference',value:entry.construction },
   ]);
@@ -42,7 +45,7 @@ export function renderProductEditorial(relative, source) {
     .replace(/<p class="product-summary__lead">[\s\S]*?<\/p>/,`<p class="product-summary__lead">${escape(entry.summary)}</p>`);
   const quote='/request-a-quote/?'+new URLSearchParams({interest:entry.interest,sku:entry.sku,product:entry.title,source:route});
   html=html.replace(/<div class="product-summary__actions">[\s\S]*?<\/div>/,`<div class="product-summary__actions"><a class="button" href="${escape(quote)}">Get a quote for this SKU</a><a class="button secondary" href="#product-buying-guide">Review sample checklist</a></div>`);
-  const facts=[['Listed fabric',entry.material],['Listed sizes',entry.size],['Listed color options',entry.colors],['Construction reference',entry.construction]];
+  const facts=[['Listed fabric',entry.material],['Listed sizes',sizeDisplay],['Listed color options',entry.colors],['Construction reference',entry.construction]];
   html=html.replace(/<div class="product-description__copy">[\s\S]*?<\/div>/,`<div class="product-description__copy">${facts.map(([name,value])=>`<section class="product-description__feature"><h3>${escape(name)}</h3><p>${escape(value)}</p></section>`).join('')}<p>Catalog options require order confirmation. Ask for measurements and a color reference; photographs and composition do not establish performance ratings or certification.</p></div>`)
     .replace(/(<dt>Material direction<\/dt><dd>)[\s\S]*?(<\/dd>)/,(_,a,b)=>a+escape(entry.material)+b);
   const related=entry.related.map(r=>{const e=productEditorial[r.slice(1)+'index.html']; if(!e)throw new Error(`Missing related editorial entry: ${r}`);return `<li><a href="${r}">${escape(e.title)}</a> — ${escape(e.material)}; SKU ${escape(e.sku)}.</li>`}).join('');

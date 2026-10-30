@@ -39,3 +39,5 @@ On 2026-10-30 the English sports bra, gym wear and activewear set guides gained 
 ## SKU-specific English details — October 30, 2026
 
 `catalog-data/product-editorial.json` holds reviewed copy for nine products. `product-editorial.mjs` renders it over the governed catalog snapshot after localization, preserving SKU identity and source specifications. Release verification rejects missing or stale overlays. The five language versions retain their previous snapshot content and dates until translated; do not capture these English overlays into the multilingual snapshot. Run `node --test scripts/product-editorial.test.mjs` when editing this content or integration.
+
+The second October 30 product batch adds nine leggings, seamless and top references (18 authored English details in total). A missing size range remains explicit in visible copy and is omitted from Product.size. Existing-legging MOQ and sampling terms follow the owner-confirmed evidence ledger; other categories retain SKU-specific quotation requirements.

@@ -13,7 +13,7 @@ test('authored details preserve SKU identity and exact visible/structured answer
   const source=snapshot.files[relative],html=renderProductEditorial(relative,source),nodes=graph(html);
   const before=graph(source).find(n=>n['@type']==='Product'),product=nodes.find(n=>n['@type']==='Product');
   assert.equal(product.sku,before.sku);assert.equal(product.url,before.url);assert.deepEqual(product.image,before.image);
-  assert.equal(product.material,entry.material);assert.equal(product.size,entry.size);assert(!product.offers&&!product.aggregateRating&&!product.review&&!product.manufacturer);
+  assert.equal(product.material,entry.material);if (entry.size) assert.equal(product.size,entry.size); else { assert(!Object.hasOwn(product,"size")); assert(!product.additionalProperty.some(p=>p.name==="Size range")); assert(html.includes("Size range not listed; request a size chart.")); }assert(!product.offers&&!product.aggregateRating&&!product.review&&!product.manufacturer);
   assert.equal(nodes.find(n=>n['@type']==='WebPage').dateModified,entry.dateModified);
   const visible=[...html.matchAll(/<details><summary>(.*?)<\/summary><p>(.*?)<\/p><\/details>/g)];
   const faq=nodes.find(n=>n['@type']==='FAQPage').mainEntity;assert.equal(visible.length,4);assert.equal(faq.length,4);
