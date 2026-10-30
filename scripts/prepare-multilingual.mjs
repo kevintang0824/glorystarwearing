@@ -8,6 +8,7 @@ import { pageCopy } from './page-copy.mjs';
 import { legacyPhraseExtra } from './legacy-copy-extra.mjs';
 import { editorialSource, editorialLastmod } from './editorial-localization.mjs';
 import { authoredEditorialPage } from './authored-editorial.mjs';
+import { productEditorial, installProductEditorial } from './product-editorial.mjs';
 
 const sourceRoot = path.resolve(import.meta.dirname, '..');
 const origin = 'https://glorystarwearing.com';
@@ -100,7 +101,7 @@ function captureCatalog(root) {
 export function installMultilingual(root = sourceRoot) {
   const count = installEnglish(root);
   if (root === sourceRoot) fs.writeFileSync(snapshotPath,zlib.gzipSync(JSON.stringify(captureCatalog(root))));
-  else buildLocalized(root,captureCatalog(root));
+  else { const snapshot=captureCatalog(root); buildLocalized(root,snapshot); installProductEditorial(root,snapshot); }
   return count;
 }
 const titleFor = (t, key) => t.pages[key]?.split('|')[0];
@@ -2231,7 +2232,7 @@ function buildLocalized(outputRoot,snapshot) {
     snapshot.products.forEach((product)=>{
       write(`${language.prefix}${product.route}index.html`,cloneEnglishPage(language,product.route,snapshot.files[`${product.route.slice(1)}index.html`],{product,products}));
       urls.push(`${origin}${base}${product.route}`);
-      const sourceDate = editorialLastmod(`${product.route.slice(1)}index.html`, sourceDates.get(product.route));
+      const sourceDate = productEditorial[`${product.route.slice(1)}index.html`]?.localizedLastmod ?? editorialLastmod(`${product.route.slice(1)}index.html`, sourceDates.get(product.route));
       lastmodByUrl.set(`${origin}${base}${product.route}`, schemaUrlFixRoutes.has(product.route) && sourceDate < '2026-10-30' ? '2026-10-30' : sourceDate);
     });
     write(`${language.prefix}/404.html`,cloneEnglishPage(language,'/',fs.readFileSync(path.join(sourceRoot,'404.html'),'utf8'),{pageKey:'',products}));
@@ -2264,6 +2265,7 @@ export function prepareMultilingualRelease() {
   fs.cpSync(path.join(sourceRoot,'assets'),path.join(outputRoot,'assets'),{recursive:true});
   // Source HTML already contains the same generated navigation and metadata.
   buildLocalized(outputRoot,snapshot);
+  installProductEditorial(outputRoot,snapshot);
 }
 if(process.argv[1] && fileURLToPath(import.meta.url)===path.resolve(process.argv[1])) {
   if(process.argv.includes('--release')) prepareMultilingualRelease();

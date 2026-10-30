@@ -19,6 +19,7 @@ const run = (command, args) => {
 };
 
 run(process.execPath, ["scripts/seo-audit.mjs"]);
+run(process.execPath, ["--test", "scripts/product-editorial.test.mjs"]);
 run(process.execPath, ["--check", "scripts/seo-audit.mjs"]);
 run(process.execPath, ["--check", "scripts/production-seo-check.mjs"]);
 run(process.execPath, ["--check", "scripts/postbuild-check.mjs"]);

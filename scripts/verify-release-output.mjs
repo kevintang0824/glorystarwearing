@@ -1,4 +1,6 @@
 import fs from "node:fs";
+import zlib from "node:zlib";
+import { productEditorial, renderProductEditorial } from "./product-editorial.mjs";
 import path from "node:path";
 import { canonicalPages, releaseImageAssets } from "./prepare-multilingual.mjs";
 import { languages } from "./locales.mjs";
@@ -8,6 +10,7 @@ import { authoredEditorialPage } from "./authored-editorial.mjs";
 const root = path.resolve(import.meta.dirname, "..");
 const publicRoot = path.join(root, "public");
 const failures = [];
+const productSnapshot = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root,"catalog-data/multilingual-catalog.json.gz"))));
 const fail = (message) => failures.push(message);
 
 const listFiles = (directory) => {
@@ -183,7 +186,7 @@ for (const relative of canonicalPages(publicRoot)) {
   // while every other page must still match the current English structure.
   for (const language of languages.slice(1)) {
     const authored = authoredEditorialPage(language, relative);
-    const translationSource = authored?.html ?? editorialSource(relative, () => page);
+    const translationSource = authored?.html ?? (productEditorial[relative] ? productSnapshot.files[relative] : editorialSource(relative, () => page));
     const translatedPath = path.join(publicRoot, language.prefix, relative);
     if (!fs.existsSync(translatedPath)) { fail(`Missing language page ${language.prefix}/${relative}`); continue; }
     const localized = fs.readFileSync(translatedPath, "utf8");
@@ -207,6 +210,11 @@ for (const relative of canonicalPages(publicRoot)) {
       fail(`Locale-relative shared asset URL in ${language.prefix}/${relative}`);
     }
   }
+}
+
+for (const relative of Object.keys(productEditorial)) {
+  const actual = fs.readFileSync(path.join(publicRoot, relative), "utf8");
+  if (actual !== renderProductEditorial(relative, productSnapshot.files[relative])) fail(`Stale authored product detail: ${relative}`);
 }
 
 if (failures.length) {

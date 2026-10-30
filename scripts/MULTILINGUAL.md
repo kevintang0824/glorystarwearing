@@ -35,3 +35,7 @@ The leggings guide now has a complete French document in `scripts/templates/edit
 The previous English leggings source is the eighth entry in the translation baseline. Spanish, Portuguese, Russian and Chinese continue using that source until their expanded content is translated and checked. Only the revised English and French leggings sitemap entries advance to October 30. Run `node --test scripts/authored-editorial.test.mjs` to check regeneration and exact visible FAQ/schema agreement.
 
 On 2026-10-30 the English sports bra, gym wear and activewear set guides gained category-specific buyer questions and catalog references. Their five existing translations retain the previously reviewed sources until equivalent translations are authored; the editorial baseline now holds 11 routes.
+
+## SKU-specific English details — October 30, 2026
+
+`catalog-data/product-editorial.json` holds reviewed copy for nine products. `product-editorial.mjs` renders it over the governed catalog snapshot after localization, preserving SKU identity and source specifications. Release verification rejects missing or stale overlays. The five language versions retain their previous snapshot content and dates until translated; do not capture these English overlays into the multilingual snapshot. Run `node --test scripts/product-editorial.test.mjs` when editing this content or integration.
