@@ -13,9 +13,9 @@ test('untranslated editorial changes retain the source with authored translation
 
 test('pages without an editorial hold use their current source and actual modification date', () => {
   let reads = 0;
-  assert.equal(editorialSource('sports-bra-manufacturer/index.html', () => { reads += 1; return 'current page'; }), 'current page');
+  assert.equal(editorialSource('activewear-shipping-guide/index.html', () => { reads += 1; return 'current page'; }), 'current page');
   assert.equal(reads, 1);
-  assert.equal(editorialLastmod('sports-bra-manufacturer/index.html', '2026-08-28'), '2026-08-28');
+  assert.equal(editorialLastmod('activewear-shipping-guide/index.html', '2026-08-28'), '2026-08-28');
 });
 
 test('missing sitemap dates stop publication instead of inventing a fresh date', () => {
